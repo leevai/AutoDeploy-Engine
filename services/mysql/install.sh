@@ -1,0 +1,1 @@
+echo "install 2 ok"

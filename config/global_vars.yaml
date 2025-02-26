@@ -1,0 +1,10 @@
+global_vars:
+  host: localhost
+  port: 5432
+  user: dbuser
+  password: dbpass
+  endpoint: https://api.example.com
+  timeout: 30
+  mysqluser: root
+  mysqlpassword: 123456
+  mysqlhost: 192.168.48.154

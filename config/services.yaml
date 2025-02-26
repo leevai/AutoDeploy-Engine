@@ -1,0 +1,28 @@
+services:
+  - name: "zcloud"
+    local: true
+    remote:
+      host: "192.168.48.130"
+      port: 22
+      user: "root"
+      password: "123456"
+    priority: 1 # 低数字优先执行
+    
+
+  - name: "mysql"
+    local: true
+    remote:
+      host: "192.168.48.130"
+      port: 22
+      user: "root"
+      password: "123456"
+    priority: 2 # 低数字优先执行
+
+#  - name: "consul"
+#    local: true
+#    remote:
+#      host: "192.168.1.101"
+#      port: 22
+#      user: "root"
+#      password: "password"
+#    priority: 2 # 低数字优先执行

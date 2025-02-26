@@ -1,0 +1,20 @@
+service:
+  name: "mysql"
+  local: true
+  remote:
+    host: "192.168.1.100"
+    port: 22
+    user: "deployuser"
+    password: "password"
+  install_package: "/root/test/zuoye/deploy-chatgpt/services/mysql/install.tar.gz"
+  upgrade_package: "/root/test/zuoye/deploy-chatgpt/services/mysql/upgrade.tar.gz"
+  install_script: "/root/test/zuoye/deploy-chatgpt/services/mysql/backup.sql"
+  backup_script: "/root/test/zuoye/deploy-chatgpt/services/mysql/upgrade.py"
+  rollback_script: "/root/test/zuoye/deploy-chatgpt/services/mysql/rollback.url"
+  check_health_script: "/root/test/zuoye/deploy-chatgpt/services/mysql/check_health_script.sh"
+  upgrade_script: "/root/test/zuoye/deploy-chatgpt/services/mysql/upgrade.py"
+  change_ip_script: "/root/test/zuoye/deploy-chatgpt/services/mysql/change_ip.sh"
+  install_path: "/opt/mysql"
+  start_command: "systemctl start mysql"
+  stop_command: "systemctl stop mysql"
+  priority: 2 # 低数字优先执行
