@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# 检查操作系统时区
+startTime=$(date +"%s%N")
+type=$1
+if [[ ${installType} != 4 || ${type} == "upgrade" ]];then
+  timeZone="CST"
+  time=`date`
+  result=$(echo $time | grep "${timeZone}" |wc -l)
+  if [[ $result -gt 0 ]];then
+      info "操作系统时区为CST,检查通过"
+  else
+      info "操作系统时区不是CST(中国标准时间)，请手动设置为CST"
+      exit 1
+  fi
+else
+  info "此次为标准安装升级，无需执行此步骤 "
+fi
+endTime=$(date +"%s%N")
+info "检查服务器时区完成，耗时$( __CalcDuration ${startTime} ${endTime})"
