@@ -1,0 +1,20 @@
+service:
+  name: "zcloud"
+  local: true
+  remote:
+    host: "192.168.1.100"
+    port: 22
+    user: "deployuser"
+    password: "password"
+  install_package: "/root/test/zuoye/deploy-chatgpt/services/zcloud/install.tar.gz"
+  upgrade_package: "/root/test/zuoye/deploy-chatgpt/services/zcloud/upgrade.tar.gz"
+  install_script: "/root/test/zuoye/deploy-chatgpt/services/zcloud/install.sh"
+  backup_script: "/root/test/zuoye/deploy-chatgpt/services/zcloud/backup.sh"
+  rollback_script: "/root/test/zuoye/deploy-chatgpt/services/zcloud/rollback.url"
+  check_health_script: "/root/test/zuoye/deploy-chatgpt/services/zcloud/check_health_script.sh"
+  upgrade_script: "/root/test/zuoye/deploy-chatgpt/services/zcloud/upgrade.py"
+  change_ip_script: "/root/test/zuoye/deploy-chatgpt/services/zcloud/change_ip.sh"
+  install_path: "/opt/zcloud"
+  start_command: "systemctl start zcloud"
+  stop_command: "systemctl stop zcloud"
+  priority: 2 # 低数字优先执行

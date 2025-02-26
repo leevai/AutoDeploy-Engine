@@ -1,36 +1,67 @@
 package checker
 
 import (
+	"AutoDeploy-Engine/config"
+	"AutoDeploy-Engine/utils"
 	"fmt"
-	"sync"
 )
 
-var shellFileList = []string{"checkCpuCore.sh", "checkDirExist.sh", "checkDiskCapacity.sh", "checkMemory.sh", "checkTimeZone.sh"}
-
-func ExecPreCheckShell() error {
-	var wg sync.WaitGroup
-	errCh := make(chan error)
-	for _, file := range shellFileList {
-		wg.Add(1)
-		go func(file string) {
-			defer wg.Done()
-			//todo exec file
-			fmt.Print(file)
-			var err error
-			if err != nil {
-				errCh <- err
-			}
-		}(file)
+// PerformPreDeploymentChecks ????????????????????
+func PerformPreDeploymentChecks() error {
+	var service *config.ServiceConfig
+	for _, item := range config.MicroServices {
+		if item.Name == "zcloud" {
+			service = item
+			break
+		}
 	}
-	wg.Wait()
 
-	select {
-	case err := <-errCh:
-		fmt.Print(err)
-		return err
-		//exit failed
-	default:
-		fmt.Print("success")
-		return nil
+	// ?????????? zcloud ????
+	if err := CheckAndCreateUser(service); err != nil {
+		return fmt.Errorf("user check and creation failed: %v", err)
 	}
+
+	// ?????????? YUM ??
+	if err := CheckAndConfigureYumSource(service); err != nil {
+		return fmt.Errorf("YUM source configuration failed: %v", err)
+	}
+
+	// ????????????????????????????????????????????????????????????
+	fmt.Println("Environment checks completed successfully.")
+	return nil
+}
+
+// CheckAndConfigureYumSource ???????????????????? YUM ??????????????????
+func CheckAndConfigureYumSource(service *config.ServiceConfig) error {
+	// ???? YUM ????????????
+	cmd := "yum repolist"
+	output, _, err := utils.ExecuteShellCommand(service, cmd)
+	if err != nil || len(output) == 0 {
+		fmt.Errorf("YUM source is not configured, configuring YUM source...")
+	} else {
+		fmt.Println("YUM source is already configured.")
+	}
+
+	return nil
+}
+
+// CheckAndCreateUser ???? zcloud ????????????????????????????????????
+func CheckAndCreateUser(service *config.ServiceConfig) error {
+	// ????????????????
+	cmd := "id -u zcloud"
+	_, _, err := utils.ExecuteShellCommand(service, cmd)
+	if err != nil {
+		// ????????????????????
+		fmt.Println("zcloud user does not exist, creating user...")
+		cmd = "useradd -m zcloud"
+		output, stderr, err := utils.ExecuteShellCommand(service, cmd)
+		if err != nil {
+			return fmt.Errorf("failed to create zcloud user: %v, output: %s, stderr: %s", err, string(output), string(stderr))
+		}
+		fmt.Println("zcloud user created successfully.")
+	} else {
+		fmt.Println("zcloud user already exists.")
+	}
+
+	return nil
 }
