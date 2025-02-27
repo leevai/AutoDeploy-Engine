@@ -32,7 +32,7 @@ func RemoteSCP(service *config.ServiceConfig, localFile string, remoteFile strin
 	password := service.Remote.Password
 
 	// ???????????????????? sshpass ?????????????? scp ????
-	cmdStr := fmt.Sprintf("sshpass -p %s scp -r %s %s@%s:%s", password, localFile, user, host, remoteFile)
+	cmdStr := fmt.Sprintf("sshpass -p %s scp -o StrictHostKeyChecking=no -r %s %s@%s:%s", password, localFile, user, host, remoteFile)
 
 	// ????????
 	cmd := exec.Command("bash", "-c", cmdStr)
@@ -78,6 +78,7 @@ func RemoteSSH(service *config.ServiceConfig, cmdstr string) (stdout, stderr str
 		err = fmt.Errorf("failed to execute command on remote server: %v, output: %s", err, output)
 		return
 	}
+	stdout = string(output)
 
 	return
 
@@ -86,15 +87,15 @@ func RemoteSSH(service *config.ServiceConfig, cmdstr string) (stdout, stderr str
 func AddScriptExecutorForRemote(cmdstr string) string {
 	// ????????
 	if strings.HasSuffix(cmdstr, "sh") {
-		cmdstr = fmt.Sprintf("bash %s", cmdstr)
+		cmdstr = fmt.Sprintf("%s", cmdstr)
 	} else if strings.HasSuffix(cmdstr, "py") {
 		cmdstr = fmt.Sprintf("python %s", cmdstr)
 	} else if strings.HasSuffix(cmdstr, "url") {
-		cmdstr = fmt.Sprintf("bash %s", cmdstr)
+		cmdstr = fmt.Sprintf("%s", cmdstr)
 	} else if strings.HasSuffix(cmdstr, "sql") {
 		cmdstr = fmt.Sprintf("execute %s", cmdstr)
 	} else {
-		cmdstr = fmt.Sprintf("bash %s", cmdstr)
+		cmdstr = fmt.Sprintf("%s", cmdstr)
 	}
 	return cmdstr
 }

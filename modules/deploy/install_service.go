@@ -10,7 +10,7 @@ func Install() error {
 	fmt.Println("开始安装")
 	for _, service := range config.MicroServices {
 		fmt.Printf("Installing service: %s\n", service.Name)
-		serviceDetail, err := config.LoadSingleServiceConfig(fmt.Sprintf("/root/test/zuoye/deploy-chatgpt/services/%s/service.yaml", service.Name))
+		serviceDetail, err := config.LoadSingleServiceConfig(fmt.Sprintf("./services/%s/service.yaml", service.Name))
 		if err != nil {
 			return err
 		}

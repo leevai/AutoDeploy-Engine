@@ -2,20 +2,22 @@ services:
   - name: "zcloud"
     local: true
     remote:
-      host: "192.168.48.130"
+      host: "192.168.48.174"
       port: 22
       user: "root"
-      password: "123456"
+      password: "root@123"
+    install_path: "/opt/dbaas"
     priority: 1 # 低数字优先执行
     
 
   - name: "mysql"
-    local: true
+    local: false
     remote:
-      host: "192.168.48.130"
+      host: "192.168.48.174"
       port: 22
       user: "root"
-      password: "123456"
+      password: "root@123"
+    install_path: "/opt/dbaas"
     priority: 2 # 低数字优先执行
 
 #  - name: "consul"
@@ -25,4 +27,5 @@ services:
 #      port: 22
 #      user: "root"
 #      password: "password"
+#    install_path: "/opt/dbaas"
 #    priority: 2 # 低数字优先执行

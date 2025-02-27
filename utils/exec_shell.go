@@ -5,35 +5,47 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os/exec"
+	"path/filepath"
 	"strings"
 )
 
 func ExecuteShellCommandUseBash(service *config.ServiceConfig, execScript string, isFile bool) (string, error) {
-
-	// ??????????????????????????????????????????????????????????
-	if !service.Local {
-		// ??????????????????????????????
-		stdout, _, err := RemoteSSH(service, fmt.Sprintf("if [ ! -d %s ]; then echo \"dir_not_found\"; fi", service.Name))
-		if err != nil {
-			return stdout, fmt.Errorf("failed to check remote service directory for %s: %v", service.Name, err)
-		}
-		if strings.Contains(stdout, "dir_not_found") {
-			// ??????????????????????
-			if err := RemoteSCP(service, fmt.Sprintf("./services/%s", service.Name), service.InstallPath); err != nil {
-				return stdout, fmt.Errorf("failed to copy install package for service %s: %v", service.Name, err)
-			}
-		}
-	}
+	var err error
+	newExecScript := execScript
 	if isFile {
-		err := ReplaceVarsForFile(execScript)
+		newExecScript, err = ReplaceVarsForFile(execScript)
 		if err != nil {
 			return "", err
 		}
 	}
-	if isFile && strings.HasSuffix(execScript, ".sql") {
-		data, err := ioutil.ReadFile(execScript)
+
+	// ??????????????????????????????????????????????????????????
+	if !service.Local {
+		// ??????????????????????????????
+		stdout, _, err := RemoteSSH(service, fmt.Sprintf("if [ ! -d %s ]; then echo \"dir_not_found\"; fi", filepath.Join(service.InstallPath, service.Name)))
 		if err != nil {
-			return "", fmt.Errorf("read file %s failed.%s", execScript, err.Error())
+			return stdout, fmt.Errorf("failed to check remote service directory for %s: %v", service.Name, err)
+		}
+		if strings.Contains(stdout, "dir_not_found") {
+			stdout, _, err := RemoteSSH(service, fmt.Sprintf("mkdir -p %s", service.InstallPath))
+			if err != nil {
+				return stdout, fmt.Errorf("failed to mkdir remote service directory for %s: %v", service.InstallPath, err)
+			}
+			// ??????????????????????
+			if err := RemoteSCP(service, fmt.Sprintf("./services/%s", service.Name), filepath.Join(service.InstallPath, service.Name)); err != nil {
+				return stdout, fmt.Errorf("failed to copy install package for service %s: %v", service.Name, err)
+			}
+		} else {
+			if err := RemoteSCP(service, newExecScript, filepath.Join(service.InstallPath, service.Name)); err != nil {
+				return stdout, fmt.Errorf("failed to copy install package for service %s: %v", service.Name, err)
+			}
+		}
+	}
+
+	if isFile && strings.HasSuffix(newExecScript, ".sql") {
+		data, err := ioutil.ReadFile(newExecScript)
+		if err != nil {
+			return "", fmt.Errorf("read file %s failed.%s", newExecScript, err.Error())
 		}
 		err = ExecMysqlSQL(string(data))
 		if err != nil {
@@ -41,8 +53,11 @@ func ExecuteShellCommandUseBash(service *config.ServiceConfig, execScript string
 		}
 		return "sql execute success", nil
 	}
+	if !service.Local {
+		newExecScript = filepath.Join(service.InstallPath, service.Name, filepath.Base(newExecScript))
+	}
 	// ??????????????????????????????
-	stdout, stderr, err := ExecuteShellCommand(service, execScript)
+	stdout, stderr, err := ExecuteShellCommand(service, newExecScript)
 	if err != nil {
 		return stdout, fmt.Errorf("failed to execute install script: %v\nstdout: %s\nstderr: %s", err, stdout, stderr)
 	}
