@@ -1,4 +1,4 @@
-package envinit
+package checker
 
 import (
 	"AutoDeploy-Engine/config"
@@ -9,7 +9,9 @@ import (
 	"sync"
 )
 
-func ExecEnvInitShell() error {
+//安装通用环境检查
+
+func EnvPreCheck() error {
 	var service *config.ServiceConfig
 	for _, item := range config.MicroServices {
 		if item.Name == "zcloud" {
@@ -17,7 +19,7 @@ func ExecEnvInitShell() error {
 			break
 		}
 	}
-	var scripts = strings.Split(service.EnvInitScripts, ",")
+	var scripts = strings.Split(service.PreCheckScripts, ",")
 	errCh := make(chan error, len(scripts))
 	var wg sync.WaitGroup
 	for _, script := range scripts {

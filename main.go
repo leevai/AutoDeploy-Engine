@@ -3,6 +3,7 @@ package main
 import (
 	"AutoDeploy-Engine/core"
 	"AutoDeploy-Engine/modules/checker"
+	"AutoDeploy-Engine/modules/envinit"
 	"fmt"
 )
 
@@ -12,7 +13,18 @@ func main() {
 	//	return
 	//}
 	//fmt.Println(config.GlobalConfigMap)
+	err := checker.EnvPreCheck()
+	if err != nil {
+		fmt.Println("pre check failed", err)
+		return
+	}
 	checker.CronCheckSourceLimit()
+
+	err = envinit.ExecEnvInitShell()
+	if err != nil {
+		fmt.Println("env init failed", err)
+		return
+	}
 
 	//action := os.Args[1]
 	action := "install"

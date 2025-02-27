@@ -1,6 +1,7 @@
 #!/bin/bash
+. ../lib/common_unroot.sh
 
-#检查服务器CPU核心数
+#检查服务器CPU核心数；升级时type传了upgrade
 type=$1
 startTime=$(date +"%s%N")
 if [[ ${installType} != 4 || ${type} == "upgrade" ]];then

@@ -1,4 +1,5 @@
 #!/bin/bash
+. ../lib/common_unroot.sh
 
 # 检查操作系统时区
 startTime=$(date +"%s%N")

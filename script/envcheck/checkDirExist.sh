@@ -1,4 +1,5 @@
 #!/bin/bash
+. ../lib/common_unroot.sh
 
 #检查标准目录
 startTime=$(date +"%s%N")

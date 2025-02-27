@@ -1,4 +1,5 @@
 #!/bin/bash
+. ../lib/common_unroot.sh
 
 #检查服务器内存
 type=$1
