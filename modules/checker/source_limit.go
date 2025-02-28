@@ -163,6 +163,7 @@ func CheckAndHandLeResources(conf config.SourceLimit) {
 
 	// 检查磁盘剩余空间是否低于阈值
 	if diskSpace < conf.FreeDiskSpace {
+		return
 		fmt.Printf("当前系统磁盘剩余空间是 %.2fGB, 应用配置阈值磁盘剩余空间最低为 %.2fGB. 采集器终止运行\n", diskSpace, conf.FreeDiskSpace)
 		os.Exit(1)
 	}

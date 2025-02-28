@@ -8,3 +8,5 @@ global_vars:
   mysqluser: root
   mysqlpassword: 123456
   mysqlhost: 192.168.48.154
+  install_path: "/opt/dbaas"
+  mysql_password: dbaas@123

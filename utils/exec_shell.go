@@ -2,11 +2,14 @@ package utils
 
 import (
 	"AutoDeploy-Engine/config"
+	"bytes"
+	"context"
 	"fmt"
 	"io/ioutil"
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 func ExecuteShellCommandUseBash(service *config.ServiceConfig, execScript string, isFile bool) (string, error) {
@@ -80,6 +83,30 @@ func ExecuteShellCommand(service *config.ServiceConfig, cmdstr string) (stdout, 
 }
 
 func executeShellLocal(cmdstr string) (stdout, stderr string, err error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3000*time.Second) // 设置超时
+	defer cancel()
+
+	cmd := exec.CommandContext(ctx, "bash", "-c", cmdstr) // 明确使用 bash
+	var outBuf, errBuf bytes.Buffer
+	cmd.Stdout = &outBuf
+	cmd.Stderr = &errBuf
+
+	if err := cmd.Start(); err != nil {
+		return "", "", fmt.Errorf("启动命令失败: %v", err)
+	}
+
+	// 等待命令完成（父进程退出即可）
+	err = cmd.Wait()
+	stdout = outBuf.String()
+	stderr = errBuf.String()
+
+	if ctx.Err() == context.DeadlineExceeded {
+		return stdout, stderr, fmt.Errorf("执行超时")
+	}
+	return stdout, stderr, err
+}
+
+func executeShellLocal1(cmdstr string) (stdout, stderr string, err error) {
 	var cmd *exec.Cmd
 	cmdstr = AddScriptExecutorForLocal(cmdstr)
 	cmd = exec.Command("bash", "-c", cmdstr)
