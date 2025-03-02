@@ -20,12 +20,22 @@ services:
     install_path: "/opt/dbaas"
     priority: 2 # 低数字优先执行
 
-#  - name: "consul"
-#    local: true
-#    remote:
-#      host: "192.168.1.101"
-#      port: 22
-#      user: "root"
-#      password: "password"
-#    install_path: "/opt/dbaas"
-#    priority: 2 # 低数字优先执行
+  - name: "consul"
+    local: true
+    remote:
+      host: "192.168.48.174"
+      port: 22
+      user: "root"
+      password: "root@123"
+    install_path: "/opt/dbaas"
+    priority: 2 # 低数字优先执行
+
+  - name: "nginx"
+    local: true
+    remote:
+      host: "192.168.48.174"
+      port: 22
+      user: "root"
+      password: "root@123"
+    install_path: "/opt/dbaas"
+    priority: 2 # 低数字优先执行

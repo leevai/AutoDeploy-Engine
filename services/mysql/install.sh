@@ -11,7 +11,7 @@ function __InstallMySQLCommon {
     if [[ ${osType}  = "Kylin_arm" || ${osType}  = "uos_arm" || ${osType}  = "openEuler_arm" || ${osType}  = "bcLinux_arm" ]];then
       tar -zxf ./services/mysql/mysql-5.7.34-kylin-aarch64.tar.gz -C "${installPath}/soft/mysql/"
     else
-      tar -zxf ./services/mysql/mysql-5.7.38-linux-glibc2.12-x86_64.tar.gz -C "${installPath}/soft/mysql/"
+      tar -zxf ./services/mysql/soft_pkg/mysql-5.7.38-linux-glibc2.12-x86_64.tar.gz -C "${installPath}/soft/mysql/"
       mv ${installPath}/soft/mysql/mysql-5.7.38-linux-glibc2.12-x86_64 ${installPath}/soft/mysql/mysql
     fi
 #    cd ${workdir}

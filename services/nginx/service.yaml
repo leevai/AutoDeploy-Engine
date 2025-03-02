@@ -1,0 +1,20 @@
+service:
+  name: "nginx"
+  local: true
+  remote:
+    host: "192.168.1.100"
+    port: 22
+    user: "deployuser"
+    password: "password"
+  install_package: "./services/nginx/install.tar.gz"
+  upgrade_package: "./services/nginx/upgrade.tar.gz"
+  install_script: "./services/nginx/install.sh"
+  backup_script: "./services/nginx/upgrade.py"
+  rollback_script: "./services/nginx/rollback.url"
+  check_health_script: "./services/nginx/check_health_script.sh"
+  upgrade_script: "./services/nginx/upgrade.py"
+  change_ip_script: "./services/nginx/change_ip.sh"
+  install_path: "/opt/nginx"
+  start_command: "systemctl start nginx"
+  stop_command: "systemctl stop nginx"
+  priority: 2 # 低数字优先执行

@@ -1,0 +1,20 @@
+service:
+  name: "consul"
+  local: true
+  remote:
+    host: "192.168.1.100"
+    port: 22
+    user: "deployuser"
+    password: "password"
+  install_package: "./services/consul/install.tar.gz"
+  upgrade_package: "./services/consul/upgrade.tar.gz"
+  install_script: "./services/consul/install.sh"
+  backup_script: "./services/consul/upgrade.py"
+  rollback_script: "./services/consul/rollback.url"
+  check_health_script: "./services/consul/check_health_script.sh"
+  upgrade_script: "./services/consul/upgrade.py"
+  change_ip_script: "./services/consul/change_ip.sh"
+  install_path: "/opt/consul"
+  start_command: "systemctl start consul"
+  stop_command: "systemctl stop consul"
+  priority: 2 # 低数字优先执行
