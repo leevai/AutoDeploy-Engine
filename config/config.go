@@ -8,40 +8,38 @@ import (
 )
 
 type RemoteConfig struct {
-	Host     string `yaml:"host"`     // ???????? IP
-	Port     uint16 `yaml:"port"`     // ???????? Port
-	User     string `yaml:"user"`     // ??????????????
-	Password string `yaml:"password"` // ????????????
+	Host     string `yaml:"host"`
+	Port     uint16 `yaml:"port"`
+	User     string `yaml:"user"`
+	Password string `yaml:"password"`
 }
 
 type ServiceConfig struct {
-	Name              string        `yaml:"name"`                // ????????
-	Local             bool          `yaml:"local"`               // ?????????? true???????????? false
-	Remote            *RemoteConfig `yaml:"remote,omitempty"`    // ????????????
-	PreCheckScripts   string        `yaml:"pre_check_scripts"`   // 前置检查脚本
-	EnvInitScripts    string        `yaml:"env_init_scripts"`    // 环境初始化脚本
-	InstallPackage    string        `yaml:"install_package"`     // ????????????????????????????
-	UpgradePackage    string        `yaml:"upgrade_package"`     // ????????????????????????????
-	InstallScript     string        `yaml:"install_script"`      // ????????????
-	UpgradeScript     string        `yaml:"upgrade_script"`      // ????????????
-	UninstallScript   string        `yaml:"uninstall_script"`    // ????????????
-	RollbackScript    string        `yaml:"rollback_script"`     // ????????????
-	CheckHealthScript string        `yaml:"check_health_script"` // ????????????
-	BackupScript      string        `yaml:"backup_script"`       // ????????????
-	ChangeIPScript    string        `yaml:"change_ip_script"`    // ????????????
-	InstallPath       string        `yaml:"install_path"`        // ????????
-	StartCommand      string        `yaml:"start_command"`       // ????????
+	Name              string        `yaml:"name"`
+	Local             bool          `yaml:"local"`
+	Remote            *RemoteConfig `yaml:"remote,omitempty"`
+	PreCheckScripts   string        `yaml:"pre_check_scripts"`
+	EnvInitScripts    string        `yaml:"env_init_scripts"`
+	InstallPackage    string        `yaml:"install_package"`
+	UpgradePackage    string        `yaml:"upgrade_package"`
+	InstallScript     string        `yaml:"install_script"`
+	UpgradeScript     string        `yaml:"upgrade_script"`
+	UninstallScript   string        `yaml:"uninstall_script"`
+	RollbackScript    string        `yaml:"rollback_script"`
+	CheckHealthScript string        `yaml:"check_health_script"`
+	BackupScript      string        `yaml:"backup_script"`
+	ChangeIPScript    string        `yaml:"change_ip_script"`
+	InstallPath       string        `yaml:"install_path"`
+	StartCommand      string        `yaml:"start_command"`
 	Priority          int           `yaml:"priority"`
 }
 
 func LoadServiceConfig(configFile string) ([]*ServiceConfig, error) {
-	// ????????????
 	data, err := ioutil.ReadFile(configFile)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read config file: %v", err)
 	}
 
-	// ???? YAML ????
 	var servicesConfig struct {
 		Services []*ServiceConfig `yaml:"services"`
 	}
@@ -50,7 +48,6 @@ func LoadServiceConfig(configFile string) ([]*ServiceConfig, error) {
 		return nil, fmt.Errorf("failed to parse YAML: %v", err)
 	}
 
-	// ???? priority ????????????????????????????????????
 	sort.SliceStable(servicesConfig.Services, func(i, j int) bool {
 		return servicesConfig.Services[i].Priority < servicesConfig.Services[j].Priority
 	})
@@ -62,7 +59,6 @@ func LoadServiceConfig(configFile string) ([]*ServiceConfig, error) {
 var MicroServices []*ServiceConfig
 
 func init() {
-	// ??????????????
 	var err error
 	MicroServices, err = LoadServiceConfig("config/services.yaml")
 	if err != nil {
@@ -81,13 +77,11 @@ func GetZcloudService() *ServiceConfig {
 }
 
 func LoadSingleServiceConfig(configFile string) (*ServiceConfig, error) {
-	// ????????????
 	data, err := ioutil.ReadFile(configFile)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read config file: %v", err)
 	}
 
-	// ???? YAML ????
 	var servicesConfig struct {
 		Service *ServiceConfig `yaml:"service"`
 	}

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+    <property name="logHome" value="/log/app/dbaas/dbaas-mariadb/"/>
+    <property name="maxHistory" value="10"/>
+    <property name="maxFileSize" value="10MB"/>
+    <property name="totalSizeCap" value="200MB"/>
+    <property name="minIndexNum" value="1"/>
+    <property name="maxIndexNum" value="10"/>
+
+    <appender name="INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logHome}/info.log</file>
+        <append>true</append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>${logHome}/info.%i.log.zip</fileNamePattern>
+            <minIndex>${minIndexNum}</minIndex>
+            <maxIndex>${maxIndexNum}</maxIndex>
+        </rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>${maxFileSize}</maxFileSize>
+        </triggeringPolicy>
+        <encoder>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss}] [%thread] [%p] [%class:%line] %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="INFO"/>
+    </root>
+</configuration>
