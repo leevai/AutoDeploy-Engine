@@ -1,4 +1,10 @@
-#!/bin/bash
+installType=#{installType}
+homePath=#{homePath}
+theme=#{theme}
+executeUser=#{executeUser}
+logPath=#{logPath}
+logFile=#{logFile}
+. ../lib/common_unroot.sh
 
 #检查并创建用户
 if [[ -f ${homePath}/dbaas/zcloud-log/evn.cfg ]];then
@@ -43,12 +49,6 @@ chown -R  zcloud:zcloud ${homePath}/dbaas
 
 
 __ReplaceText ${logPath}/evn.cfg "checkUser=" "checkUser=1"
-installPath="${homePath}/dbaas/soft-install"
-packagePath="${homePath}/dbaas/soft-package"
-bakPath="${homePath}/dbaas/soft-bak"
-configPath="${homePath}/dbaas/zcloud-config"
-javaIoTempDir="${logPath}/java-io-tmpdir"
-startTime=$(date +"%s%N")
 
 if [[ ! -f ${logFile} ]];then
   touch ${logFile}
@@ -67,5 +67,3 @@ if [[ ! (`whoami` = "root" || `whoami` = "zcloud") ]];then
   error "执行用户必须是root或者zcloud"
   exit 1;
 fi
-endTime=$(date +"%s%N")
-info "检查用户信息完成，耗时$( __CalcDuration ${startTime} ${endTime})"

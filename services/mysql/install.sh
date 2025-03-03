@@ -1,5 +1,6 @@
 installBasePath=#{install_path}
 __mysqlRootPwd=#{mysql_password}
+osType=#{osType}
 installPath=${installBasePath}/mysql
 
 function __InstallMySQLCommon {

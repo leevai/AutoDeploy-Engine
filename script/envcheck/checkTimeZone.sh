@@ -1,8 +1,7 @@
-#!/bin/bash
+installType=#{installType}
 . ../lib/common_unroot.sh
 
 # 检查操作系统时区
-startTime=$(date +"%s%N")
 type=$1
 if [[ ${installType} != 4 || ${type} == "upgrade" ]];then
   timeZone="CST"
@@ -17,5 +16,3 @@ if [[ ${installType} != 4 || ${type} == "upgrade" ]];then
 else
   info "此次为标准安装升级，无需执行此步骤 "
 fi
-endTime=$(date +"%s%N")
-info "检查服务器时区完成，耗时$( __CalcDuration ${startTime} ${endTime})"

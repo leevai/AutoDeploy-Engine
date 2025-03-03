@@ -2,10 +2,8 @@ package envinit
 
 import (
 	"AutoDeploy-Engine/config"
+	"AutoDeploy-Engine/utils"
 	"fmt"
-	"os"
-	"os/exec"
-	"strings"
 	"sync"
 )
 
@@ -17,22 +15,17 @@ func ExecEnvInitShell() error {
 			break
 		}
 	}
-	var scripts = strings.Split(service.EnvInitScripts, ",")
-	errCh := make(chan error, len(scripts))
+	errCh := make(chan error, len(service.EnvInitScripts))
 	var wg sync.WaitGroup
-	for _, script := range scripts {
+	for _, script := range service.EnvInitScripts {
 		wg.Add(1)
-		go func() {
+		go func(script string) {
 			defer wg.Done()
-			cmd := exec.Command(script)
-			// 设置环境变量
-			cmd.Env = append(os.Environ(), "MY_VARIABLE=hello")
-			// 执行命令并获取输出结果
-			err := cmd.Run()
+			_, _, err := utils.ExecuteShellCommand(service, script)
 			if err != nil {
 				errCh <- err
 			}
-		}()
+		}(script)
 	}
 	wg.Wait()
 	var err error

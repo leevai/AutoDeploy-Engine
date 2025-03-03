@@ -1,4 +1,10 @@
-#!/bin/bash
+installType=#{installType}
+homePath=#{homePath}
+installPath=#{installPath}
+packagePath=#{packagePath}
+bakPath=#{bakPath}
+configPath=#{configPath}
+javaIoTempDir=#{javaIoTempDir}
 
 
 # 文件(夹) 创建和赋权给zcloud

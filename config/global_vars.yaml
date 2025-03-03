@@ -10,3 +10,8 @@ global_vars:
   mysqlhost: 192.168.48.154
   install_path: "/opt/dbaas"
   mysql_password: dbaas@123
+  outsidePrometheus: 0
+  defaultCoreNum: 32
+  diskCapacity: 200
+  defaultMemorySize: 64
+  installNodeType: OneNode

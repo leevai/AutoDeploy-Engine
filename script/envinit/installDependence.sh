@@ -1,4 +1,7 @@
-#!/bin/bash
+installType=#{installType}
+osType=#{osType}
+theme=#{theme}
+repoCommand="--disablerepo=zcloud"
 
 #yum安装依赖
 startTime=$(date +"%s%N")

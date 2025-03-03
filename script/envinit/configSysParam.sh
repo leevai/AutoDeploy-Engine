@@ -1,9 +1,9 @@
-#!/bin/bash
+installType=#{installType}
+osType=#{osType}
+osVersion=#{osVersion}
 
 #操作系统调优和设置
-startTime=$(date +"%s%N")
 if [[ ${installType} != 4 ]];then
-  # shellcheck disable=SC2006
   if [[ ${osType} = "Kylin_arm" || ${osType} = "Kylin_x86" || ${osType} = "uos_x86" || ${osType} = "uos_arm" ||
         ${osType} = "openEuler_x86" || ${osType} = "openEuler_arm" || ${osType} = "bcLinux_x86" || ${osType} = "bcLinux_arm" ]];then
     limitFileName="/etc/security/limits.conf"
@@ -53,5 +53,3 @@ else
   info "此次为标准安装升级，无需执行此步骤"
 fi
 ulimit -c unlimited
-endTime=$(date +"%s%N")
-info "检查操作系统调优和设置完成，耗时$( __CalcDuration ${startTime} ${endTime})"

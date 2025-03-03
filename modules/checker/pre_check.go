@@ -2,7 +2,6 @@ package checker
 
 import (
 	"AutoDeploy-Engine/config"
-	"AutoDeploy-Engine/utils"
 	"fmt"
 )
 
@@ -15,44 +14,11 @@ func PerformPreDeploymentChecks() error {
 		}
 	}
 
-	if err := CheckAndCreateUser(service); err != nil {
-		return fmt.Errorf("user check and creation failed: %v", err)
-	}
-
-	if err := CheckAndConfigureYumSource(service); err != nil {
-		return fmt.Errorf("YUM source configuration failed: %v", err)
-	}
-
-	fmt.Println("Environment checks completed successfully.")
-	return nil
-}
-
-func CheckAndConfigureYumSource(service *config.ServiceConfig) error {
-	cmd := "yum repolist"
-	output, _, err := utils.ExecuteShellCommand(service, cmd)
-	if err != nil || len(output) == 0 {
-		fmt.Errorf("YUM source is not configured, configuring YUM source...")
-	} else {
-		fmt.Println("YUM source is already configured.")
-	}
-
-	return nil
-}
-
-func CheckAndCreateUser(service *config.ServiceConfig) error {
-	cmd := "id -u zcloud"
-	_, _, err := utils.ExecuteShellCommand(service, cmd)
+	err := EnvPreCheck(service)
 	if err != nil {
-		fmt.Println("zcloud user does not exist, creating user...")
-		cmd = "useradd -m zcloud"
-		output, stderr, err := utils.ExecuteShellCommand(service, cmd)
-		if err != nil {
-			return fmt.Errorf("failed to create zcloud user: %v, output: %s, stderr: %s", err, string(output), string(stderr))
-		}
-		fmt.Println("zcloud user created successfully.")
-	} else {
-		fmt.Println("zcloud user already exists.")
+		fmt.Println("pre check failed", err)
+		return err
 	}
-
+	fmt.Println("Environment checks completed successfully.")
 	return nil
 }

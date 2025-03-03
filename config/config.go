@@ -18,8 +18,8 @@ type ServiceConfig struct {
 	Name              string        `yaml:"name"`
 	Local             bool          `yaml:"local"`
 	Remote            *RemoteConfig `yaml:"remote,omitempty"`
-	PreCheckScripts   string        `yaml:"pre_check_scripts"`
-	EnvInitScripts    string        `yaml:"env_init_scripts"`
+	PreCheckScripts   []string      `yaml:"pre_check_scripts"`
+	EnvInitScripts    []string      `yaml:"env_init_scripts"`
 	InstallPackage    string        `yaml:"install_package"`
 	UpgradePackage    string        `yaml:"upgrade_package"`
 	InstallScript     string        `yaml:"install_script"`
@@ -31,7 +31,9 @@ type ServiceConfig struct {
 	ChangeIPScript    string        `yaml:"change_ip_script"`
 	InstallPath       string        `yaml:"install_path"`
 	StartCommand      string        `yaml:"start_command"`
+	Theme             string        `yaml:"theme"`
 	Priority          int           `yaml:"priority"`
+	InstallDbType     string        `yaml:"install_db_type"` //安装数据库类型
 }
 
 func LoadServiceConfig(configFile string) ([]*ServiceConfig, error) {
@@ -92,4 +94,8 @@ func LoadSingleServiceConfig(configFile string) (*ServiceConfig, error) {
 
 	//log.Printf("Successfully loaded %d services from config file %s", len(servicesConfig.Services), configFile)
 	return servicesConfig.Service, nil
+}
+
+func loadEnvVar(config *ServiceConfig) {
+
 }

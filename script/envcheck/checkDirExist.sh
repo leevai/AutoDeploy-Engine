@@ -1,8 +1,13 @@
-#!/bin/bash
+installType=#{installType}
+logPath=#{logPath}
+packagePath=#{packagePath}
+installPath=#{installPath}
+configPath=#{configPath}
+bakPath=#{bakPath}
+homePath=#{homePath}
 . ../lib/common_unroot.sh
 
 #检查标准目录
-startTime=$(date +"%s%N")
 if [[ $( __ReadValue ${logPath}/evn.cfg checkDir) != 1 ]];then
   if [[ $installType = 1 || $installType = 2  ]];then
     if [[ -e ${packagePath} || -e  ${installPath} || -e ${configPath} || -e ${bakPath} ]]; then
@@ -21,5 +26,3 @@ if [[ $( __ReadValue ${logPath}/evn.cfg checkDir) != 1 ]];then
 else
   info "重试无需执行此步骤"
 fi
-endTime=$(date +"%s%N")
-info "检查标准目录完成，耗时$( __CalcDuration ${startTime} ${endTime})"

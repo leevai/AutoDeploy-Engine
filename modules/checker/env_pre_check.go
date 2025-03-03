@@ -2,45 +2,29 @@ package checker
 
 import (
 	"AutoDeploy-Engine/config"
+	"AutoDeploy-Engine/utils"
 	"fmt"
-	"os"
-	"os/exec"
-	"strings"
 	"sync"
 )
 
-//安装通用环境检查
-
-func EnvPreCheck() error {
-	var service *config.ServiceConfig
-	for _, item := range config.MicroServices {
-		if item.Name == "zcloud" {
-			service = item
-			break
-		}
-	}
-	var scripts = strings.Split(service.PreCheckScripts, ",")
-	errCh := make(chan error, len(scripts))
+// 安装通用环境检查
+func EnvPreCheck(service *config.ServiceConfig) error {
+	errCh := make(chan error, len(service.PreCheckScripts))
 	var wg sync.WaitGroup
-	for _, script := range scripts {
+	for _, script := range service.PreCheckScripts {
 		wg.Add(1)
-		go func() {
+		go func(script string) {
 			defer wg.Done()
-			cmd := exec.Command(script)
-			// 设置环境变量
-			cmd.Env = append(os.Environ(), "MY_VARIABLE=hello")
-			// 执行命令并获取输出结果
-			err := cmd.Run()
+			_, stdErr, err := utils.ExecuteShellCommand(service, script)
 			if err != nil {
-				errCh <- err
+				errCh <- fmt.Errorf("env pre check failed: %s. %v", stdErr, err)
 			}
-		}()
+		}(script)
 	}
 	wg.Wait()
 	var err error
 	for scriptErr := range errCh {
 		err = scriptErr
-		fmt.Println(scriptErr)
 	}
 	return err
 }
