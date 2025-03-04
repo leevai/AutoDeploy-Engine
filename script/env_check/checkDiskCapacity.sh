@@ -1,7 +1,7 @@
 installType=#{installType}
 diskCapacity=#{diskCapacity}
 homePath=#{homePath}
-. ../lib/common_unroot.sh
+. ./script/lib/common.sh
 
 #检查服务器磁盘容量
 type=$1
@@ -12,9 +12,9 @@ if [[ ${installType} != 4 || ${type} == "upgrade" ]];then
     error "本次安装退出"
     exit 1
   else
-    info "主机的磁盘空间满足zcloud正常安装"
+    echo "主机的磁盘空间满足zcloud正常安装"
   fi
 
 else
-  info "此次为标准安装升级，无需执行此步骤"
+  echo "此次为标准安装升级，无需执行此步骤"
 fi

@@ -1,5 +1,4 @@
-installBasePath=#{install_path}
-installPath=${installBasePath}/consul
+installPath=${installPath}
 
 function install_consul() {
     info "开始安装consul "

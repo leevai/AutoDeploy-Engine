@@ -3,6 +3,6 @@ sourceLimit:
   memoryUsagePercentage: 85 # unit %
   memoryMinimumValue: 7 # os memory minimum value unit GB
   freeDiskSpace: 5 # unit GB
-  dataStoragePath: "/home/zcloud"
+  dataStoragePath: "/home"
 log:
   level: debug

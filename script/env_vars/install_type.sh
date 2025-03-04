@@ -1,4 +1,5 @@
 homePath=#{homePath}
+. ./script/lib/common.sh
 
 installPath="${homePath}/dbaas/soft-install"
 startTime=$(date +"%s%N")

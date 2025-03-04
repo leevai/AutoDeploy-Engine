@@ -134,7 +134,7 @@ func CheckAndHandLeResources(conf config.SourceLimit) {
 
 	totalMemGB, err := getOsTotalMemoryByShell(zcloudService)
 	if err != nil {
-		fmt.Printf("Failed to get disk space: %v\n", err)
+		fmt.Printf("Failed to get memory space: %v\n", err)
 		os.Exit(1)
 	}
 

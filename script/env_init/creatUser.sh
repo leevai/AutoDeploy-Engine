@@ -4,7 +4,7 @@ theme=#{theme}
 executeUser=#{executeUser}
 logPath=#{logPath}
 logFile=#{logFile}
-. ../lib/common_unroot.sh
+. ./script/lib/common.sh
 
 #检查并创建用户
 if [[ -f ${homePath}/dbaas/zcloud-log/evn.cfg ]];then
@@ -57,10 +57,6 @@ fi
 if [[ ! -f ${logPath}/evn.cfg ]];then
   touch ${logPath}/evn.cfg
   chown zcloud:zcloud ${logPath}/evn.cfg
-fi
-if [[ ! -f ${logFile} ]];then
-  touch ${logFile}
-  chown zcloud:zcloud ${logFile}
 fi
 chown  zcloud:zcloud ${homePath}/dbaas
 if [[ ! (`whoami` = "root" || `whoami` = "zcloud") ]];then

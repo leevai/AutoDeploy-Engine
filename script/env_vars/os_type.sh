@@ -1,11 +1,10 @@
 logPath=#{logPath}
 
-. ../lib/dir_auth.sh
-. ../lib/common_unroot.sh
+. ./script/lib/common_unroot.sh
+. ./script/lib/dir_auth.sh
 
 function __CheckOSVersion {
     str=`cat /etc/system-release`
-
     if [[ `echo $str | grep 'CentOS' | wc -l ` -gt 0 ]]; then
         osType=CentOS
         osVersion=`echo $str | awk '{print $(NF-1)}' | awk -F'.' '{print $1"."$2}'`
@@ -47,7 +46,6 @@ function __CheckOSVersion {
       error "仅支持CentOS,Red Hat,Kylin,BC Linux for Euler上运行zCloud"
       exit 1
     fi
-    info "当前主机的操作系统为$osType,操作系统版本为$osVersion"
     if [[ "CentOS" = $osType || "RedHat" = $osType  ]]; then
       if [[ $osVersion < '7.0' ]]; then
           error $osType+"版本应该大于7.0，当前版本为:"$osVersion
@@ -91,3 +89,4 @@ function __CheckOSVersion {
     __ReplaceText ${logPath}/evn.cfg "osVersion=" "osVersion=${osVersion}"
     echo "${osType};${osVersion}"
 }
+__CheckOSVersion

@@ -4,25 +4,28 @@ import (
 	"AutoDeploy-Engine/config"
 	"AutoDeploy-Engine/modules/checker"
 	"AutoDeploy-Engine/modules/deploy"
-	"AutoDeploy-Engine/modules/envinit"
+	"AutoDeploy-Engine/modules/env"
 	"fmt"
 )
 
 func Install() error {
 	fmt.Println("全局变量加载")
-	if err := config.LoadGlobalEnvVars(); err != nil {
+	if err := env.LoadGlobalEnvVars(); err != nil {
 		return fmt.Errorf("env vars load failed: %v", err)
 	}
+	fmt.Printf("global env var is %s", config.GlobalConfigMap)
 
 	fmt.Println("环境初始化")
-	if err := envinit.ExecEnvInitShell(); err != nil {
+	if err := env.ExecEnvInitShell(); err != nil {
 		return fmt.Errorf("env init failed: %v", err)
 	}
+	fmt.Println("环境初始化完成")
 
 	fmt.Println("前置检查")
 	if err := checker.PerformPreDeploymentChecks(); err != nil {
 		return fmt.Errorf("preinstall check failed: %v", err)
 	}
+	fmt.Println("前置检查完成")
 
 	//fmt.Println("Backing up configurations...")
 	//err := backup.BackupService("MySQL")

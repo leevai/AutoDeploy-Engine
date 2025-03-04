@@ -1,7 +1,7 @@
-installBasePath=#{install_path}
 __mysqlRootPwd=#{mysql_password}
 osType=#{osType}
-installPath=${installBasePath}/mysql
+installPath=#{installPath}
+mysqlhostport=#{mysqlhostport}
 
 function __InstallMySQLCommon {
     info "开始安装MySQL "

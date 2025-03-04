@@ -1,6 +1,6 @@
 installType=#{installType}
 defaultMemorySize=#{defaultMemorySize}
-. ../lib/common_unroot.sh
+. ./script/lib/common.sh
 
 #检查服务器内存
 type=$1
@@ -12,5 +12,5 @@ if [[ ${installType} != 4 || ${type} == "upgrade" ]];then
     exit 1
   fi
 else
-  info "此次为标准安装升级，无需执行此步骤"
+  echo "此次为标准安装升级，无需执行此步骤"
 fi

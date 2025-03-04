@@ -21,7 +21,7 @@ if [[ ${installType} != 4 ]];then
   if [[ -f /sys/firmware/dmi/tables/DMI ]];then
     chmod o+r /sys/firmware/dmi/tables/DMI
   fi
-  info "licence赋权成功"
+  echo "licence赋权成功"
 else
-  info "此次为标准安装升级，无需执行此步骤"
+  echo "此次为标准安装升级，无需执行此步骤"
 fi

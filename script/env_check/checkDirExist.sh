@@ -5,7 +5,7 @@ installPath=#{installPath}
 configPath=#{configPath}
 bakPath=#{bakPath}
 homePath=#{homePath}
-. ../lib/common_unroot.sh
+. ./script/lib/common.sh
 
 #检查标准目录
 if [[ $( __ReadValue ${logPath}/evn.cfg checkDir) != 1 ]];then
@@ -20,9 +20,9 @@ if [[ $( __ReadValue ${logPath}/evn.cfg checkDir) != 1 ]];then
       exit 1
     fi
   else
-    info "此次为标准安装升级，无需清理文件夹"
+    echo "此次为标准安装升级，无需清理文件夹"
   fi
   __ReplaceText ${logPath}/evn.cfg "checkDir=" "checkDir=1"
 else
-  info "重试无需执行此步骤"
+  echo "重试无需执行此步骤"
 fi

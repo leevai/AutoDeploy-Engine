@@ -6,7 +6,7 @@ repoCommand="--disablerepo=zcloud"
 #yum安装依赖
 startTime=$(date +"%s%N")
 if [[ ${installType} != 4 ]];then
-  info "yum安装依赖 ..."
+  echo "yum安装依赖 ..."
   linux_kernel_version=$(uname -r|awk -F'\\.' '{print $1}')
   if [ $linux_kernel_version -ge 4 ];then
     yum -y --nobest install gcc-c++ gcc libxslt-devel gd gd-devel curl  libffi-devel ${repoCommand}
@@ -18,18 +18,18 @@ if [[ ${installType} != 4 ]];then
   opensslStr=`openssl version`
   set -e
   if [[ `echo $opensslStr | grep 'OpenSSL' | wc -l ` -gt 0 ]]; then
-    info "openssl already install"
+    echo "openssl already install"
   else
-    info "start openssl install"
+    echo "start openssl install"
     yum -y  install openssl ${repoCommand}
   fi
   set +e
   opensslDevelStr=`rpm -q openssl-devel`
   set +e
   if [[ `echo $opensslDevelStr | grep 'openssl-devel' | wc -l ` -gt 0 ]]; then
-      info "openssl-devel already install"
+      echo "openssl-devel already install"
   else
-      info "start openssl-devel install"
+      echo "start openssl-devel install"
       yum -y  install openssl-devel ${repoCommand}
   fi
   #增加perl和perl-libs支持后续nginx编译
@@ -37,18 +37,18 @@ if [[ ${installType} != 4 ]];then
   perlStr=`rpm -q perl`
   set -e
   if [[ `echo $perlStr | grep 'perl-' | wc -l ` -gt 0 ]]; then
-      info "perl already install"
+      echo "perl already install"
   else
-      info "start perl install"
+      echo "start perl install"
       yum -y  install perl ${repoCommand}
   fi
   set +e
   perlLibStr=`rpm -q perl-libs`
   set -e
   if [[ `echo $perlLibStr | grep 'perl-libs' | wc -l ` -gt 0 ]]; then
-      info "perl-libs already install"
+      echo "perl-libs already install"
   else
-      info "start perl-libs install"
+      echo "start perl-libs install"
       yum -y  install perl-libs ${repoCommand}
   fi
 
@@ -65,11 +65,11 @@ if [[ ${installType} != 4 ]];then
   fi
   if [[ ${osType} = "openEuler_arm" || ${osType} = "bcLinux_arm" ]];then
           yum -y install bc ${repoCommand}
-          info "openeuler_arm 安装mysql需要依赖包libatomic"
+          echo "openeuler_arm 安装mysql需要依赖包libatomic"
           yum install libatomic -y ${repoCommand}
   fi
   if [[ ${osType}  = "uos_arm" ]];then
-        info "统信arm安装mysql需要依赖包libatomic"
+        echo "统信arm安装mysql需要依赖包libatomic"
         yum install libatomic -y ${repoCommand}
   fi
 
@@ -80,23 +80,23 @@ if [[ ${installType} != 4 ]];then
   fi
   for softName in gcc-c++ gcc libxslt-devel gd openssl openssl-devel curl  libffi-devel
   do
-    info "yum list ${softName} ${repoCommand}"
+    echo "yum list ${softName} ${repoCommand}"
     result=`yum list ${softName} ${repoCommand}`
-    info "${result}"
+    echo "${result}"
   done
   if [[ ${osType} = "Kylin_arm" && ${theme} != "zData" ]];then
-    info "yum list libatomic ${repoCommand}"
+    echo "yum list libatomic ${repoCommand}"
     result=`yum list libatomic ${repoCommand}`
-    info "${result}"
+    echo "${result}"
   fi
 else
-  info "此次为标准安装升级，无需执行此步骤"
+  echo "此次为标准安装升级，无需执行此步骤"
 fi
- info "yum安装依赖成功"
+ echo "yum安装依赖成功"
 endTime=$(date +"%s%N")
-info "检查Yum源配置完成，耗时$( __CalcDuration ${startTime} ${endTime})"
+echo "检查Yum源配置完成，耗时$( __CalcDuration ${startTime} ${endTime})"
 
-for libso in libncurses.so.5 libtinfo.so.5 libnsl.so.1 libreadline.so.6
+for libso in libncurses.so.5 libtecho.so.5 libnsl.so.1 libreadline.so.6
 do
   if [[ `ls /usr/lib64/ | grep ${libso} | wc -l ` -gt 0 ]]; then
     echo "存在${libso}"

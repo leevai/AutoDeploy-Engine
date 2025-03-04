@@ -6,36 +6,57 @@ services:
       port: 22
       user: "root"
       password: "root@123"
-    install_path: "/opt/dbaas"
     priority: 1 # 低数字优先执行
-    
+    env_init_scripts:
+      - "./script/env_init/authLicence.sh"
+      - "./script/env_init/configSysParam.sh"
+      - "./script/env_init/createDir.sh"
+      - "./script/env_init/creatUser.sh"
+#      - "./script/env_init/installDependence.sh" #测试环境yum源部分缺失
+    pre_check_scripts:
+      - "./script/env_check/checkCpuCore.sh"
+      - "./script/env_check/checkDirExist.sh"
+      - "./script/env_check/checkDiskCapacity.sh"
+      - "./script/env_check/checkMemory.sh"
+      - "./script/env_check/checkTimeZone.sh"
 
-  - name: "mysql"
-    local: true
-    remote:
-      host: "192.168.48.174"
-      port: 22
-      user: "root"
-      password: "root@123"
-    install_path: "/opt/dbaas"
-    priority: 2 # 低数字优先执行
 
-  - name: "consul"
-    local: true
-    remote:
-      host: "192.168.48.174"
-      port: 22
-      user: "root"
-      password: "root@123"
-    install_path: "/opt/dbaas"
-    priority: 2 # 低数字优先执行
+#  - name: "mysql"
+#    local: true
+#    remote:
+#      host: "192.168.48.174"
+#      port: 22
+#      user: "root"
+#      password: "root@123"
+#    install_path: "/opt/dbaas"
+#    priority: 2 # 低数字优先执行
 
-  - name: "nginx"
-    local: true
-    remote:
-      host: "192.168.48.174"
-      port: 22
-      user: "root"
-      password: "root@123"
-    install_path: "/opt/dbaas"
-    priority: 2 # 低数字优先执行
+#  - name: "consul"
+#    local: true
+#    remote:
+#      host: "192.168.48.174"
+#      port: 22
+#      user: "root"
+#      password: "root@123"
+#    install_path: "/opt/dbaas"
+#    priority: 2 # 低数字优先执行
+
+#  - name: "nginx"
+#    local: true
+#    remote:
+#      host: "192.168.48.174"
+#      port: 22
+#      user: "root"
+#      password: "root@123"
+#    install_path: "/opt/dbaas"
+#    priority: 2 # 低数字优先执行
+
+#  - name: "java"
+#    local: true
+#    remote:
+#      host: "192.168.48.174"
+#      port: 22
+#      user: "root"
+#      password: "root@123"
+#    install_path: "/opt/dbaas"
+#    priority: 2 # 低数字优先执行

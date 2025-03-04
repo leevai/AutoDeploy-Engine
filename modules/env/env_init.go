@@ -1,4 +1,4 @@
-package envinit
+package env
 
 import (
 	"AutoDeploy-Engine/config"
@@ -15,23 +15,23 @@ func ExecEnvInitShell() error {
 			break
 		}
 	}
-	errCh := make(chan error, len(service.EnvInitScripts))
+	var resErr error
 	var wg sync.WaitGroup
+	if service.EnvInitScripts == nil || len(service.EnvInitScripts) == 0 {
+		return nil
+	}
 	for _, script := range service.EnvInitScripts {
 		wg.Add(1)
 		go func(script string) {
 			defer wg.Done()
-			_, _, err := utils.ExecuteShellCommand(service, script)
+			fmt.Printf("exec env init script:%s\n", script)
+			_, err := utils.ExecuteShellCommandUseBash(service, script, true)
 			if err != nil {
-				errCh <- err
+				fmt.Printf("exec env init script:%s, err : %s\n", script, err)
+				resErr = err
 			}
 		}(script)
 	}
 	wg.Wait()
-	var err error
-	for scriptErr := range errCh {
-		err = scriptErr
-		fmt.Println(scriptErr)
-	}
-	return err
+	return resErr
 }

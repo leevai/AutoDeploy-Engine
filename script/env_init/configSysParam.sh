@@ -48,8 +48,8 @@ if [[ ${installType} != 4 ]];then
   else
     echo "*          soft    core       unlimited">>${limitFileName}
   fi
-  info "检查操作系统调优和设置完成"
+  echo "检查操作系统调优和设置完成"
 else
-  info "此次为标准安装升级，无需执行此步骤"
+  echo "此次为标准安装升级，无需执行此步骤"
 fi
 ulimit -c unlimited

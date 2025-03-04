@@ -3,8 +3,8 @@ osVersion=#{osVersion}
 logPath=#{logPath}
 installPath=#{installPath}
 
-. ../lib/common_unroot.sh
-. ../lib/dir_auth.sh
+. ./script/lib/common.sh
+. ./script/lib/dir_auth.sh
 
 # 非Root安装JDK
 function __CheckJava {
@@ -29,9 +29,9 @@ function __InstallJava {
     info "This Machine Not Install JDK, Will Install JDK 17 "
     __CreateDir "${installPath}/soft/java/"
     if [[ ${osType}  = "Kylin_arm" || ${osType}  = "uos_arm" || ${osType}  = "openEuler_arm"  || ${osType}  = "bcLinux_arm" ]];then
-      tar -zxf soft/java/OpenJDK17U-jdk_aarch64_linux_hotspot_17.0.11_9.tar.gz -C "${installPath}/soft/java/"
+      tar -zxf services/jdk/soft_pkg/OpenJDK17U-jdk_aarch64_linux_hotspot_17.0.11_9.tar.gz -C "${installPath}/soft/java/"
     else
-      tar -zxf soft/java/OpenJDK17U-jdk_x64_linux_hotspot_17.0.11_9.tar.gz -C "${installPath}/soft/java/"
+      tar -zxf services/jdk/soft_pkg/OpenJDK17U-jdk_x64_linux_hotspot_17.0.11_9.tar.gz -C "${installPath}/soft/java/"
     fi
     retCode=$?
     # retCode=0
