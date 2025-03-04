@@ -77,13 +77,11 @@ func SliceExistElem(elems []string, elem string) bool {
 func LoadConfig(path string) (*Config, error) {
 	config := &Config{}
 
-	// ????????????
 	yamlFile, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
 
-	// ???? YAML ????
 	err = yaml.Unmarshal(yamlFile, config)
 	if err != nil {
 		return nil, err

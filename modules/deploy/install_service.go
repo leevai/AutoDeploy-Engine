@@ -15,7 +15,6 @@ func Install() error {
 			return err
 		}
 
-		// ????????????
 		output, err := utils.ExecuteShellCommandUseBash(service, serviceDetail.InstallScript, true)
 		if err != nil {
 			return fmt.Errorf("failed to install service %s: %v", service.Name, err)
