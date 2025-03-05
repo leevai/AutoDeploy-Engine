@@ -30,8 +30,11 @@ func LoadGlobalEnvVars() error {
 	if err := getOsTypeVer(config); err != nil {
 		return fmt.Errorf("os type env vars load failed: %v", err)
 	}
-	if err := getExecUser(); err != nil {
+	if err := getExecUser(config); err != nil {
 		return fmt.Errorf("exec user env vars load failed: %v", err)
+	}
+	if err := getRepoCommand(config); err != nil {
+		return fmt.Errorf("repoCommand env vars load failed: %v", err)
 	}
 	return nil
 }
@@ -59,7 +62,7 @@ func getPath(config *config2.ServiceConfig) error {
 		fmt.Println(stderr)
 		return err
 	}
-	config2.InsertToGlobalVars("workdir", workdir)
+	config2.InsertToGlobalVars("workdir", strings.TrimSpace(workdir))
 	return nil
 }
 
@@ -68,7 +71,7 @@ func getInstallType(config *config2.ServiceConfig) error {
 	if err != nil {
 		return err
 	}
-	config2.InsertToGlobalVars("installType", installType)
+	config2.InsertToGlobalVars("installType", strings.TrimSpace(installType))
 	return nil
 }
 
@@ -81,16 +84,36 @@ func getOsTypeVer(config *config2.ServiceConfig) error {
 	if len(varVal) != 2 {
 		return fmt.Errorf("getOsTypeVer data err: %s", osTypeVer)
 	}
-	config2.InsertToGlobalVars("osType", varVal[0])
-	config2.InsertToGlobalVars("osVersion", varVal[1])
+	config2.InsertToGlobalVars("osType", strings.TrimSpace(varVal[0]))
+	config2.InsertToGlobalVars("osVersion", strings.TrimSpace(varVal[1]))
 	return nil
 }
 
-func getExecUser() error {
-	currentUser, err := user.Current()
-	if err != nil {
-		return fmt.Errorf("获取当前用户信息时出错: %v\n", err)
+func getExecUser(config *config2.ServiceConfig) error {
+	if config.Local {
+		currentUser, err := user.Current()
+		if err != nil {
+			return fmt.Errorf("获取当前用户信息时出错: %v\n", err)
+		}
+		config2.InsertToGlobalVars("executeUser", currentUser.Username)
+	} else {
+		config2.InsertToGlobalVars("executeUser", config.Remote.User)
 	}
-	config2.InsertToGlobalVars("executeUser", currentUser.Username)
+	return nil
+}
+
+func getRepoCommand(config *config2.ServiceConfig) error {
+	data, err := utils.ExecuteShellCommandUseBash(config, "./script/env_vars/repo_command.sh", true)
+	if err != nil {
+		return err
+	}
+	varValList := strings.Split(data, ";")
+	for _, varVal := range varValList {
+		kv := strings.SplitN(data, "=", 2)
+		if len(kv) != 2 {
+			return fmt.Errorf("data err: %s", varVal)
+		}
+		config2.InsertToGlobalVars(strings.TrimSpace(kv[0]), strings.TrimSpace(kv[1]))
+	}
 	return nil
 }

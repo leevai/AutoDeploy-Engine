@@ -2,8 +2,9 @@ installPath=#{installPath}
 configPath=#{configPath}
 installType=#{installType}
 outsidePrometheus=#{outsidePrometheus}
-workdir=#{workdir}
-. ../lib/dir_auth.sh
+
+. ./script/lib/dir_auth.sh
+. ./script/lib/common.sh
 
 #zcloudCfg=${workdir}/zcloud.cfg
 #if [[ ${installNodeType} == "OneNode" ]]; then
@@ -12,8 +13,7 @@ workdir=#{workdir}
 #  outsidePrometheus=$(__readINI ${zcloudCfg} multiple dependence.outside.prometheus)
 #fi
 if [[  ${outsidePrometheus} = 0 ]]; then
-  cd "./services/prometheus/soft_pkg"
-  tar -xf prometheus.tar.gz
+  tar -xf ./services/prometheus/soft_pkg/prometheus.tar.gz
   __CreateDir "${installPath}/prometheus"
   if [[ ! -e ${installPath}/prometheus/log ]];then
     mkdir -p ${installPath}/prometheus/log

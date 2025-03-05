@@ -1,10 +1,9 @@
 installType=#{installType}
 osType=#{osType}
 theme=#{theme}
-repoCommand="--disablerepo=zcloud"
+repoCommand=#{repoCommand}
 
 #yum安装依赖
-startTime=$(date +"%s%N")
 if [[ ${installType} != 4 ]];then
   echo "yum安装依赖 ..."
   linux_kernel_version=$(uname -r|awk -F'\\.' '{print $1}')
@@ -32,25 +31,25 @@ if [[ ${installType} != 4 ]];then
       echo "start openssl-devel install"
       yum -y  install openssl-devel ${repoCommand}
   fi
-  #增加perl和perl-libs支持后续nginx编译
-  set +e
-  perlStr=`rpm -q perl`
-  set -e
-  if [[ `echo $perlStr | grep 'perl-' | wc -l ` -gt 0 ]]; then
-      echo "perl already install"
-  else
-      echo "start perl install"
-      yum -y  install perl ${repoCommand}
-  fi
-  set +e
-  perlLibStr=`rpm -q perl-libs`
-  set -e
-  if [[ `echo $perlLibStr | grep 'perl-libs' | wc -l ` -gt 0 ]]; then
-      echo "perl-libs already install"
-  else
-      echo "start perl-libs install"
-      yum -y  install perl-libs ${repoCommand}
-  fi
+#  #增加perl和perl-libs支持后续nginx编译
+#  set +e
+#  perlStr=`rpm -q perl`
+#  set -e
+#  if [[ `echo $perlStr | grep 'perl-' | wc -l ` -gt 0 ]]; then
+#      echo "perl already install"
+#  else
+#      echo "start perl install"
+#      yum -y  install perl ${repoCommand}
+#  fi
+#  set +e
+#  perlLibStr=`rpm -q perl-libs`
+#  set -e
+#  if [[ `echo $perlLibStr | grep 'perl-libs' | wc -l ` -gt 0 ]]; then
+#      echo "perl-libs already install"
+#  else
+#      echo "start perl-libs install"
+#      yum -y  install perl-libs ${repoCommand}
+#  fi
 
   if [[ ${osType} = "Kylin_arm" && ${theme} != "zData" ]];then
     if [[ `nkvers | grep '(SP2)' | wc -l` -gt 0 || `nkvers | grep '(SP3)' | wc -l` -gt 0  ]]; then
@@ -93,10 +92,8 @@ else
   echo "此次为标准安装升级，无需执行此步骤"
 fi
  echo "yum安装依赖成功"
-endTime=$(date +"%s%N")
-echo "检查Yum源配置完成，耗时$( __CalcDuration ${startTime} ${endTime})"
 
-for libso in libncurses.so.5 libtecho.so.5 libnsl.so.1 libreadline.so.6
+for libso in libncurses.so.5 libtinfo.so.5 libnsl.so.1 libreadline.so.6
 do
   if [[ `ls /usr/lib64/ | grep ${libso} | wc -l ` -gt 0 ]]; then
     echo "存在${libso}"
@@ -113,6 +110,5 @@ do
       ln -s /usr/lib64/${useSo} /usr/lib64/${libso}
       echo "使用${useSo}建立软连接完成"
     fi
-
   fi
 done

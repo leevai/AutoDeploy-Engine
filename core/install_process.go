@@ -15,17 +15,17 @@ func Install() error {
 	}
 	fmt.Printf("global env var is %s", config.GlobalConfigMap)
 
-	fmt.Println("环境初始化")
-	if err := env.ExecEnvInitShell(); err != nil {
-		return fmt.Errorf("env init failed: %v", err)
-	}
-	fmt.Println("环境初始化完成")
-
 	fmt.Println("前置检查")
 	if err := checker.PerformPreDeploymentChecks(); err != nil {
 		return fmt.Errorf("preinstall check failed: %v", err)
 	}
 	fmt.Println("前置检查完成")
+
+	fmt.Println("环境初始化")
+	if err := env.ExecEnvInitShell(); err != nil {
+		return fmt.Errorf("env init failed: %v", err)
+	}
+	fmt.Println("环境初始化完成")
 
 	//fmt.Println("Backing up configurations...")
 	//err := backup.BackupService("MySQL")

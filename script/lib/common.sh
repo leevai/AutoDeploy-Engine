@@ -24,3 +24,11 @@ function error() {
       echo "  ➜[zcloud dbaas][$(date "+%Y-%m-%d %H:%M:%S")] $@">> ${logFile}
     fi
 }
+
+function __readINI() {
+    INIFILE=$1;
+    SECTION=$2;
+    ITEM=$3
+    _readIni=`cat $INIFILE|awk -vsection="[$SECTION]" 'begin{isprint=0}{if($0~/^\[.*/ ){if($0==section){isprint=1} else {isprint=0}}else{ if(isprint==1){print $0}}}'|egrep "^$ITEM\s*="|sed 's/=/::/'|awk -F'::' '{print $NF}'`
+    echo ${_readIni}
+}

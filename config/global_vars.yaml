@@ -1,5 +1,6 @@
 global_vars:
   host: localhost
+  hostIp: localhost
   port: 5432
   user: dbuser
   password: dbpass
@@ -9,11 +10,17 @@ global_vars:
   mysqlpassword: 123456
   mysqlhost: 192.168.48.154
   mysqlhostport: 3306
-  install_path: "/opt/dbaas"
+  mogdbuser: dbaas
+  mogdbpassword: Zcloud12345
+  mogdbport: 26000
+  mogdbhost: 172.20.23.243
   mysql_password: dbaas@123
   outsidePrometheus: 0
   defaultCoreNum: 16
   diskCapacity: 20
   defaultMemorySize: 30
   installNodeType: OneNode
+  nodeNum: 1
+  databaseType: MySQL
+  release: standard
   theme: ""

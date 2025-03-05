@@ -11,7 +11,7 @@ function __CheckJava {
     homedir=`cd ~ && pwd`
     if [[ ((! -e ${homedir}/.bashrc) || ($(cat ${homedir}/.bashrc|grep JAVA_HOME|wc -l) = 0)) || ! -e ${installPath}/soft/java/jdk-17.0.11+9 ]]
     then
-      __InstallJava
+      __InstallJavakes
     fi
     __GetJavaVersion
 

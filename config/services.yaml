@@ -7,19 +7,37 @@ services:
       user: "root"
       password: "root@123"
     priority: 1 # 低数字优先执行
-    env_init_scripts:
-      - "./script/env_init/authLicence.sh"
-      - "./script/env_init/configSysParam.sh"
-      - "./script/env_init/createDir.sh"
-      - "./script/env_init/creatUser.sh"
-#      - "./script/env_init/installDependence.sh" #测试环境yum源部分缺失
     pre_check_scripts:
       - "./script/env_check/checkCpuCore.sh"
       - "./script/env_check/checkDirExist.sh"
       - "./script/env_check/checkDiskCapacity.sh"
       - "./script/env_check/checkMemory.sh"
       - "./script/env_check/checkTimeZone.sh"
+    env_init_scripts: #需要顺序执行
+      - "./script/env_init/authLicence.sh"
+      - "./script/env_init/configSysParam.sh"
+      - "./script/env_init/createDir.sh"
+      - "./script/env_init/creatUser.sh"
+      - "./script/env_init/installDependence.sh"
+      - "./script/env_init/authInstallPackage.sh"
+#      - "./script/env_init/copyPackage.sh"
 
+  - name: "jdk"
+    local: true
+    priority: 2 # 低数字优先执行
+
+  - name: "lowcode"
+    local: true
+    priority: 2
+
+  - name: "mogdb"
+    local: true
+    remote:
+      host: "192.168.48.174"
+      port: 22
+      user: "root"
+      password: "root@123"
+    priority: 2 # 低数字优先执行
 
 #  - name: "mysql"
 #    local: true
@@ -51,12 +69,3 @@ services:
 #    install_path: "/opt/dbaas"
 #    priority: 2 # 低数字优先执行
 
-#  - name: "java"
-#    local: true
-#    remote:
-#      host: "192.168.48.174"
-#      port: 22
-#      user: "root"
-#      password: "root@123"
-#    install_path: "/opt/dbaas"
-#    priority: 2 # 低数字优先执行

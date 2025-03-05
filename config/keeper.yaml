@@ -1,0 +1,997 @@
+globalEnable: true
+serviceList:
+- serviceName: consul
+  path: #installPath#/soft/consul/consul/consul agent -server -data-dir
+  prefix: nohup #installPath#/soft/consul/consul/consul
+  suffix: ' agent -server -data-dir=#installPath#/soft/consul/consul/data/
+    -node=agent-one -config-dir=#installPath#/soft/consul/consul/config/
+    -bind=127.0.0.1 -bootstrap-expect=1 -client=0.0.0.0 -ui -log-file=#installPath#/soft/consul/consul/logs/
+    -log-rotate-bytes=10485760 -log-rotate-max-files=10 &>>#installPath#/soft/consul/log/info.log
+    &'
+  enable: true
+  defaultProcessNum: 1
+- serviceName: nginx
+  path: #installPath#/soft/nginx/nginx/sbin/nginx
+  prefix: #installPath#/soft/nginx/nginx/sbin/nginx
+  suffix: ' -c #installPath#/soft/nginx/nginx/conf/nginx.conf'
+  enable: true
+  defaultProcessNum: 1
+- serviceName: alertmanager
+  path: config.file=#installPath#/alertmanager/alertmanager.yml
+  prefix: cd #installPath#/alertmanager/;nohup #installPath#/alertmanager/alertmanager
+      --config.file=#installPath#/alertmanager/alertmanager.yml
+  suffix: ' --web.listen-address=:8094 --cluster.listen-address=127.0.0.1:8096
+    --log.level=error &>>#installPath#/alertmanager/log/alertmanager.log
+    &'
+  enable: true
+  defaultProcessNum: 1
+- serviceName: zoramon-mgr
+  path: #installPath#/zcloud-zoramon-mgr/zoramon_mgr
+  prefix: nohup #installPath#/zcloud-zoramon-mgr/zoramon_mgr --conf.zoramon=#installPath#/zcloud-zoramon-mgr/conf/zoramon.yaml
+  suffix: '  --conf.clean=#installPath#/zcloud-zoramon-mgr/conf/dataclean.yaml  --log.filename=#logPath#/log/zoramon_mgr.log
+    >/dev/null 2>&1 &'
+  enable: true
+  defaultProcessNum: 1
+- serviceName: slowmon_mgr
+  path: #installPath#/slowmon_mgr/slowmon_mgr
+  prefix: 'cd #installPath#/slowmon_mgr/;nohup #installPath#/slowmon_mgr/slowmon_mgr '
+  suffix: ' --no-log.console >/dev/null 2>&1 &'
+  enable: true
+  defaultProcessNum: 1
+- serviceName: dbaas-mail-sender
+  path: #installPath#/dbaas-mail-sender/dbaas-mail-sender-3.6.1-SNAPSHOT.jar
+  prefix: cd #installPath#/dbaas-mail-sender;nohup #installPath#/soft/java/jdk-17.0.11+9/bin/java
+      -Djava.io.tmpdir=#logPath#/java-io-tmpdir
+      -XX:+UseNUMA
+      -XX:+UseG1GC
+      -XX:ConcGCThreads=4 
+      -XX:ParallelGCThreads=6 
+      -XX:ZCollectionInterval=60 
+      -XX:ZAllocationSpikeTolerance=5
+      -XX:+UseCompressedClassPointers 
+      -XX:ZUncommitDelay=120 
+      -XX:NativeMemoryTracking=summary
+      -XX:ErrorFile=#logPath#/hserr/dbaas-mail-sender_%p.log 
+      -Xms128m
+      -Xmx256m 
+      --add-opens java.base/java.util.concurrent=ALL-UNNAMED 
+      --add-opens java.base/jdk.internal.misc=ALL-UNNAMED 
+      -Dio.netty.tryReflectionSetAccessible=true
+      -XX:CICompilerCount=4 
+      -XX:MetaspaceSize=128m 
+      -XX:MaxMetaspaceSize=256m 
+      -server
+      -Duser.timezone=GMT+08
+      -jar #installPath#/dbaas-mail-sender/dbaas-mail-sender-3.6.1-SNAPSHOT.jar 
+      --thin.offline=true 
+      --thin.root=#installPath#/pub_libs/
+  suffix: ' --log.path=#installPath#/dbaas-mail-sender/log >/dev/null
+    2>&1 &'
+  enable: true
+  defaultProcessNum: 1
+- serviceName: dbaas-wxwork-sender
+  path: #installPath#/dbaas-wxwork-sender/dbaas-wxwork-sender-6.0.1-SNAPSHOT.jar
+  prefix: cd #installPath#/dbaas-wxwork-sender;nohup #installPath#/soft/java/jdk-17.0.11+9/bin/java
+      -Djava.io.tmpdir=#logPath#/java-io-tmpdir 
+      -XX:+UseNUMA 
+      -XX:+UseG1GC
+      -XX:ConcGCThreads=4
+      -XX:ParallelGCThreads=6
+      -XX:ZCollectionInterval=60 
+      -XX:ZAllocationSpikeTolerance=5
+      -XX:+UseCompressedClassPointers 
+      -XX:ZUncommitDelay=120 
+      -XX:NativeMemoryTracking=summary
+      -XX:ErrorFile=#logPath#/hserr/dbaas-wxwork-sender_%p.log 
+      -Xms128m
+      -Xmx256m 
+      --add-opens java.base/java.util.concurrent=ALL-UNNAMED 
+      --add-opens java.base/jdk.internal.misc=ALL-UNNAMED 
+      -Dio.netty.tryReflectionSetAccessible=true
+      -XX:CICompilerCount=4
+      -XX:MetaspaceSize=128m 
+      -XX:MaxMetaspaceSize=256m 
+      -server
+      -Duser.timezone=GMT+08
+      -jar #installPath#/dbaas-wxwork-sender/dbaas-wxwork-sender-6.2.1-SNAPSHOT.jar
+      --thin.offline=true
+      --thin.root=#installPath#/pub_libs/
+  suffix: ' --log.path=#installPath#/dbaas-wxwork-sender/log >/dev/null
+    2>&1 &'
+  enable: true
+  defaultProcessNum: 1
+- serviceName: dbaas-sender-common
+  path: #installPath#/dbaas-sender-common/dbaas-sender-common-6.0.1-SNAPSHOT.jar
+  prefix: cd #installPath#/dbaas-sender-common;nohup #installPath#/soft/java/jdk-17.0.11+9/bin/java
+      -Djava.io.tmpdir=#logPath#/java-io-tmpdir
+      -XX:+UseNUMA
+      -XX:+UseG1GC
+      -XX:ConcGCThreads=4
+      -XX:ParallelGCThreads=6
+      -XX:ZCollectionInterval=60
+      -XX:ZAllocationSpikeTolerance=5
+      -XX:+UseCompressedClassPointers
+      -XX:ZUncommitDelay=120
+      -XX:NativeMemoryTracking=summary
+      -XX:ErrorFile=#logPath#/hserr/dbaas-sender-common_%p.log
+      -Xms128m
+      -Xmx256m
+      --add-opens java.base/java.util.concurrent=ALL-UNNAMED 
+      --add-opens java.base/jdk.internal.misc=ALL-UNNAMED
+      -Dio.netty.tryReflectionSetAccessible=true
+      -XX:CICompilerCount=4 
+      -XX:MetaspaceSize=128m 
+      -XX:MaxMetaspaceSize=256m 
+      -server
+      -Duser.timezone=GMT+08 
+      -jar #installPath#/dbaas-sender-common/dbaas-sender-common-6.2.1-SNAPSHOT.jar
+      --thin.offline=true
+      --thin.root=#installPath#/pub_libs/
+  suffix: ' --log.path=#installPath#/dbaas-sender-common/log >/dev/null
+    2>&1 &'
+  enable: true
+  defaultProcessNum: 1
+- serviceName: dbaas-zabbix-sender
+  path: #installPath#/dbaas-zabbix-sender/dbaas-zabbix-sender-6.0.1-SNAPSHOT.jar
+  prefix: cd #installPath#/dbaas-zabbix-sender;nohup #installPath#/soft/java/jdk-17.0.11+9/bin/java
+      -Djava.io.tmpdir=#logPath#/java-io-tmpdir
+      -XX:+UseNUMA
+      -XX:+UseG1GC
+      -XX:ConcGCThreads=4
+      -XX:ParallelGCThreads=6
+      -XX:ZCollectionInterval=60
+      -XX:ZAllocationSpikeTolerance=5
+      -XX:+UseCompressedClassPointers
+      -XX:ZUncommitDelay=120
+      -XX:NativeMemoryTracking=summary
+      -XX:ErrorFile=#logPath#/hserr/dbaas-zabbix-sender_%p.log
+      -Xms128m
+      -Xmx256m
+      --add-opens java.base/java.util.concurrent=ALL-UNNAMED 
+      --add-opens java.base/jdk.internal.misc=ALL-UNNAMED 
+      -Dio.netty.tryReflectionSetAccessible=true
+      -XX:CICompilerCount=4
+      -XX:MetaspaceSize=128m
+      -XX:MaxMetaspaceSize=256m -server
+      -Duser.timezone=GMT+08 
+      -jar #installPath#/dbaas-zabbix-sender/dbaas-zabbix-sender-6.2.1-SNAPSHOT.jar
+      --thin.offline=true
+      --thin.root=#installPath#/pub_libs/
+  suffix: ' --log.path=#installPath#/dbaas-zabbix-sender/log >/dev/null
+    2>&1 &'
+  enable: true
+  defaultProcessNum: 1
+- serviceName: dbaas-registrationHub
+  path: #installPath#/dbaas-registrationHub/dbaas-registrationHub-3.6.1-SNAPSHOT.jar
+  prefix: nohup #installPath#/soft/java/jdk-17.0.11+9/bin/java -Djava.io.tmpdir=#logPath#/java-io-tmpdir
+      -XX:+UseNUMA
+      -XX:+UseG1GC
+      -XX:ConcGCThreads=4
+      -XX:G1HeapRegionSize=8M
+      -XX:MaxGCPauseMillis=500
+      -XX:NativeMemoryTracking=summary
+      -XX:ErrorFile=#logPath#/hserr/dbaas-registrationHub_%p.log
+      -Xms128m
+      -Xmx512m
+      --add-opens java.base/jdk.internal.misc=ALL-UNNAMED
+      -Dio.netty.tryReflectionSetAccessible=true
+      -XX:CICompilerCount=4
+      -XX:MetaspaceSize=128m
+      -XX:MaxMetaspaceSize=256m
+      -server
+      -Duser.timezone=GMT+08
+      -jar #installPath#/dbaas-registrationHub/dbaas-registrationHub-6.2.1.lightweight-RELEASE.jar
+      --thin.offline=true
+      --thin.root=#installPath#/pub_libs/
+  suffix: ' --springProfilesActive=prod --consulHost=#localIP# --consulPort=8500
+    --spring.cloud.consul.config.acl-token=#consulToken# --log.path=#installPath#/dbaas-registrationHub/log
+    >/dev/null 2>&1 &'
+  enable: true
+  defaultProcessNum: 1
+- serviceName: prometheus
+  path: '#installPath#/prometheus/prometheus '
+  prefix: nohup #installPath#/prometheus/prometheus
+  suffix: ' --storage.tsdb.path=#installPath#/prometheus/data/ --config.file=#installPath#/prometheus/prometheus.yml
+    --query.lookback-delta=15m --web.enable-lifecycle --web.listen-address=:8093 --log.level=error
+    --web.enable-admin-api --enable-feature=promgl-at-modifier --storage.tsdb.retention.time=10y &>>#installPath#/prometheus/log/prometheus.log
+    &'
+  enable: true
+  defaultProcessNum: 1
+- serviceName: smart-baseline
+  path: #installPath#/smart_baseline/start
+  prefix: cd #installPath#/smart_baseline/;nohup #installPath#/smart_baseline/start
+  suffix: ' >/dev/null 2>&1 &'
+  enable: true
+  defaultProcessNum: 2
+- serviceName: dbaas-eureka-server
+  path: #installPath#/dbaas-eureka-server/dbaas-eureka-server-3.6.1-SNAPSHOT.jar
+  prefix: nohup #installPath#/soft/java/jdk-17.0.11+9/bin/java
+      -Xms256m  
+      -Xmx256m 
+      --add-opens java.base/java.util.concurrent=ALL-UNNAMED 
+      --add-opens java.base/jdk.internal.misc=ALL-UNNAMED 
+      -Dio.netty.tryReflectionSetAccessible=true
+      -XX:CICompilerCount=4
+      -XX:MetaspaceSize=128m
+      -XX:MaxMetaspaceSize=256m
+      -server
+      -Djava.io.tmpdir=#logPath#/java-io-tmpdir
+      -XX:+UseNUMA
+      -XX:+UseG1GC
+      -XX:ConcGCThreads=4
+      -XX:ParallelGCThreads=6
+      -XX:ZCollectionInterval=60
+      -XX:ZAllocationSpikeTolerance=5
+      -XX:+UseCompressedClassPointers
+      -XX:ZUncommitDelay=120
+      -XX:NativeMemoryTracking=summary
+      -XX:ErrorFile=#logPath#/hserr/dbaas-eureka-server_%p.log
+      -Duser.timezone=GMT+08
+      -jar #installPath#/dbaas-eureka-server/dbaas-eureka-server-6.2.1.lightweight-RELEASE.jar
+      --thin.offline=true
+      --thin.root=#installPath#/pub_libs/
+  suffix: ' --springProfilesActive=prod --consulHost=#localIP# --consulPort=8500
+    --spring.cloud.consul.config.acl-token=#consulToken# --watchEnable=false  --logging.config=#installPath#/dbaas-eureka-server/config/logback.xml  >/dev/null
+    2>&1 &'
+  enable: true
+  defaultProcessNum: 1
+- serviceName: dbaas-infrastructure
+  path: #installPath#/dbaas-infrastructure/dbaas-infrastructure-3.6.1-SNAPSHOT.jar
+  prefix: nohup #installPath#/soft/java/jdk-17.0.11+9/bin/java
+      -Xms512m
+      -Xmx2048m
+      --add-opens java.base/java.util.concurrent=ALL-UNNAMED 
+      --add-opens java.base/jdk.internal.misc=ALL-UNNAMED
+      -Dio.netty.tryReflectionSetAccessible=true
+      -XX:CICompilerCount=4
+      -XX:MetaspaceSize=256m
+      -XX:MaxMetaspaceSize=512m
+      -server
+      -Djava.io.tmpdir=#logPath#/java-io-tmpdir
+      -XX:+UseNUMA
+      -XX:+UseG1GC
+      -XX:ConcGCThreads=4
+      -XX:G1HeapRegionSize=8M
+      -XX:MaxGCPauseMillis=500
+      -XX:NativeMemoryTracking=summary
+      -XX:ErrorFile=#logPath#/hserr/dbaas-infrastructure_%p.log
+      -Duser.timezone=GMT+08
+      -jar #installPath#/dbaas-infrastructure/dbaas-infrastructure-6.3.1-SNAPSHOT.jar
+      --thin.offline=true
+      --thin.root=#installPath#/pub_libs/
+  suffix: ' --springProfilesActive=prod --consulHost=#localIP# --consulPort=8500
+    --spring.cloud.consul.config.acl-token=#consulToken# --watchEnable=false  >/dev/null
+    2>&1 &'
+  enable: true
+  defaultProcessNum: 1
+- serviceName: dbaas-permissions
+  path: #installPath#/dbaas-permissions/dbaas-permissions-3.6.1-SNAPSHOT.jar
+  prefix: nohup #installPath#/soft/java/jdk-17.0.11+9/bin/java
+      -Xms256m  
+      -Xmx512m
+      --add-opens java.base/java.util.concurrent=ALL-UNNAMED 
+      --add-opens java.base/jdk.internal.misc=ALL-UNNAMED
+      -Dio.netty.tryReflectionSetAccessible=true
+      -XX:CICompilerCount=4
+      -XX:MetaspaceSize=128m
+      -XX:MaxMetaspaceSize=256m
+      -server
+      -Djava.io.tmpdir=#logPath#/java-io-tmpdir
+      -XX:+UseNUMA
+      -XX:+UseG1GC
+      -XX:ConcGCThreads=4
+      -XX:G1HeapRegionSize=8M
+      -XX:MaxGCPauseMillis=500
+      -XX:NativeMemoryTracking=summary
+      -XX:ErrorFile=#logPath#/hserr/dbaas-permissions_%p.log
+      -Duser.timezone=GMT+08
+      -jar #installPath#/dbaas-permissions/dbaas-permissions-6.2.1.lightweight-RELEASE.jar
+      --thin.offline=true
+      --thin.root=#installPath#/pub_libs/
+  suffix: ' --springProfilesActive=prod --consulHost=#localIP# --consulPort=8500
+    --spring.cloud.consul.config.acl-token=#consulToken# --watchEnable=false  >/dev/null
+    2>&1 &'
+  enable: true
+  defaultProcessNum: 1
+- serviceName: dbaas-db-manage
+  path: #installPath#/dbaas-db-manage/dbaas-db-manage-3.6.1-SNAPSHOT.jar
+  prefix: nohup #installPath#/soft/java/jdk-17.0.11+9/bin/java
+      -Xms256m
+      -Xmx512m
+      --add-opens java.base/java.util.concurrent=ALL-UNNAMED 
+      --add-opens java.base/jdk.internal.misc=ALL-UNNAMED
+      -Dio.netty.tryReflectionSetAccessible=true
+      -XX:CICompilerCount=4 
+      -XX:MetaspaceSize=128m 
+      -XX:MaxMetaspaceSize=256m
+      -server
+      -Djava.io.tmpdir=#logPath#/java-io-tmpdir
+      -XX:+UseNUMA
+      -XX:+UseG1GC
+      -XX:ConcGCThreads=4 
+      -XX:G1HeapRegionSize=8M 
+      -XX:MaxGCPauseMillis=500
+      -XX:NativeMemoryTracking=summary
+      -XX:ErrorFile=#logPath#/hserr/dbaas-db-manage_%p.log 
+      -Duser.timezone=GMT+08
+      -jar #installPath#/dbaas-db-manage/dbaas-db-manage-6.2.1-SNAPSHOT.jar
+      --thin.offline=true
+      --thin.root=#installPath#/pub_libs/
+  suffix: ' --springProfilesActive=prod --consulHost=#localIP# --consulPort=8500
+    --spring.cloud.consul.config.acl-token=#consulToken# --watchEnable=false  >/dev/null
+    2>&1 &'
+  enable: true
+  defaultProcessNum: 1
+- serviceName: dbaas-backend-script
+  path: #installPath#/dbaas-backend-script/dbaas-backend-script-3.6.1-SNAPSHOT.jar
+  prefix: nohup #installPath#/soft/java/jdk-17.0.11+9/bin/java
+      -Xms128m
+      -Xmx256m 
+      --add-opens java.base/java.util.concurrent=ALL-UNNAMED 
+      --add-opens java.base/jdk.internal.misc=ALL-UNNAMED 
+      -Dio.netty.tryReflectionSetAccessible=true
+      -XX:CICompilerCount=4
+      -XX:MetaspaceSize=128m 
+      -XX:MaxMetaspaceSize=256m
+      -server
+      -Djava.io.tmpdir=#logPath#/java-io-tmpdir 
+      -XX:+UseNUMA 
+      -XX:+UseG1GC
+      -XX:ConcGCThreads=4 
+      -XX:ParallelGCThreads=6
+      -XX:ZCollectionInterval=60 
+      -XX:ZAllocationSpikeTolerance=5
+      -XX:+UseCompressedClassPointers 
+      -XX:ZUncommitDelay=120
+      -XX:NativeMemoryTracking=summary
+      -XX:ErrorFile=#logPath#/hserr/dbaas-backend-script_%p.log
+      -Duser.timezone=GMT+08
+      -jar #installPath#/dbaas-backend-script/dbaas-backend-script-6.2.1.lightweight-RELEASE.jar
+      --thin.offline=true
+      --thin.root=#installPath#/pub_libs/
+  suffix: ' --springProfilesActive=prod --consulHost=#localIP# --consulPort=8500
+    --spring.cloud.consul.config.acl-token=#consulToken# --watchEnable=false  >/dev/null
+    2>&1 &'
+  enable: true
+  defaultProcessNum: 1
+- serviceName: dbaas-database-snapshot
+  path: #installPath#/dbaas-database-snapshot/dbaas-database-snapshot-3.6.1-SNAPSHOT.jar
+  prefix: nohup #installPath#/soft/java/jdk-17.0.11+9/bin/java
+      -Xms128m
+      -Xmx256m 
+      --add-opens java.base/java.util.concurrent=ALL-UNNAMED 
+      --add-opens java.base/jdk.internal.misc=ALL-UNNAMED 
+      -Dio.netty.tryReflectionSetAccessible=true
+      -XX:CICompilerCount=4
+      -XX:MetaspaceSize=128m
+      -XX:MaxMetaspaceSize=256m
+      -server
+      -Djava.io.tmpdir=#logPath#/java-io-tmpdir
+      -XX:+UseNUMA
+      -XX:+UseG1GC
+      -XX:ConcGCThreads=4
+      -XX:ParallelGCThreads=6
+      -XX:ZCollectionInterval=60
+      -XX:ZAllocationSpikeTolerance=5
+      -XX:+UseCompressedClassPointers
+      -XX:ZUncommitDelay=120
+      -XX:NativeMemoryTracking=summary
+      -XX:ErrorFile=#logPath#/hserr/dbaas-database-snapshot_%p.log
+      -Duser.timezone=GMT+08 
+      -jar #installPath#/dbaas-database-snapshot/dbaas-database-snapshot-6.2.1.lightweight-RELEASE.jar
+      --thin.offline=true
+      --thin.root=#installPath#/pub_libs/
+  suffix: ' --springProfilesActive=prod --consulHost=#localIP# --consulPort=8500
+    --spring.cloud.consul.config.acl-token=#consulToken# --watchEnable=false  >/dev/null
+    2>&1 &'
+  enable: true
+  defaultProcessNum: 1
+- serviceName: dbaas-mariadb
+  path: #installPath#/dbaas-mariadb/dbaas-mariadb-3.6.1-SNAPSHOT.jar
+  prefix: nohup #installPath#/soft/java/jdk-17.0.11+9/bin/java
+      -Xms256m
+      -Xmx512m
+      --add-opens java.base/java.util.concurrent=ALL-UNNAMED 
+      --add-opens java.base/jdk.internal.misc=ALL-UNNAMED 
+      -Dio.netty.tryReflectionSetAccessible=true
+      -XX:CICompilerCount=4
+      -XX:MetaspaceSize=128m
+      -XX:MaxMetaspaceSize=256m
+      -server
+      -Djava.io.tmpdir=#logPath#/java-io-tmpdir
+      -XX:+UseNUMA
+      -XX:+UseG1GC
+      -XX:ConcGCThreads=4
+      -XX:G1HeapRegionSize=8M
+      -XX:MaxGCPauseMillis=500
+      -XX:NativeMemoryTracking=summary
+      -XX:ErrorFile=#logPath#/hserr/dbaas-mariadb_%p.log
+      -Duser.timezone=GMT+08
+      -jar #installPath#/dbaas-mariadb/dbaas-mariadb-6.2.1.lightweight-RELEASE.jar
+      --thin.offline=true
+      --thin.root=#installPath#/pub_libs/
+
+  suffix: ' --springProfilesActive=prod --consulHost=#localIP# --consulPort=8500
+    --spring.cloud.consul.config.acl-token=#consulToken# --watchEnable=false  >/dev/null
+    2>&1 &'
+  enable: true
+  defaultProcessNum: 1
+- serviceName: dbaas-reposerver
+  path: #installPath#/dbaas-reposerver/dbaas-reposerver-3.6.1-SNAPSHOT.jar
+  prefix: nohup #installPath#/soft/java/jdk-17.0.11+9/bin/java
+      -Xms128m    
+      -Xmx256m
+      --add-opens java.base/java.util.concurrent=ALL-UNNAMED 
+      --add-opens java.base/jdk.internal.misc=ALL-UNNAMED
+      -Dio.netty.tryReflectionSetAccessible=true
+      -XX:CICompilerCount=4
+      -XX:MetaspaceSize=128m
+      -XX:MaxMetaspaceSize=256m
+      -server
+      -Djava.io.tmpdir=#logPath#/java-io-tmpdir
+      -XX:+UseNUMA
+      -XX:+UseG1GC
+      -XX:ConcGCThreads=4
+      -XX:G1HeapRegionSize=8M 
+      -XX:MaxGCPauseMillis=500 
+      -XX:NativeMemoryTracking=summary
+      -XX:ErrorFile=#logPath#/hserr/dbaas-reposerver_%p.log
+      -Duser.timezone=GMT+08
+      -jar #installPath#/dbaas-reposerver/dbaas-reposerver-6.2.1.lightweight-RELEASE.jar
+      --thin.offline=true 
+      --thin.root=#installPath#/pub_libs/
+
+  suffix: ' --springProfilesActive=prod --consulHost=#localIP# --consulPort=8500
+    --spring.cloud.consul.config.acl-token=#consulToken# --watchEnable=false  >/dev/null
+    2>&1 &'
+  enable: true
+  defaultProcessNum: 1
+- serviceName: task-management
+  path: #installPath#/task-management/task-management-3.6.1-SNAPSHOT.jar
+  prefix: nohup #installPath#/soft/java/jdk-17.0.11+9/bin/java 
+      -Xms256m
+      -Xmx512m
+      -Djava.io.tmpdir=#logPath#/java-io-tmpdir 
+      -XX:ParallelGCThreads=8 
+      -XX:ErrorFile=#logPath#/hserr/task-management_%p.log
+      -Duser.timezone=GMT+08
+      -jar #installPath#/task-management/task-management-3.6.1-SNAPSHOT.jar
+      --thin.offline=true 
+      --thin.root=#installPath#/pub_libs/
+  suffix: ' --springProfilesActive=prod --consulHost=#localIP# --consulPort=8500
+    --spring.cloud.consul.config.acl-token=#consulToken# --watchEnable=false  >/dev/null
+    2>&1 &'
+  enable: true
+  defaultProcessNum: 1
+- serviceName: dbaas-apigateway
+  path: #installPath#/dbaas-apigateway/dbaas-apiGateWay-3.6.1-SNAPSHOT.jar
+  prefix: nohup #installPath#/soft/java/jdk-17.0.11+9/bin/java
+      -Xms512m    
+      -Xmx1024m
+      --add-opens java.base/java.util.concurrent=ALL-UNNAMED 
+      --add-opens java.base/jdk.internal.misc=ALL-UNNAMED
+      -Dio.netty.tryReflectionSetAccessible=true
+      -XX:CICompilerCount=4
+      -XX:MetaspaceSize=128m
+      -XX:MaxMetaspaceSize=256m
+      -server
+      -Djava.io.tmpdir=#logPath#/java-io-tmpdir
+      -XX:+UseNUMA
+      -XX:+UseG1GC
+      -XX:ConcGCThreads=4
+      -XX:G1HeapRegionSize=8M
+      -XX:MaxGCPauseMillis=500
+      -XX:NativeMemoryTracking=summary
+      -XX:ErrorFile=#logPath#/hserr/dbaas-apigateway_%p.log
+      -Duser.timezone=GMT+08
+      -jar #installPath#/dbaas-apigateway/dbaas-apiGateWay-6.3.1-SNAPSHOT.jar
+      --thin.offline=true
+      --thin.root=#installPath#/pub_libs/
+  suffix: ' --springProfilesActive=prod --consulHost=#localIP# --consulPort=8500
+    --spring.cloud.consul.config.acl-token=#consulToken# --watchEnable=false  >/dev/null
+    2>&1 &'
+  enable: true
+  defaultProcessNum: 1
+- serviceName: dbaas-monitor
+  path: #installPath#/dbaas-monitor/dbaas-monitor-3.6.1-SNAPSHOT.jar
+  prefix: nohup #installPath#/soft/java/jdk-17.0.11+9/bin/java
+      -Xms256m
+      -Xmx2048m
+      --add-opens java.base/java.util=ALL-UNNAMED
+      --add-opens java.base/java.util.concurrent=ALL-UNNAMED
+      --add-opens java.base/jdk.internal.misc=ALL-UNNAMED
+      -Dio.netty.tryReflectionSetAccessible=true
+      -XX:CICompilerCount=4
+      -XX:MetaspaceSize=128m
+      -XX:MaxMetaspaceSize=256m
+      -server
+      -Djava.io.tmpdir=#logPath#/java-io-tmpdir
+      -XX:+UseNUMA
+      -XX:+UseG1GC
+      -XX:ConcGCThreads=4
+      -XX:G1HeapRegionSize=8M
+      -XX:MaxGCPauseMillis=500
+      -XX:NativeMemoryTracking=summary
+      -XX:ErrorFile=#logPath#/hserr/dbaas-monitor_%p.log
+      -Duser.timezone=GMT+08
+      -jar #installPath#/dbaas-monitor/dbaas-monitor-6.2.1.lightweight-RELEASE.jar
+      --thin.offline=true
+      --thin.root=#installPath#/pub_libs/
+  suffix: ' --springProfilesActive=prod --consulHost=#localIP# --consulPort=8500
+    --spring.cloud.consul.config.acl-token=#consulToken# --watchEnable=false  >/dev/null
+    2>&1 &'
+  enable: true
+  defaultProcessNum: 1
+- serviceName: ai-business
+  path: #installPath#/aicure/ai-business/ai-business-3.6.1-SNAPSHOT.jar
+  prefix: cd #installPath#/aicure/ai-business/;nohup #installPath#/soft/java/jdk-17.0.11+9/bin/java
+      -Xms512m
+      -Xmx1024m 
+      --add-opens java.base/jdk.internal.misc=ALL-UNNAMED
+      -Dio.netty.tryReflectionSetAccessible=true
+      -XX:CICompilerCount=4
+      -XX:MetaspaceSize=128m
+      -XX:MaxMetaspaceSize=256m
+      -server
+      -Djava.io.tmpdir=#logPath#/java-io-tmpdir
+      -XX:+UseNUMA
+      -XX:+UseG1GC
+      -XX:ConcGCThreads=4
+      -XX:ParallelGCThreads=6
+      -XX:ZCollectionInterval=60
+      -XX:ZAllocationSpikeTolerance=5
+      -XX:+UseCompressedClassPointers
+      -XX:ZUncommitDelay=120
+      -XX:NativeMemoryTracking=summary
+      -XX:ErrorFile=#logPath#/hserr/ai-business_%p.log
+      -Duser.timezone=GMT+08
+      -jar #installPath#/aicure/ai-business/ai-business-6.2.1.lightweight-RELEASE.jar
+      --thin.offline=true
+      --thin.root=#installPath#/pub_libs/
+  suffix: ' --logging.config=#installPath#/aicure/ai-business/config/logback.xml
+    >/dev/null 2>&1 &'
+  enable: true
+  defaultProcessNum: 1
+- serviceName: zcloud-ai-adapter
+  path: #installPath#/aicure/zcloud-ai-adapter/zcloud-ai-adapter-3.6.1-SNAPSHOT.jar
+  prefix: cd #installPath#/aicure/zcloud-ai-adapter/;nohup #installPath#/soft/java/jdk-17.0.11+9/bin/java    
+      -Xms256m
+      -Xmx512m
+      --add-opens java.base/jdk.internal.misc=ALL-UNNAMED 
+      -Dio.netty.tryReflectionSetAccessible=true
+      -XX:CICompilerCount=4
+      -XX:MetaspaceSize=128m
+      -XX:MaxMetaspaceSize=256m
+      -server
+      -Djava.io.tmpdir=#logPath#/java-io-tmpdir
+      -XX:+UseNUMA
+      -XX:+UseG1GC
+      -XX:ConcGCThreads=4
+      -XX:ParallelGCThreads=6
+      -XX:ZCollectionInterval=60
+      -XX:ZAllocationSpikeTolerance=5
+      -XX:+UseCompressedClassPointers
+      -XX:ZUncommitDelay=120
+      -XX:NativeMemoryTracking=summary
+      -XX:ErrorFile=#logPath#/hserr/zcloud-ai-adapter_%p.log
+      -Duser.timezone=GMT+08
+      -jar #installPath#/aicure/zcloud-ai-adapter/zcloud-ai-adapter-6.2.1.lightweight-RELEASE.jar
+      --thin.offline=true
+      --thin.root=#installPath#/pub_libs/
+  suffix: ' --logging.config=#installPath#/aicure/zcloud-ai-adapter/config/logback.xml
+    >/dev/null 2>&1 &'
+  enable: true
+  defaultProcessNum: 1
+- serviceName: influx
+  path: #installPath#/soft/influx/influxd
+  prefix: nohup #installPath#/soft/influx/influxd
+  suffix: ' --http-bind-address=:8086 --engine-path=#installPath#/soft/influx/.influxdbv2/engine
+    --bolt-path=#installPath#/soft/influx/.influxdbv2/influxd.bolt --pprof-disabled=true
+    &>>#installPath#/soft/influx/log/info.log &'
+  enable: true
+  defaultProcessNum: 1
+- serviceName: dbaas-ogg-management
+  path: #installPath#/dbaas-ogg-management/dbaas-ogg-management-3.6.1-SNAPSHOT.jar
+  prefix: nohup #installPath#/soft/java/jdk-17.0.11+9/bin/java
+      -Xms128m    
+      -Xmx256m
+      --add-opens java.base/java.util.concurrent=ALL-UNNAMED
+      --add-opens java.base/jdk.internal.misc=ALL-UNNAMED
+      -Dio.netty.tryReflectionSetAccessible=true
+      -XX:CICompilerCount=4
+      -XX:MetaspaceSize=128m
+      -XX:MaxMetaspaceSize=256m
+      -server
+      -Djava.io.tmpdir=#logPath#/java-io-tmpdir
+      -XX:+UseNUMA
+      -XX:+UseG1GC
+      -XX:ConcGCThreads=4
+      -XX:ParallelGCThreads=6
+      -XX:ZCollectionInterval=60
+      -XX:ZAllocationSpikeTolerance=5
+      -XX:+UseCompressedClassPointers
+      -XX:ZUncommitDelay=120
+      -XX:NativeMemoryTracking=summary
+      -XX:ErrorFile=#logPath#/hserr/dbaas-ogg-management_%p.log
+      -Duser.timezone=GMT+08
+      -jar #installPath#/dbaas-ogg-management/dbaas-ogg-management-6.2.1.lightweight-RELEASE.jar
+      --thin.offline=true
+      --thin.root=#installPath#/pub_libs/
+  suffix: ' --springProfilesActive=prod --consulHost=#localIP# --consulPort=8500
+    --spring.cloud.consul.config.acl-token=#consulToken# --watchEnable=false  >/dev/null
+    2>&1 &'
+  enable: true
+  defaultProcessNum: 1
+- serviceName: dbaas-backend-mogdb
+  path: #installPath#/dbaas-backend-mogdb/dbaas-backend-mogdb-3.6.1-SNAPSHOT.jar
+  prefix: nohup #installPath#/soft/java/jdk-17.0.11+9/bin/java
+      -Xms128m      
+      -Xmx256m
+      --add-opens java.base/java.util.concurrent=ALL-UNNAMED
+      --add-opens java.base/jdk.internal.misc=ALL-UNNAMED
+      -Dio.netty.tryReflectionSetAccessible=true
+      -XX:CICompilerCount=4
+      -XX:MetaspaceSize=128m
+      -XX:MaxMetaspaceSize=256m
+      -server
+      -Djava.io.tmpdir=#logPath#/java-io-tmpdir
+      -XX:+UseNUMA
+      -XX:+UseG1GC
+      -XX:ConcGCThreads=4 
+      -XX:ParallelGCThreads=6
+      -XX:ZCollectionInterval=60
+      -XX:ZAllocationSpikeTolerance=5
+      -XX:+UseCompressedClassPointers
+      -XX:ZUncommitDelay=120
+      -XX:NativeMemoryTracking=summary
+      -XX:ErrorFile=#logPath#/hserr/dbaas-backend-mogdb_%p.log
+      -Duser.timezone=GMT+08
+      -jar #installPath#/dbaas-backend-mogdb/dbaas-backend-mogdb-6.2.1.lightweight-RELEASE.jar
+      --thin.offline=true
+      --thin.root=#installPath#/pub_libs/
+  suffix: ' --springProfilesActive=prod --consulHost=#localIP# --consulPort=8500
+    --spring.cloud.consul.config.acl-token=#consulToken# --watchEnable=false  >/dev/null
+    2>&1 &'
+  enable: true
+  defaultProcessNum: 1
+- serviceName: dbaas-common-db
+  path: #installPath#/dbaas-common-db/dbaas-common-db-3.6.1-SNAPSHOT.jar
+  prefix: nohup #installPath#/soft/java/jdk-17.0.11+9/bin/java
+      -Xms512m
+      -Xmx1024m
+      --add-opens java.base/java.util.concurrent=ALL-UNNAMED
+      --add-opens java.base/java.util=ALL-UNNAMED
+      --add-opens java.base/jdk.internal.misc=ALL-UNNAMED
+      -Dio.netty.tryReflectionSetAccessible=true
+      -XX:CICompilerCount=4
+      -XX:MetaspaceSize=128m
+      -XX:MaxMetaspaceSize=256m
+      -server
+      -Djava.io.tmpdir=#logPath#/java-io-tmpdir
+      -XX:+UseNUMA
+      -XX:+UseG1GC
+      -XX:ConcGCThreads=4
+      -XX:G1HeapRegionSize=8M
+      -XX:MaxGCPauseMillis=500
+      -XX:NativeMemoryTracking=summary
+      -XX:ErrorFile=#logPath#/hserr/dbaas-common-db_%p.log
+      -Duser.timezone=GMT+08 
+      -jar #installPath#/dbaas-common-db/dbaas-common-db-6.2.1.lightweight-RELEASE.jar
+      --thin.offline=true 
+      --thin.root=#installPath#/pub_libs/
+  suffix: ' --springProfilesActive=prod --consulHost=#localIP# --consulPort=8500
+    --spring.cloud.consul.config.acl-token=#consulToken# --watchEnable=false  >/dev/null
+    2>&1 &'
+  enable: true
+  defaultProcessNum: 1
+- serviceName: dbaas-flyway-manage
+  path: #installPath#/dbaas-flyway-manage/dbaas-flyway-manage-3.6.1-SNAPSHOT.jar
+  prefix: nohup #installPath#/soft/java/jdk-17.0.11+9/bin/java
+      -Xms256m
+      -Xmx512m
+      -Djava.io.tmpdir=#logPath#/java-io-tmpdir
+      -XX:ParallelGCThreads=8
+      -XX:ErrorFile=#logPath#/hserr/dbaas-flyway-manage_%p.log
+      -Duser.timezone=GMT+08
+      -jar #installPath#/dbaas-flyway-manage/dbaas-flyway-manage-6.2.1.lightweight-RELEASE.jar
+      --thin.offline=true
+      --thin.root=#installPath#/pub_libs/
+  suffix: ' --springProfilesActive=prod --consulHost=#localIP# --consulPort=8500
+    --spring.cloud.consul.config.acl-token=#consulToken# --watchEnable=false  >/dev/null
+    2>&1 &'
+  enable: true
+  defaultProcessNum: 1
+- serviceName: mysql
+  path: #installPath#/soft/mysql/mysql/bin/mysqld
+  prefix: cd #installPath#/keeper/script;
+  suffix: ' ./mysqlstart.sh'
+  enable: true
+  defaultProcessNum: 2
+- serviceName: mogdb
+  path: #installPath#/soft/mogdb/app/bin/mogdb
+  prefix: gs_ctl start
+  suffix: ''
+  enable: true
+  defaultProcessNum: 1
+- serviceName: dbaas-common-backupcenter
+  path: #installPath#/dbaas-common-backupcenter/dbaas-common-backupcenter-3.6.1-SNAPSHOT.jar
+  prefix: nohup #installPath#/soft/java/jdk-17.0.11+9/bin/java
+      -Xms128m
+      -Xmx256m
+      --add-opens java.base/java.util.concurrent=ALL-UNNAMED
+      --add-opens java.base/jdk.internal.misc=ALL-UNNAMED
+      --add-opens java.base/java.util=ALL-UNNAMED
+      -Dio.netty.tryReflectionSetAccessible=true
+      -XX:CICompilerCount=4
+      -XX:MetaspaceSize=128m
+      -XX:MaxMetaspaceSize=256m
+      -server
+      -Djava.io.tmpdir=#logPath#/java-io-tmpdir
+      -XX:+UseNUMA
+      -XX:+UseG1GC
+      -XX:ConcGCThreads=4
+      -XX:ParallelGCThreads=6
+      -XX:ZCollectionInterval=60
+      -XX:ZAllocationSpikeTolerance=5
+      -XX:+UseCompressedClassPointers
+      -XX:ZUncommitDelay=120
+      -XX:NativeMemoryTracking=summary
+      -XX:ErrorFile=#logPath#/hserr/dbaas-common-backupcenter_%p.log
+      -Duser.timezone=GMT+08 
+      -jar #installPath#/dbaas-common-backupcenter/dbaas-common-backupcenter-6.2.1.lightweight-RELEASE.jar
+      --thin.offline=true
+      --thin.root=#installPath#/pub_libs/
+
+  suffix: ' --springProfilesActive=prod --consulHost=#localIP# --consulPort=8500
+    --spring.cloud.consul.config.acl-token=#consulToken# --watchEnable=false  >/dev/null
+    2>&1 &'
+  enable: true
+  defaultProcessNum: 1
+- serviceName: dbaas-lowcode-atomic-ability
+  path: #installPath#/dbaas-lowcode-atomic-ability/dbaas-lowcode-atomic-ability-3.6.1-SNAPSHOT.jar
+  prefix: nohup #installPath#/soft/java/jdk-17.0.11+9/bin/java
+      -Xms128m
+      -Xmx256m
+      --add-opens java.base/java.util.concurrent=ALL-UNNAMED
+      --add-opens java.base/jdk.internal.misc=ALL-UNNAMED
+      -Dio.netty.tryReflectionSetAccessible=true
+      -XX:CICompilerCount=4
+      -XX:MetaspaceSize=128m
+      -XX:MaxMetaspaceSize=256m
+      -server
+      -Djava.io.tmpdir=#logPath#//java-io-tmpdir
+      -XX:+UseNUMA
+      -XX:+UseG1GC
+      -XX:ConcGCThreads=4
+      -XX:ParallelGCThreads=6
+      -XX:ZCollectionInterval=60
+      -XX:ZAllocationSpikeTolerance=5
+      -XX:+UseCompressedClassPointers
+      -XX:ZUncommitDelay=120
+      -XX:NativeMemoryTracking=summary
+      -XX:ErrorFile=#logPath#/hserr/dbaas-lowcode-atomic-ability_%p.log
+      -Duser.timezone=GMT+08
+      -jar #installPath#/dbaas-lowcode-atomic-ability/dbaas-lowcode-atomic-ability-6.2.1.lightweight-RELEASE.jar
+      --thin.offline=true
+      --thin.root=#installPath#/pub_libs/
+  suffix: ' --springProfilesActive=prod --consulHost=#localIP# --consulPort=8500
+    --spring.cloud.consul.config.acl-token=#consulToken# --watchEnable=false  >/dev/null
+    2>&1 &'
+  enable: true
+  defaultProcessNum: 1
+- serviceName: dbaas-lowcode-http-engine
+  path: #installPath#/dbaas-lowcode-http-engine/dbaas-lowcode-http-engine-3.6.1-SNAPSHOT.jar
+  prefix: nohup #installPath#/soft/java/jdk-17.0.11+9/bin/java
+      -Xms128m
+      -Xmx256m
+      --add-opens java.base/jdk.internal.misc=ALL-UNNAME
+      -Dio.netty.tryReflectionSetAccessible=true
+      -XX:CICompilerCount=4
+      -XX:MetaspaceSize=128m
+      -XX:MaxMetaspaceSize=256m
+      -server
+      -Djava.io.tmpdir=#logPath#/java-io-tmpdir
+      -XX:+UseNUMA
+      -XX:+UseG1GC
+      -XX:ConcGCThreads=4
+      -XX:ParallelGCThreads=6
+      -XX:ZCollectionInterval=60
+      -XX:ZAllocationSpikeTolerance=5
+      -XX:+UseCompressedClassPointers
+      -XX:ZUncommitDelay=120
+      -XX:NativeMemoryTracking=summary
+      -XX:ErrorFile=#logPath#/hserr/dbaas-lowcode-http-engine_%p.log
+      -Duser.timezone=GMT+08 
+      -jar #installPath#/dbaas-lowcode-http-engine/dbaas-lowcode-http-engine-6.2.1.lightweight-RELEASE.jar
+      --thin.offline=true
+      --thin.root=#installPath#/pub_libs/
+  suffix: ' --springProfilesActive=prod --consulHost=#localIP# --consulPort=8500
+    --spring.cloud.consul.config.acl-token=#consulToken# --watchEnable=false  >/dev/null
+    2>&1 &'
+  enable: true
+  defaultProcessNum: 1
+- serviceName: dbaas-management-host
+  path: #installPath#/dbaas-management-host/dbaas-management-host-3.6.1-SNAPSHOT.jar
+  prefix: nohup #installPath#/soft/java/jdk-17.0.11+9/bin/java
+      -Xms128m
+      -Xmx256m
+      --add-opens java.base/java.util.concurrent=ALL-UNNAMED
+      --add-opens java.base/jdk.internal.misc=ALL-UNNAMED
+      -Dio.netty.tryReflectionSetAccessible=true
+      -XX:CICompilerCount=4
+      -XX:MetaspaceSize=128m
+      -XX:MaxMetaspaceSize=256m
+      -server
+      -Djava.io.tmpdir=#logPath#/java-io-tmpdir
+      -XX:+UseNUMA
+      -XX:+UseG1GC
+      -XX:ConcGCThreads=4
+      -XX:ParallelGCThreads=6
+      -XX:ZCollectionInterval=60
+      -XX:ZAllocationSpikeTolerance=5
+      -XX:+UseCompressedClassPointers
+      -XX:ZUncommitDelay=120 
+      -XX:NativeMemoryTracking=summary
+      -XX:ErrorFile=#logPath#/hserr/dbaas-management-host_%p.log
+      -Duser.timezone=GMT+08 
+      -jar #installPath#/dbaas-management-host/dbaas-management-host-6.2.1.lightweight-RELEASE.jar
+      --thin.offline=true
+      --thin.root=#installPath#/pub_libs/
+  suffix: ' --springProfilesActive=prod --consulHost=#localIP# --consulPort=8500
+    --spring.cloud.consul.config.acl-token=#consulToken# --watchEnable=false  >/dev/null
+    2>&1 &'
+  enable: true
+  defaultProcessNum: 1
+- serviceName: dbaas-management-database
+  path: #installPath#/dbaas-management-database/dbaas-management-database-3.6.1-SNAPSHOT.jar
+  prefix: nohup #installPath#/soft/java/jdk-17.0.11+9/bin/java
+      -Xms128m
+      -Xmx256m
+      --add-opens java.base/java.util.concurrent=ALL-UNNAMED
+      --add-opens java.base/jdk.internal.misc=ALL-UNNAMED
+      -Dio.netty.tryReflectionSetAccessible=true
+      -XX:CICompilerCount=4
+      -XX:MetaspaceSize=128m
+      -XX:MaxMetaspaceSize=256m
+      -server
+      -Djava.io.tmpdir=#logPath#/java-io-tmpdir
+      -XX:+UseNUMA
+      -XX:+UseG1GC
+      -XX:ConcGCThreads=4
+      -XX:ParallelGCThreads=6
+      -XX:ZCollectionInterval=60
+      -XX:ZAllocationSpikeTolerance=5
+      -XX:+UseCompressedClassPointers
+      -XX:ZUncommitDelay=120
+      -XX:NativeMemoryTracking=summary
+      -XX:ErrorFile=#logPath#/hserr/dbaas-management-database_%p.log
+      -Duser.timezone=GMT+08
+      -jar #installPath#/dbaas-management-database/dbaas-management-database-6.2.1.lightweight-RELEASE.jar
+      --thin.offline=true
+      --thin.root=#installPath#/pub_libs/
+  suffix: ' --springProfilesActive=prod --consulHost=#localIP# --consulPort=8500
+    --spring.cloud.consul.config.acl-token=#consulToken# --watchEnable=false  >/dev/null
+    2>&1 &'
+  enable: true
+  defaultProcessNum: 1
+- serviceName: ansible_executor
+  path: #installPath#/ansible_executor/ansible_executor.py
+  prefix: export PYTHONPATH=#installPath#/ansible_executor/site-packages;export
+      PATH=/usr/local/Python3.9/bin:$PATH;export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:#installPath#/ansible_executor/site-packages/shared-lib/x86/CentOS-3.10.0-693-el7;
+  suffix: nohup python3.9 #installPath#/ansible_executor/ansible_executor.py
+      --consulHost=#localIP# --consulACLToken=#consulToken#
+      --logpath=#installPath#/ansible_executor/ansible_executor.log
+      --consulPort=8500 >/dev/null 2>&1 &
+  enable: true
+  defaultProcessNum: 1000
+- serviceName: open_workflow
+  path: #installPath#/open_workflow/open_workflow
+  prefix: 'nohup #installPath#/open_workflow/open_workflow --conf=#installPath#/open_workflow/conf/open_workflow.yaml '
+  suffix: --log.filename=#logPath#/open_workflow/open_workflow.log
+      --log.level=info --log.maxsize=32  --log.backlog=7 >/dev/null 2>&1 &
+  enable: true
+  defaultProcessNum: 1
+- serviceName: dbaas-doc-retrieval
+  path: #installPath#/dbaas-doc-retrieval/doc-center-3.6.1-SNAPSHOT.jar
+  prefix: cd #installPath#/dbaas-doc-retrieval;
+  suffix: nohup #installPath#/soft/java/jdk-17.0.11+9/bin/java
+      -Xms256m
+      -Xmx512m
+      --add-opens java.base/java.util.concurrent=ALL-UNNAMED
+      --add-opens java.base/jdk.internal.misc=ALL-UNNAMED
+      -Dio.netty.tryReflectionSetAccessible=true
+      -XX:CICompilerCount=4
+      -XX:MetaspaceSize=128m
+      -XX:MaxMetaspaceSize=256m
+      -server
+      -Djava.io.tmpdir=#logPath#/java-io-tmpdir
+      -XX:+UseNUMA
+      -XX:+UseG1GC
+      -XX:ConcGCThreads=4
+      -XX:G1HeapRegionSize=8M
+      -XX:MaxGCPauseMillis=500
+      -XX:NativeMemoryTracking=summary
+      -XX:ErrorFile=#logPath#/hserr/dbaas-doc-retrieval_%p.log
+      -Duser.timezone=GMT+08
+      -jar #installPath#/dbaas-doc-retrieval/doc-center-6.2.1.lightweight-RELEASE.jar
+      --thin.offline=true
+      --thin.root=#installPath#/pub_libs/
+      --logging.config=#installPath#/dbaas-doc-retrieval/config/logback.xml
+      --springProfilesActive=prod
+      --consulHost=#localIP#
+      --consulPort=8500
+      --spring.cloud.consul.config.acl-token=#consulToken#
+      --watchEnable=false >/dev/null 2>&1 &
+  enable: true
+  defaultProcessNum: 1
+- serviceName: expert-knowledge-base
+  path: #installPath#/expert-knowledge-base/expert-knwl-base-3.6.1-SNAPSHOT.jar
+  prefix: cd #installPath#/expert-knowledge-base;
+  suffix: nohup #installPath#/soft/java/jdk-17.0.11+9/bin/java
+      -Xms512m
+      -Xmx1024m
+      -Djava.io.tmpdir=#logPath#/java-io-tmpdir
+      -XX:ParallelGCThreads=8
+      -XX:ErrorFile=#logPath#/hserr/expert-knowledge-base_%p.log
+      -Duser.timezone=GMT+08
+      -jar #installPath#/expert-knowledge-base/expert-knwl-base-3.6.1-SNAPSHOT.jar
+      --thin.offline=true
+      --thin.root=#installPath#/pub_libs/
+      --logging.config=#installPath#/expert-knowledge-base/config/logback.xml
+      --springProfilesActive=prod
+      --consulHost=#localIP#
+      --consulPort=8500
+      --spring.cloud.consul.config.acl-token=#consulToken#
+      --watchEnable=false >/dev/null 2>&1 &
+  enable: true
+  defaultProcessNum: 1
+- serviceName: magic-cube
+  path: #installPath#/magic_cube/magic_cube
+  prefix: 'nohup #installPath#/magic_cube/magic_cube '
+  suffix: --consul.endpoint=http://#localIP#:8500 --consul.token=#consulToken# >/dev/null 2>&1 &
+  enable: true
+  defaultProcessNum: 1
+- serviceName: zdbmon-mgr
+  path: #installPath#/zdbmon-mgr/zdbmon-mgr-3.6.1-SNAPSHOT.jar
+  prefix: nohup #installPath#/soft/java/jdk-17.0.11+9/bin/java
+      -Xms512m
+      -Xmx1024m
+      --add-opens java.base/java.util.concurrent=ALL-UNNAMED
+      --add-opens java.base/java.lang=ALL-UNNAMED
+      --add-opens java.base/jdk.internal.misc=ALL-UNNAMED
+      -Dio.netty.tryReflectionSetAccessible=true
+      -XX:CICompilerCount=4
+      -XX:MetaspaceSize=128m
+      -XX:MaxMetaspaceSize=256m
+      -server
+      -Djava.io.tmpdir=#logPath#/java-io-tmpdir
+      -XX:+UseNUMA
+      -XX:+UseG1GC
+      -XX:ConcGCThreads=4
+      -XX:G1HeapRegionSize=8M
+      -XX:MaxGCPauseMillis=500
+      -XX:NativeMemoryTracking=summary
+      -XX:ErrorFile=#logPath#/hserr/zdbmon-mgr_%p.log
+      -Duser.timezone=GMT+08
+      -jar #installPath#/zdbmon-mgr/zdbmon-mgr-6.2.1.lightweight-RELEASE.jar
+      --thin.offline=true
+      --thin.root=#installPath#/pub_libs/
+  suffix: ' --springProfilesActive=prod --consulHost=#localIP# --consulPort=8500
+    --spring.cloud.consul.config.acl-token=#consulToken# --watchEnable=false  >/dev/null
+    2>&1 &'
+  enable: true
+  defaultProcessNum: 1
+- serviceName: magic-script-executor
+  path: /opt/magic_script_executor
+  prefix: 'sudo #installPath#/podman/podman --runtime #installPath#/podman/runc '
+  suffix: 'start magic-script-executor'
+  enable: true
+  defaultProcessNum: 1
+- serviceName: node-exporter
+  path: #installPath#/node-exporter/node_exporter
+  prefix: cd #installPath#/node-exporter;
+  suffix: 'nohup #installPath#/node-exporter/node_exporter --collector.disable-defaults --web.disable-exporter-metrics 
+  --collector.cpu --collector.meminfo --collector.uname --collector.stat --collector.os --collector.textfile
+  --web.listen-address=:8092 &>>#installPath#/node-exporter/log/node_exporter.log &'
+  enable: true
+  defaultProcessNum: 1

@@ -11,7 +11,7 @@ osVersion=#{osVersion}
 executeUser=#{executeUser}
 
 function __InstallPython3_9 {
-  info "安装python3.9.."
+  echo "安装python3.9.."
   pythonInstallVersion=3.9
   pythonCommand="python3.9"
   if [[ ${osType}  = "openEuler_x86" || ${osType}  = "openEuler_arm" || ${osType}  = "bcLinux_x86" || ${osType}  = "bcLinux_arm" ]];then
@@ -68,14 +68,14 @@ function __InstallPython3_9 {
         pythonVersion=${BASH_REMATCH[1]}
         pythonVersion_part1=${BASH_REMATCH[2]}
         pythonVersion_part2=${BASH_REMATCH[3]}
-        info "python version: ${pythonVersion}"
+        echo "python version: ${pythonVersion}"
         version=${pythonVersion_part1}.${pythonVersion_part2}
         set +e
         pythonPath=`which python3.9`
         set -e
-        info "python path: ${pythonPath}"
+        echo "python path: ${pythonPath}"
         if [[ ${version} = ${pythonInstallVersion} && ${pythonPath} = "/usr/bin/${pythonCommand}" ]];then
-          info "已安装python3.9，无需重复安装"
+          echo "已安装python3.9，无需重复安装"
         else
           tar -xvf soft/python/Python-${pythonInstallVersion}.15.tar.xz -C"soft/python"
           mkdir -p /usr/local/Python3.9
@@ -92,7 +92,7 @@ function __InstallPython3_9 {
           cd ${workdir}
         fi
     else
-        info "Failed to parse python version."
+        echo "Failed to parse python version."
         exit 1
     fi
   fi
@@ -102,9 +102,9 @@ function __InstallPython3_9_patch {
   currentTime=`date "+%Y-%m-%d_%H%M"`
   currentDir=${workdir}/jar/DBaas-Lowcode-WorkFlow/site-packages/shared-lib/patch
 
-  info "开始python3.9 补丁包升级"
+  echo "开始python3.9 补丁包升级"
   if [[ ! -d /usr/local/Python3.9/lib/python3.9 ]];then
-      info "python3.9 install directory:/usr/local/Python3.9/lib/python3.9 is not exist"
+      echo "python3.9 install directory:/usr/local/Python3.9/lib/python3.9 is not exist"
       exit 1
   fi
   # upgrade email
@@ -123,25 +123,25 @@ function __InstallPython3_9_patch {
   fi
   #重启服务
   if [[ `ps -ef|grep "DBaas-Lowcode-WorkFlow"|grep -v grep |wc -l` -gt 0  ]];then
-      info "开始重启服务DBaas-Lowcode-WorkFlow"
+      echo "开始重启服务DBaas-Lowcode-WorkFlow"
       ps -ef |grep "DBaas-Lowcode-WorkFlow"|grep -v grep | awk '{print $2}' | xargs kill -9
       sleep 2
-      info "重启服务DBaas-Lowcode-WorkFlow完成"
+      echo "重启服务DBaas-Lowcode-WorkFlow完成"
   fi
 
   if [[ `ps -ef|grep "ansible_executor"|grep -v grep |wc -l` -gt 0  ]];then
-      info "开始重启服务ansible_executor"
+      echo "开始重启服务ansible_executor"
       ps -ef |grep "ansible_executor"|grep -v grep | awk '{print $2}' | xargs kill -9
       sleep 2
-      info "重启服务ansible_executor完成"
+      echo "重启服务ansible_executor完成"
   fi
   sleep 2
 
-  info "python3.9 补丁更新完成"
+  echo "python3.9 补丁更新完成"
 }
 
 function __InstallAnsible {
-  info "安装Ansible环境..."
+  echo "安装Ansible环境..."
   if [[ ${installType} != 4 ]];then
     cd soft/ansible
     tar -xvf ansible-install.tar.gz
@@ -154,8 +154,8 @@ function __InstallAnsible {
     else
       pip3.9 install *whl
     fi
-    info "Ansible环境安装完成"
-    info "安装gunicorn环境..."
+    echo "Ansible环境安装完成"
+    echo "安装gunicorn环境..."
     cd ..
     tar -xvf gunicorn20.1.0.tar.gz
     cd gunicorn
@@ -164,11 +164,11 @@ function __InstallAnsible {
     else
       pip3.9 install *whl
     fi
-    info "gunicorn环境安装完成"
+    echo "gunicorn环境安装完成"
     chmod -R 755 /usr/local/Python3.9/lib/python3.9/site-packages/
     if [[ ${osType}  == "Kylin_arm" || ${osType}  = "uos_arm" || ${osType}  = "openEuler_arm" || ${osType}  = "bcLinux_arm" ]];then
       rm -rf /usr/local/Python3.9/lib/python3.9/site-packages/_cffi_backend.cpython-39-aarch64-linux-gnu.so
-      rm -rf /usr/local/Python3.9/lib/python3.9/site-packages/cffi-1.15.1.dist-info
+      rm -rf /usr/local/Python3.9/lib/python3.9/site-packages/cffi-1.15.1.dist-echo
       rm -rf /usr/local/Python3.9/lib/python3.9/site-packages/cffi.libs
       rm -rf /usr/local/Python3.9/lib/python3.9/site-packages/cffi
     fi
@@ -270,7 +270,7 @@ function __CleanVarTmpDirForPodman() {
 
 function __InstallPodmanOnKylin() {
   if rpm -q podman;then
-    info "podman.rpm已经安装，跳过此步"
+    echo "podman.rpm已经安装，跳过此步"
   else
     yum install -y podman ${repoCommand}
   fi
@@ -304,7 +304,7 @@ function __InstallPodmanOnKylin() {
       sed -i "s|graphroot\s*=\s*\"/.*\"|graphroot = \"${installPath}/podman/lib\"|g" /etc/containers/storage.conf
     fi
     chown -R zcloud:zcloud ${installPath}/podman
-    info "安装podman成功"
+    echo "安装podman成功"
   else
     error "安装podman失败"
     exit 1
@@ -312,7 +312,7 @@ function __InstallPodmanOnKylin() {
 }
 
 function __InstallPodman() {
-  info "开始安装 Podman"
+  echo "开始安装 Podman"
   __CloseSeLinux
   if [[ ! -f /etc/resolv.conf ]];then
     touch /etc/resolv.conf
@@ -332,7 +332,7 @@ function __InstallPodman() {
     return 0
   fi
   if rpm -q libseccomp && rpm -q conmon && [ -f "${installPath}/podman/podman" ] && [ -f "${installPath}/podman/runc" ] && [[ -f /etc/containers/policy.json ]];then
-    info "podman已经安装，安装完成"
+    echo "podman已经安装，安装完成"
     return 0
   fi
   # os is redhat centos uos
@@ -373,19 +373,19 @@ function __InstallPodman() {
   fi
   # check libseccomp
   if rpm -q libseccomp;then
-      info "libseccomp已经安装，跳过此步"
+      echo "libseccomp已经安装，跳过此步"
     else
       rpm -ivh rpms/libseccomp-*.rpm
   fi
   # check conmon binary file
   if rpm -q conmon;then
-      info "conmon已经安装，跳过此步"
+      echo "conmon已经安装，跳过此步"
     else
       rpm -ivh rpms/conmon-*.rpm
   fi
   if [[ ${osType} = "openEuler_arm" || ${osType} = "openEuler_x86" || ${osType} = "bcLinux_arm" || ${osType} = "bcLinux_x86" ]]; then
     if rpm -q ostree;then
-      info "ostree已经安装，跳过此步"
+      echo "ostree已经安装，跳过此步"
     else
       yum install ostree -y ${repoCommand}
     fi
@@ -393,21 +393,21 @@ function __InstallPodman() {
   __useFuseOverlayFsTool
   chown -R zcloud:zcloud ${installPath}/podman
   cd ${workdir}
-  info "podman 安装完成"
+  echo "podman 安装完成"
 }
 
 function __useFuseOverlayFsTool() {
   if [[ ${osType} != "RedHat" && ${osType} != "CentOS" ]]; then
     return 0
   fi
-  if df -T / |tail -n 1| grep ' xfs ' > /dev/null 2>&1 && xfs_info / |grep ftype=0 > /dev/null 2>&1;then
+  if df -T / |tail -n 1| grep ' xfs ' > /dev/null 2>&1 && xfs_echo / |grep ftype=0 > /dev/null 2>&1;then
     if rpm -q fuse3-libs;then
-        info "fuse3-libs已经安装，跳过此步"
+        echo "fuse3-libs已经安装，跳过此步"
       else
         rpm -ivh ${installPath}/podman/rpms/fuse3-libs-3.6.1-4.el7.x86_64.rpm
     fi
     if rpm -q fuse-overlayfs;then
-        info "fuse-overlayfs已经安装，跳过此步"
+        echo "fuse-overlayfs已经安装，跳过此步"
       else
         rpm -ivh ${installPath}/podman/rpms/fuse-overlayfs-0.7.2-6.el7_8.x86_64.rpm
     fi
@@ -417,8 +417,8 @@ function __useFuseOverlayFsTool() {
 
 function __KillNginxOccupyMountPoint() {
   mnt_point="$1"
-  # 使用awk来直接提取PID，同时避免了/mountinfo的问题
-  nginx_pids=$(grep -l "$mnt_point" /proc/[0-9]*/mountinfo | awk -F/ '{print $3}' | xargs -I{} grep -lE 'nginx' /proc/{}/cmdline | awk -F/ '{print $3}')
+  # 使用awk来直接提取PID，同时避免了/mountecho的问题
+  nginx_pids=$(grep -l "$mnt_point" /proc/[0-9]*/mountecho | awk -F/ '{print $3}' | xargs -I{} grep -lE 'nginx' /proc/{}/cmdline | awk -F/ '{print $3}')
 
   if [ -z "$nginx_pids" ]; then
       return 0
@@ -428,19 +428,19 @@ function __KillNginxOccupyMountPoint() {
   nginx_pids_str=$(echo $nginx_pids | tr ' ' '\n' | sort -u | tr '\n' ' ')
 
   if [ -n "$nginx_pids_str" ]; then
-      info "发现以下nginx进程占用挂载点 $mnt_point，准备集体终止..."
-      info "PID列表: $nginx_pids_str"
+      echo "发现以下nginx进程占用挂载点 $mnt_point，准备集体终止..."
+      echo "PID列表: $nginx_pids_str"
       # 使用kill命令终止所有列出的nginx进程
       kill -15 $nginx_pids_str
-      info "nginx进程已尝试终止。"
+      echo "nginx进程已尝试终止。"
   fi
 }
 
 
 function __ShowOtherProcessOccupyMountPoint() {
   mnt_point="$1"
-  # 使用awk来直接提取PID，同时避免了/mountinfo的问题
-  other_pids=$(grep -l "$mnt_point" /proc/[0-9]*/mountinfo | awk -F/ '{print $3}')
+  # 使用awk来直接提取PID，同时避免了/mountecho的问题
+  other_pids=$(grep -l "$mnt_point" /proc/[0-9]*/mountecho | awk -F/ '{print $3}')
 
   if [ -z "$other_pids" ]; then
       return 0
@@ -450,15 +450,15 @@ function __ShowOtherProcessOccupyMountPoint() {
   other_pids_str=$(echo $other_pids | tr ' ' '\n' | sort -u | tr '\n' ' ')
 
   if [ -n "$other_pids_str" ]; then
-      info "发现以下进程占用podman挂载点 $mnt_point"
-      info "PID列表: $other_pids_str"
-      info "请手动处理或强制终止这些进程后再尝试。"
+      echo "发现以下进程占用podman挂载点 $mnt_point"
+      echo "PID列表: $other_pids_str"
+      echo "请手动处理或强制终止这些进程后再尝试。"
       exit 1
   fi
 }
 
 function __InstallMagicScriptExecutor() {
-  info "开始安装 magic-script-executor"
+  echo "开始安装 magic-script-executor"
   if [[ -d ${installPath}/magic-script-executor ]];then
     __AddToKeeper magic-script-executor
     mountPointID=$(mount |grep podman|grep overlay|grep '/merged'|awk '{print $3}'|awk -F'/' '{print $9}')
@@ -515,7 +515,7 @@ function __InstallMagicScriptExecutor() {
     sleep 2
   fi
   if sudo ${installPath}/podman/podman --runtime ${installPath}/podman/runc ps|grep magic-script-executor;then
-    info "启动magic-script-executor容器成功"
+    echo "启动magic-script-executor容器成功"
   else
     error "启动magic-script-executor容器失败"
     exit 1
@@ -529,76 +529,67 @@ function __InstallMagicScriptExecutor() {
   fi
   cp script/other/start.sh ${installPath}/magic-script-executor
   cp script/other/stop.sh ${installPath}/magic-script-executor
-  info "magic-script-executor 安装完成"
+  echo "magic-script-executor 安装完成"
 }
 
 
 function __InstallLowCodeEnv() {
-  nodeNum=$( __ReadValue nodeconfig/installparam.txt nodeNum)
-  if [[  $( __readINI nodeconfig/current.cfg service low-code ) == ${nodeNum} ]]; then
-    lowCodeServiceNum=`ps -ef|egrep "ansible_executor.py|DBaas-Lowcode-WorkFlow/manage.py"|grep -v grep |wc -l`
-    if [[ (${installType} = 1 || ${lowCodeServiceNum} = 0)]];then
-      if [[ ${executeUser} != "root"  ]];then
-        error "首次安装低代码平台需要root执行"
-        exit 1
-      fi
+  lowCodeServiceNum=`ps -ef|egrep "ansible_executor.py|DBaas-Lowcode-WorkFlow/manage.py"|grep -v grep |wc -l`
+  if [[ (${installType} = 1 || ${lowCodeServiceNum} = 0)]];then
+    if [[ ${executeUser} != "root"  ]];then
+      error "首次安装低代码平台需要root执行"
+      exit 1
+    fi
 #      if [[ ${databaseType} == "MySQL" ]];then
 #        tar -zxvf soft/lowcode_for_mysql.tar.gz -C "/paasdata"
 #      else
 #        tar -zxvf soft/lowcode_for_mogdb.tar.gz -C "/paasdata"
 #      fi
 
+    #chown -R zcloud:zcloud /paasdata/platform
 
+    __InstallPython3_9
+    if [[ ${installType} != 4  ]];then
+      __InstallAnsible
 
-      #chown -R zcloud:zcloud /paasdata/platform
-
-      __InstallPython3_9
-      if [[ ${installType} != 4  ]];then
-        __InstallAnsible
-
-        __InstallAnsibleAgent
+      __InstallAnsibleAgent
+    fi
+  else
+    if [[ -d /usr/share/ansible/plugins ]];then
+      chown -R zcloud:zcloud /usr/share/ansible/plugins
+      if [[ -d /paasdata/lowcode ]];then
+        \cp -rf /paasdata/lowcode/* /paasdata
+        mv /paasdata/lowcode /paasdata/lowcode.bak
       fi
-    else
-      if [[ -d /usr/share/ansible/plugins ]];then
-        chown -R zcloud:zcloud /usr/share/ansible/plugins
-        if [[ -d /paasdata/lowcode ]];then
-          \cp -rf /paasdata/lowcode/* /paasdata
-          mv /paasdata/lowcode /paasdata/lowcode.bak
-        fi
 #        if [[ ${databaseType} == "MySQL" ]];then
 #          tar -zxvf soft/lowcode_for_mysql.tar.gz -C "/paasdata"
 #        else
 #          tar -zxvf soft/lowcode_for_mogdb.tar.gz -C "/paasdata"
 #        fi
 #        chown -R zcloud:zcloud /paasdata/platform
-      fi
-
-      info "无需安装低代码运行环境"
     fi
-    __InstallPython3_9_patch
-    __InstallPodman
-    if [[ ! -e /paasdata/lowcodedata ]];then
-      mkdir -p  /paasdata/lowcodedata
-    fi
-    \cp -f soft/lowcodePresetAbility.tar.gz /paasdata/lowcodedata
-    if [[ ! -e /paasdata/lowcodedata/script-executor ]];then
-      mkdir -p  /paasdata/lowcodedata/script-executor
-    fi
-    chmod 755 /paasdata/lowcodedata/script-executor
-    chown -R zcloud:zcloud  /paasdata/lowcodedata
 
-      __preparePythonSource
-
-      __preparePythonPip2pi
-
-      __prepareAnsibleModule
-
-
-  else
-    info "当前节点无需安装低代码"
+    echo "无需安装低代码运行环境"
   fi
+  __InstallPython3_9_patch
+  __InstallPodman
+  if [[ ! -e /paasdata/lowcodedata ]];then
+    mkdir -p  /paasdata/lowcodedata
+  fi
+  \cp -f soft/lowcodePresetAbility.tar.gz /paasdata/lowcodedata
+  if [[ ! -e /paasdata/lowcodedata/script-executor ]];then
+    mkdir -p  /paasdata/lowcodedata/script-executor
+  fi
+  chmod 755 /paasdata/lowcodedata/script-executor
+  chown -R zcloud:zcloud  /paasdata/lowcodedata
+
+    __preparePythonSource
+
+    __preparePythonPip2pi
+
+    __prepareAnsibleModule
 }
-function __QueryDatabaseInfo() {
+function __QueryDatabaseecho() {
   if [[ ${databaseType} == "MogDB" ]];then
 
       if [[ ${installNodeType} == "OneNode" ]]; then
@@ -642,7 +633,7 @@ function __QueryDatabaseInfo() {
 }
 
 function __CreateLowCodeSchema() {
-    __QueryDatabaseInfo
+    __QueryDatabaseecho
     if [[ ${databaseType} == "MySQL" ]];then
       mysqlAddr="${installPath}/soft/mysql/mysql/bin/mysql"
       ${mysqlAddr} -uroot -p${dbaas_password} -h${server_ip} -P${server_port}  -e "CREATE DATABASE IF NOT EXISTS lowcodeworkflow;"
@@ -675,10 +666,10 @@ function __InstallLowCodeSoft {
     infraIp=$( __readINI zcloud.cfg multiple consul.host )
   fi
 
-  __QueryDatabaseInfo
+  __QueryDatabaseecho
   if [[  $( __readINI nodeconfig/current.cfg service low-code ) == ${nodeNum} ]]; then
     sed -i "s/self.webservice_ip = \"127.0.0.1\"/self.webservice_ip = \"${infraIp}\"/g" /usr/share/ansible/plugins/connection/zcloudAgent.py
-    info "安裝低代码平台软件"
+    echo "安裝低代码平台软件"
     __InitLowCodeConsulData
 
     __InitMagicCubeConsulData
@@ -708,7 +699,7 @@ function __InstallLowCodeSoft {
       fi
     fi
 
-    info "当前节点无需安装低代码"
+    echo "当前节点无需安装低代码"
   fi
 
 }
@@ -716,7 +707,7 @@ function __InitLowCodeConsulData() {
   if [[ -f ${configPath}/consultoken.txt ]];then
     consulToken=`less ${configPath}/consultoken.txt | grep SecretID|awk '{print $2}'`
     export CONSUL_HTTP_TOKEN=${consulToken}
-    info "consulToken=${CONSUL_HTTP_TOKEN}"
+    echo "consulToken=${CONSUL_HTTP_TOKEN}"
   fi
   if [[ -f ${installPath}/soft/consul/consul/consul ]];then
     ${installPath}/soft/consul/consul/consul kv put zcloudconfig/prod/dbaas-lowcode-atomic-ability/lowcode.atomic.ability.api.excuter.url http://127.0.0.1:8915
@@ -780,18 +771,18 @@ function __InitLowCodeConsulData() {
 }
 
 function __InitMagicCubeConsulData() {
-  __QueryDatabaseInfo
+  __QueryDatabaseecho
   if [[ -f ${configPath}/consultoken.txt ]];then
     consulToken=`less ${configPath}/consultoken.txt | grep SecretID|awk '{print $2}'`
     export CONSUL_HTTP_TOKEN=${consulToken}
-    info "consulToken=${CONSUL_HTTP_TOKEN}"
+    echo "consulToken=${CONSUL_HTTP_TOKEN}"
   fi
   if [[ -f ${installPath}/soft/consul/consul/consul ]];then
     # global
     ${installPath}/soft/consul/consul/consul kv put zcloudconfig/prod/magic-cube/global.api_addr :18281
     ${installPath}/soft/consul/consul/consul kv put zcloudconfig/prod/magic-cube/global.open_workflow_host ${localIP}
     # log
-    ${installPath}/soft/consul/consul/consul kv put zcloudconfig/prod/magic-cube/log.level info
+    ${installPath}/soft/consul/consul/consul kv put zcloudconfig/prod/magic-cube/log.level echo
     ${installPath}/soft/consul/consul/consul kv put zcloudconfig/prod/magic-cube/log.dir ${homePath}/dbaas/zcloud-log/magic_cube
     ${installPath}/soft/consul/consul/consul kv put zcloudconfig/prod/magic-cube/log.prefix magic-cube
     # database
@@ -816,7 +807,7 @@ function __InitMagicCubeConsulData() {
       curl -X PUT -d ":18281" http://${consulIp}:8500/v1/kv/zcloudconfig/prod/magic-cube/global.api_addr?dc=dc1
       curl -X PUT -d "${localIP}" http://${consulIp}:8500/v1/kv/zcloudconfig/prod/magic-cube/global.open_workflow_host?dc=dc1
       # log
-      curl -X PUT -d "info" http://${consulIp}:8500/v1/kv/zcloudconfig/prod/magic-cube/log.level?dc=dc1
+      curl -X PUT -d "echo" http://${consulIp}:8500/v1/kv/zcloudconfig/prod/magic-cube/log.level?dc=dc1
       curl -X PUT -d "/home/zcloud/dbaas/zcloud-log/magic_cube" http://${consulIp}:8500/v1/kv/zcloudconfig/prod/magic-cube/log.dir?dc=dc1
       curl -X PUT -d "magic-cube" http://${consulIp}:8500/v1/kv/zcloudconfig/prod/magic-cube/log.prefix?dc=dc1
       # database
@@ -836,7 +827,7 @@ function __InitMagicCubeConsulData() {
       fi
     else
       # global
-      info "curl -X PUT -H \"X-Consul-Token: ${consulToken}\" -d \":18281\" http://${consulIp}:8500/v1/kv/zcloudconfig/prod/magic-cube/global.api_addr?dc=dc1"
+      echo "curl -X PUT -H \"X-Consul-Token: ${consulToken}\" -d \":18281\" http://${consulIp}:8500/v1/kv/zcloudconfig/prod/magic-cube/global.api_addr?dc=dc1"
       curl -X PUT -H "X-Consul-Token: ${consulToken}" -d ":18281" http://${consulIp}:8500/v1/kv/zcloudconfig/prod/magic-cube/global.api_addr?dc=dc1
       curl -X PUT -H "X-Consul-Token: ${consulToken}" -d "${localIP}" http://${consulIp}:8500/v1/kv/zcloudconfig/prod/magic-cube/global.open_workflow_host?dc=dc1
       # log
@@ -863,9 +854,9 @@ function __InitMagicCubeConsulData() {
 }
 
 function __InstallDBaasLowcodeWorkFlow {
-  info ""
+  echo ""
   cd jar
-  info "开始安装 DBaas-Lowcode-WorkFlow"
+  echo "开始安装 DBaas-Lowcode-WorkFlow"
   if [[ $(ps -ef|grep "gunicorn DBaasLowcodeWorkFlow.wsgi:application -b"|grep -v grep|wc -l) -gt 0 ]];then
     ps -ef |grep "gunicorn DBaasLowcodeWorkFlow.wsgi:application -b"|grep -v grep | awk '{print $2}' | xargs kill -9
     sleep 2s
@@ -897,8 +888,8 @@ function __InstallDBaasLowcodeWorkFlow {
       rm -rf ${installPath}/DBaas-Lowcode-WorkFlow/site-packages/Crypto/
     fi
 
-    if [[ -d ${installPath}/DBaas-Lowcode-WorkFlow/site-packages/pycrypto-2.6.1.dist-info/ ]];then
-      rm -rf ${installPath}/DBaas-Lowcode-WorkFlow/site-packages/pycrypto-2.6.1.dist-info/
+    if [[ -d ${installPath}/DBaas-Lowcode-WorkFlow/site-packages/pycrypto-2.6.1.dist-echo/ ]];then
+      rm -rf ${installPath}/DBaas-Lowcode-WorkFlow/site-packages/pycrypto-2.6.1.dist-echo/
     fi
   fi
   export consulHost=${hostIp}
@@ -907,17 +898,17 @@ function __InstallDBaasLowcodeWorkFlow {
   if [[ ${osType}  == "Kylin_arm" || ${osType}  = "uos_arm" || ${osType}  = "openEuler_arm" || ${osType}  = "openEuler_x86" || ${osType}  = "bcLinux_arm" ]];then
     export LD_LIBRARY_PATH=${installPath}/DBaas-Lowcode-WorkFlow/site-packages/shared-lib/arm/lib:/usr/lib64:$LD_LIBRARY_PATH
     export PYTHONPATH=${installPath}/DBaas-Lowcode-WorkFlow/site-packages/shared-lib/arm:${installPath}/DBaas-Lowcode-WorkFlow/site-packages
-    info "export PYTHONPATH=${installPath}/DBaas-Lowcode-WorkFlow/site-packages/shared-lib/arm:${installPath}/DBaas-Lowcode-WorkFlow/site-packages"
-    info "export LD_LIBRARY_PATH=${installPath}/DBaas-Lowcode-WorkFlow/site-packages/shared-lib/arm/lib:/usr/lib64:$LD_LIBRARY_PATH"
+    echo "export PYTHONPATH=${installPath}/DBaas-Lowcode-WorkFlow/site-packages/shared-lib/arm:${installPath}/DBaas-Lowcode-WorkFlow/site-packages"
+    echo "export LD_LIBRARY_PATH=${installPath}/DBaas-Lowcode-WorkFlow/site-packages/shared-lib/arm/lib:/usr/lib64:$LD_LIBRARY_PATH"
   else
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${installPath}/DBaas-Lowcode-WorkFlow/site-packages/shared-lib/x86/CentOS-3.10.0-693-el7
     export PYTHONPATH=${installPath}/DBaas-Lowcode-WorkFlow/site-packages
-    info "export PYTHONPATH=${installPath}/DBaas-Lowcode-WorkFlow/site-packages"
-    info "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${installPath}/DBaas-Lowcode-WorkFlow/site-packages/shared-lib/x86/CentOS-3.10.0-693-el7"
+    echo "export PYTHONPATH=${installPath}/DBaas-Lowcode-WorkFlow/site-packages"
+    echo "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${installPath}/DBaas-Lowcode-WorkFlow/site-packages/shared-lib/x86/CentOS-3.10.0-693-el7"
   fi
-  info "export consulHost=${hostIp}"
-  info "export consulPort=8500"
-  info "export consulACLToken=${consulToken}"
+  echo "export consulHost=${hostIp}"
+  echo "export consulPort=8500"
+  echo "export consulACLToken=${consulToken}"
 
 
 
@@ -930,7 +921,7 @@ function __InstallDBaasLowcodeWorkFlow {
     offset=`sed -n "$[${serviceNameLine}+1],\$"p ${keeperConf} |grep -n defaultProcessNum:|head -n 1|awk -F':' '{print $1}'`
     sed -i "${serviceNameLine},$[${serviceNameLine}+${offset}]d" ${keeperConf}
   done
-  coreNum=`cat /proc/cpuinfo | grep 'processor'| wc -l`
+  coreNum=`cat /proc/cpuecho | grep 'processor'| wc -l`
   processNum=$[${coreNum}/8]
   if [[ ${processNum} == 0 ]];then
     processNum=1
@@ -939,7 +930,7 @@ function __InstallDBaasLowcodeWorkFlow {
   do
     port=$[18080+i]
     __AddWorkFlowToKeeper ${port}
-    info "${installPath}/DBaas-Lowcode-WorkFlow/bin/lowcodeworkflow_start.sh ${realHostIp}:${port}"
+    echo "${installPath}/DBaas-Lowcode-WorkFlow/bin/lowcodeworkflow_start.sh ${realHostIp}:${port}"
     ${installPath}/DBaas-Lowcode-WorkFlow/bin/lowcodeworkflow_start.sh ${realHostIp}:${port}
     if [[ ${databaseType} = "MogDB" ]];then
       export LD_LIBRARY_PATH=${installPath}/soft/mogdb/app/lib:$LD_LIBRARY_PATH
@@ -963,14 +954,14 @@ function __InstallDBaasLowcodeWorkFlow {
   cp script/other/stop.sh ${installPath}/DBaas-Lowcode-WorkFlow
 
 
-  info "DBaas-Lowcode-WorkFlow 安装完成 "
+  echo "DBaas-Lowcode-WorkFlow 安装完成 "
 }
 
 
 function __InstallAnsibleExecutor {
-  info ""
+  echo ""
   cd ${workdir}jar
-  info "开始安装 ansible_executor"
+  echo "开始安装 ansible_executor"
   if [[ ${osType}  = "openEuler_x86" || ${osType}  = "openEuler_arm"  || ${osType}  = "bcLinux_x86" || ${osType}  = "bcLinux_arm"  ]];then
     if [[ $(ps -ef|grep "python3.9_enmo ${installPath}/ansible_executor/ansible_executor.py"|grep -v grep|wc -l) -gt 0 ]];then
       ps -ef |grep "python3.9_enmo ${installPath}/ansible_executor/ansible_executor.py"|grep -v grep | awk '{print $2}' | xargs kill -9
@@ -1008,8 +999,8 @@ function __InstallAnsibleExecutor {
       rm -rf ${installPath}/ansible_executor/site-packages/Crypto/
     fi
 
-    if [[ -d ${installPath}/ansible_executor/site-packages/pycrypto-2.6.1.dist-info/ ]];then
-      rm -rf ${installPath}/ansible_executor/site-packages/pycrypto-2.6.1.dist-info/
+    if [[ -d ${installPath}/ansible_executor/site-packages/pycrypto-2.6.1.dist-echo/ ]];then
+      rm -rf ${installPath}/ansible_executor/site-packages/pycrypto-2.6.1.dist-echo/
     fi
   fi
   PATH=/usr/local/Python3.9/bin:$PATH
@@ -1026,14 +1017,14 @@ function __InstallAnsibleExecutor {
 
   if [[ ${osType}  = "openEuler_x86" || ${osType}  = "openEuler_arm" || ${osType}  = "bcLinux_x86" || ${osType}  = "bcLinux_arm" ]];then
 
-    info "nohup python3.9_enmo ${installPath}/ansible_executor/ansible_executor.py --consulHost=${hostIp} --consulACLToken=${consulToken} --logpath=${installPath}/ansible_executor/ansible_executor.log --consulPort=8500 >/dev/null  2>&1 &"
+    echo "nohup python3.9_enmo ${installPath}/ansible_executor/ansible_executor.py --consulHost=${hostIp} --consulACLToken=${consulToken} --logpath=${installPath}/ansible_executor/ansible_executor.log --consulPort=8500 >/dev/null  2>&1 &"
     nohup python3.9_enmo ${installPath}/ansible_executor/ansible_executor.py --consulHost=${hostIp} --consulACLToken=${consulToken} --logpath=${logPath}/ansible_executor/ansible_executor.log --consulPort=8500 >/dev/null 2>&1 &
     keeperConf=${configPath}/keeper.yaml
     if ! grep -q "python3.9_enmo" ${keeperConf}; then
     sed -i "s/python3.9/python3.9_enmo/g" ${keeperConf}
     fi
   else
-    info "nohup python3.9 ${installPath}/ansible_executor/ansible_executor.py --consulHost=${hostIp} --consulACLToken=${consulToken} --logpath=${installPath}/ansible_executor/ansible_executor.log --consulPort=8500 >/dev/null  2>&1 &"
+    echo "nohup python3.9 ${installPath}/ansible_executor/ansible_executor.py --consulHost=${hostIp} --consulACLToken=${consulToken} --logpath=${installPath}/ansible_executor/ansible_executor.log --consulPort=8500 >/dev/null  2>&1 &"
     nohup python3.9 ${installPath}/ansible_executor/ansible_executor.py --consulHost=${hostIp} --consulACLToken=${consulToken} --logpath=${logPath}/ansible_executor/ansible_executor.log --consulPort=8500 >/dev/null 2>&1 &
   fi
   cd ${workdir}
@@ -1059,12 +1050,12 @@ function __InstallAnsibleExecutor {
   fi
 
 
-  info "ansible_executor 安装完成"
+  echo "ansible_executor 安装完成"
 }
 
 function __InstallOpenWorkFlow {
   cd jar
-  info "开始安装 open_workflow"
+  echo "开始安装 open_workflow"
   if [[ $(ps -ef|grep "${installPath}/open_workflow/open_workflow --conf="|grep -v grep|wc -l) -gt 0 ]];then
     ps -ef |grep "${installPath}/open_workflow/open_workflow --conf="|grep -v grep | awk '{print $2}' | xargs kill -9
     sleep 2s
@@ -1089,8 +1080,8 @@ function __InstallOpenWorkFlow {
   sed -ri "s|addr: \"127.0.0.1:8088\"|addr: \"${hostIp}:8088\"|g" ${installPath}/open_workflow/conf/open_workflow.yaml
   sed -ri "s|addr: \"127.0.0.1:18080\"|addr: \"${hostIp}:18080\"|g" ${installPath}/open_workflow/conf/open_workflow.yaml
   __CreateDir ${logPath}/open_workflow
-  info "nohup ${installPath}/open_workflow/open_workflow --conf=${installPath}/open_workflow/conf/open_workflow.yaml --log.filename=${installPath}/open_workflow/open_workflow.log --log.level=info --log.maxsize=32  --log.backlog=7 >/dev/null 2>&1 &"
-  nohup ${installPath}/open_workflow/open_workflow --conf=${installPath}/open_workflow/conf/open_workflow.yaml --log.filename=${logPath}/open_workflow/open_workflow.log --log.level=info --log.maxsize=32  --log.backlog=7 >/dev/null 2>&1 &
+  echo "nohup ${installPath}/open_workflow/open_workflow --conf=${installPath}/open_workflow/conf/open_workflow.yaml --log.filename=${installPath}/open_workflow/open_workflow.log --log.level=echo --log.maxsize=32  --log.backlog=7 >/dev/null 2>&1 &"
+  nohup ${installPath}/open_workflow/open_workflow --conf=${installPath}/open_workflow/conf/open_workflow.yaml --log.filename=${logPath}/open_workflow/open_workflow.log --log.level=echo --log.maxsize=32  --log.backlog=7 >/dev/null 2>&1 &
   cd ${workdir}
   cp script/other/start.sh ${installPath}/open_workflow
   cp script/other/stop.sh ${installPath}/open_workflow
@@ -1110,12 +1101,12 @@ function __InstallOpenWorkFlow {
     mysqlAddr="${installPath}/soft/mysql/mysql/bin/mysql"
     ${mysqlAddr} -uroot -p${dbaas_password} -h${server_ip} -P${server_port} mysql -e "delete from monitormanager.zcloud_platform_component where ip='${realHostIp}' and port='5001'; INSERT INTO monitormanager.zcloud_platform_component(name, ip, port, \`type\`, metrics_path, description)VALUES('open_workflow', '${realHostIp}', '5001', 'service', '/health/check', '开放作业中心');" >> ${logFile} 2>&1
   fi
-  info "open_workflow 安装完成"
+  echo "open_workflow 安装完成"
 }
 
 function __InstallMagicCube {
   cd jar
-  info "开始安装 magic_cube"
+  echo "开始安装 magic_cube"
   if [[ $(ps -ef|grep "${installPath}/magic_cube/magic_cube --consul.endpoint"|grep -v grep|wc -l) -gt 0 ]];then
     ps -ef |grep "${installPath}/magic_cube/magic_cube --consul.endpoint"|grep -v grep | awk '{print $2}' | xargs kill -9
     sleep 2s
@@ -1137,7 +1128,7 @@ function __InstallMagicCube {
   else
     consulIp=$( __readINI ${workdir}zcloud.cfg multiple consul.host )
   fi
-  info "nohup ${installPath}/magic_cube/magic_cube --consul.endpoint=http://${consulIp}:8500 --consul.token=${consulToken} >/dev/null 2>&1 &"
+  echo "nohup ${installPath}/magic_cube/magic_cube --consul.endpoint=http://${consulIp}:8500 --consul.token=${consulToken} >/dev/null 2>&1 &"
   nohup ${installPath}/magic_cube/magic_cube --consul.endpoint=http://${consulIp}:8500 --consul.token=${consulToken} >/dev/null 2>&1 &
   cd ${workdir}
   cp script/other/start.sh ${installPath}/magic_cube
@@ -1150,7 +1141,7 @@ function __InstallMagicCube {
       export LD_LIBRARY_PATH=/usr/lib64:$LD_LIBRARY_PATH
   fi
 
-  info "curl -X PUT -H "X-Consul-Token:${consulToken}" -d "${realHostIp}" http://${consulIp}:8500/v1/kv/zcloudconfig/prod/lcdp-workflow-manager/magic_cube_host?dc=dc1"
+  echo "curl -X PUT -H "X-Consul-Token:${consulToken}" -d "${realHostIp}" http://${consulIp}:8500/v1/kv/zcloudconfig/prod/lcdp-workflow-manager/magic_cube_host?dc=dc1"
   curl -X PUT -H "X-Consul-Token:${consulToken}" -d "${realHostIp}" http://${consulIp}:8500/v1/kv/zcloudconfig/prod/lcdp-workflow-manager/magic_cube_host?dc=dc1
   if [[ ${databaseType} = "MogDB" ]];then
     export LD_LIBRARY_PATH=${installPath}/soft/mogdb/app/lib:$LD_LIBRARY_PATH
@@ -1159,7 +1150,7 @@ function __InstallMagicCube {
     mysqlAddr="${installPath}/soft/mysql/mysql/bin/mysql"
     ${mysqlAddr} -uroot -p${dbaas_password} -h${server_ip} -P${server_port} mysql -e "delete from monitormanager.zcloud_platform_component where ip='${realHostIp}' and port='18281'; INSERT INTO monitormanager.zcloud_platform_component(name, ip, port, \`type\`, metrics_path, description)VALUES('magic-cube', '${realHostIp}', '18281', 'service', '/health/check', '开放作业中心');" >> ${logFile} 2>&1
   fi
-  info "magic_cube 安装完成"
+  echo "magic_cube 安装完成"
 }
 
 function __AddToKeeper {
@@ -1251,10 +1242,10 @@ function __preparePythonPip2pi {
   if [ ${retCode} -eq 1 ]
   then
     if [[ ${osType} = "openEuler_x86" || ${osType}  = "openEuler_arm" || ${osType}  = "bcLinux_x86" || ${osType}  = "bcLinux_arm"  ]];then
-        info "pip3.9_enmo install --no-index ${workdir}/soft/pysrc/pip2pi-0.8.2.tar.gz"
+        echo "pip3.9_enmo install --no-index ${workdir}/soft/pysrc/pip2pi-0.8.2.tar.gz"
         pip3.9_enmo install --no-index ${workdir}/soft/pysrc/pip2pi-0.8.2.tar.gz
     else
-        info "pip3.9 install --no-index ${workdir}/soft/pysrc/pip2pi-0.8.2.tar.gz"
+        echo "pip3.9 install --no-index ${workdir}/soft/pysrc/pip2pi-0.8.2.tar.gz"
         pip3.9 install --no-index ${workdir}/soft/pysrc/pip2pi-0.8.2.tar.gz
     fi
     chmod -R 755 /usr/local/Python3.9/lib/python3.9/site-packages/
@@ -1271,5 +1262,31 @@ function __prepareAnsibleModule {
   chown -R zcloud:zcloud /usr/share/ansible/plugins/modules
 }
 
+function __AuthSudoForPodman {
+  sudoFile=/etc/sudoers
+  chmod u+w ${sudoFile}
+  if [[ $(egrep "(^zcloud\s+ALL=\(ALL\)\s+NOPASSWD:${installPath}/podman/podman)" ${sudoFile}|wc -l) -eq 0 ]];then
+    echo "zcloud  ALL=(ALL)        NOPASSWD:${installPath}/podman/podman">>${sudoFile}
+  fi
+  if [[ $(egrep '(^zcloud\s+ALL=\(ALL\)\s+NOPASSWD:/usr/bin/podman)' ${sudoFile}|wc -l) -eq 0 ]];then
+    echo "zcloud  ALL=(ALL)        NOPASSWD:/usr/bin/podman">>${sudoFile}
+  fi
+  if [[ $(egrep '(^zcloud\s+ALL=\(ALL\)\s+NOPASSWD:/usr/bin/mount)' ${sudoFile}|wc -l) -eq 0 ]];then
+    echo "zcloud  ALL=(ALL)        NOPASSWD:/usr/bin/mount">>${sudoFile}
+  fi
+  if [[ $(egrep '(^zcloud\s+ALL=\(ALL\)\s+NOPASSWD:/usr/bin/umount)' ${sudoFile}|wc -l) -eq 0 ]];then
+    echo "zcloud  ALL=(ALL)        NOPASSWD:/usr/bin/umount">>${sudoFile}
+  fi
+  if [[ $(egrep '(^zcloud\s+ALL=\(ALL\)\s+NOPASSWD:/usr/bin/mkdir)' ${sudoFile}|wc -l) -eq 0 ]];then
+    echo "zcloud  ALL=(ALL)        NOPASSWD:/usr/bin/mkdir">>${sudoFile}
+  fi
+  if [[ $(egrep '(^zcloud\s+ALL=\(ALL\)\s+NOPASSWD:/usr/sbin/dmidecode)' ${sudoFile}|wc -l) -eq 0 ]];then
+    echo "zcloud  ALL=(ALL)        NOPASSWD:/usr/sbin/dmidecode">>${sudoFile}
+  fi
+  chmod u-w ${sudoFile}
+}
+
 
 __InstallLowCodeEnv
+
+__AuthSudoForPodman

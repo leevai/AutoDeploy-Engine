@@ -1,5 +1,4 @@
-installBasePath=#{install_path}
-installPath=${installBasePath}/nginx
+installPath=#{installPath}
 
 function install_nginx() {
     info "开始安装nginx "

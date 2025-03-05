@@ -1,12 +1,12 @@
-#!/bin/bash
+
 # 文件(夹) 创建和赋权给zcloud
 function __CreateDir() {
   filePath=$1
   if [[ ! -e $filePath ]]; then
     mkdir -p "${filePath}";
-    info "创建文件夹成功，文件夹路径:${filePath}";
+    echo "创建文件夹成功，文件夹路径:${filePath}";
   else
-    info "创建文件夹已存在，文件夹路径:${filePath}";
+    echo "创建文件夹已存在，文件夹路径:${filePath}";
   fi
   chown -R zcloud:zcloud "${filePath}"
 }
@@ -16,7 +16,7 @@ function __CreateStandardDir() {
   if [[ $installType != 4 ]];then
     __CreateDir ${filePath}
   else
-    info "此次为标准安装升级，无需创建文件夹"
+    echo "此次为标准安装升级，无需创建文件夹"
   fi
 }
 
@@ -43,12 +43,12 @@ function __AuthLicence {
     if [[ -f /sys/firmware/dmi/tables/DMI ]];then
       chmod o+r /sys/firmware/dmi/tables/DMI
     fi
-    info "licence赋权成功"
+    echo "licence赋权成功"
   else
-    info "此次为标准安装升级，无需执行此步骤"
+    echo "此次为标准安装升级，无需执行此步骤"
   fi
   endTime=$(date +"%s%N")
-  info "Licence赋权完成，耗时$( __CalcDuration ${startTime} ${endTime})"
+  echo "Licence赋权完成，耗时$( __CalcDuration ${startTime} ${endTime})"
 }
 
 function __CheckDirExist {
@@ -65,26 +65,26 @@ function __CheckDirExist {
         exit 1
       fi
     else
-      info "此次为标准安装升级，无需清理文件夹"
+      echo "此次为标准安装升级，无需清理文件夹"
     fi
     __ReplaceText ${logPath}/evn.cfg "checkDir=" "checkDir=1"
   else
-    info "重试无需执行此步骤"
+    echo "重试无需执行此步骤"
   fi
   endTime=$(date +"%s%N")
-  info "检查标准目录完成，耗时$( __CalcDuration ${startTime} ${endTime})"
+  echo "检查标准目录完成，耗时$( __CalcDuration ${startTime} ${endTime})"
 
 }
 
 function __AuthInstallPackage {
   startTime=$(date +"%s%N")
   chown -R zcloud:zcloud "`pwd`"
-  info "安装包修改属主成功"
+  echo "安装包修改属主成功"
   endTime=$(date +"%s%N")
   if [[ -d ${installPath} ]];then
     chown -R zcloud:zcloud ${installPath}
   fi
-  info "安装包修改属主完成，耗时$( __CalcDuration ${startTime} ${endTime})"
+  echo "安装包修改属主完成，耗时$( __CalcDuration ${startTime} ${endTime})"
 }
 
 function __CheckZcloudVersion {
@@ -137,7 +137,7 @@ function __CheckZcloudVersion {
         error "${oldReleaseDesc}不能升级为${releaseDesc}"
         exit 1
       elif [[ ${oldVersion} == "3.7.1" && ${newVersion} == "3.7.1.100" ]];then
-        info "当前版本${newVersion} ,原安装版本${oldVersion}"
+        echo "当前版本${newVersion} ,原安装版本${oldVersion}"
       elif [[ ${oldVersion}  != ${newVersion} ]];then
         error "标准版升级到企业版使用相同版本的安装包，原安装版本${oldVersion}"
         exit 1
@@ -160,7 +160,7 @@ function __CheckZcloudVersion {
       if [[ ${oldVersionPart1} > ${newVersionPart1} ]];then
         read -p "升级版本大于等于原安装的版本，现在版本${newVersion} ,原安装版本${oldVersion},是否继续升级（yes/no）:" choose
         if [[ ${choose} = "yes" ]];then
-          info "继续安装版本${newVersion}------------------------------"
+          echo "继续安装版本${newVersion}------------------------------"
         else
           exit 1
         fi
@@ -168,7 +168,7 @@ function __CheckZcloudVersion {
         if [[ ${oldVersionPart2} = ${newVersionPart2} ]];then
           read -p "升级版本大于等于原安装的版本，现在版本${newVersion} ,原安装版本${oldVersion},是否继续升级（yes/no）:" choose
           if [[ ${choose} = "yes" ]];then
-            info "继续安装版本${newVersion}------------------------------"
+            echo "继续安装版本${newVersion}------------------------------"
           else
             exit 1
           fi
@@ -176,19 +176,19 @@ function __CheckZcloudVersion {
           error "升级版本必须大于原安装的版本，现在版本${newVersion} ,原安装版本${oldVersion}"
           exit 1
         elif [[ ${oldVersionPart2} != "" && ${newVersionPart2} = ""  ]];then
-          info "现在版本${newVersion} ,原安装版本${oldVersion}"
+          echo "现在版本${newVersion} ,原安装版本${oldVersion}"
         elif [[ ${oldVersionPart2} > ${newVersionPart2}   ]];then
           read -p "升级版本大于等于原安装的版本，现在版本${newVersion} ,原安装版本${oldVersion},是否继续升级（yes/no）:" choose
           if [[ ${choose} = "yes" ]];then
-            info "继续安装版本${newVersion}------------------------------"
+            echo "继续安装版本${newVersion}------------------------------"
           else
             exit 1
           fi
         else
-          info "现在版本${newVersion} ,原安装版本${oldVersion}"
+          echo "现在版本${newVersion} ,原安装版本${oldVersion}"
         fi
       else
-        info "现在版本${newVersion} ,原安装版本${oldVersion}"
+        echo "现在版本${newVersion} ,原安装版本${oldVersion}"
       fi
       ##判断数据库类型
 #      if [[ ${installType} == 4 && (${release} == "forMogdb" || ${release} == "personal" || ${release} == "community") ]];then
@@ -216,7 +216,7 @@ function __CheckZcloudVersion {
     __ReplaceText ${logPath}/evn.cfg "oldRelease=" "oldRelease=${oldRelease}"
   fi
   endTime=$(date +"%s%N")
-  info "检查zCloud的版本，耗时$( __CalcDuration ${startTime} ${endTime})"
+  echo "检查zCloud的版本，耗时$( __CalcDuration ${startTime} ${endTime})"
 }
 
 function __CheckZcloudAndZDataVersion {
@@ -253,15 +253,15 @@ function __CheckZcloudAndZDataVersion {
           error "zCloud升级版本必须大于原安装的版本，现在版本${newVersion} ,原安装版本${oldVersion}"
           exit 1
         elif [[ ${oldVersionPart2} != "" && ${newVersionPart2} = ""  ]];then
-          info "zCloud现在版本${newVersion} ,原安装版本${oldVersion}"
+          echo "zCloud现在版本${newVersion} ,原安装版本${oldVersion}"
         elif [[ ${oldVersionPart2} > ${newVersionPart2}   ]];then
           error "zCloud升级版本必须大于原安装的版本，现在版本${newVersion} ,原安装版本${oldVersion}"
           exit 1
         else
-          info "zCloud现在版本${newVersion} ,原安装版本${oldVersion}"
+          echo "zCloud现在版本${newVersion} ,原安装版本${oldVersion}"
         fi
       else
-        info "zCloud现在版本${newVersion} ,原安装版本${oldVersion}"
+        echo "zCloud现在版本${newVersion} ,原安装版本${oldVersion}"
       fi
   fi
 #  installDir=`echo ${workdir}|awk -F'/' '{print $NF}'`
@@ -282,7 +282,7 @@ function __CheckZcloudAndZDataVersion {
 #        error "zDataX升级版本必须大于原安装的版本，现在版本${newVersion} ,原安装版本${oldVersion}"
 #        exit 1
 #      else
-#        info "zDataX现在版本${newVersion} ,原安装版本${oldVersion}"
+#        echo "zDataX现在版本${newVersion} ,原安装版本${oldVersion}"
 #      fi
 #  fi
 
@@ -292,7 +292,7 @@ function __CheckZcloudAndZDataVersion {
     __ReplaceText ${logPath}/evn.cfg "oldRelease=" "oldRelease=${oldRelease}"
   fi
   endTime=$(date +"%s%N")
-  info "检查zCloud的版本，耗时$( __CalcDuration ${startTime} ${endTime})"
+  echo "检查zCloud的版本，耗时$( __CalcDuration ${startTime} ${endTime})"
 }
 
 
@@ -353,7 +353,7 @@ function __CheckNodeNum {
 }
 
 function __CopyPackageTo {
-  info "此步骤大概需要执行1m,请等待"
+  echo "此步骤大概需要执行1m,请等待"
   cp version.txt ${installPath}
   chown zcloud:zcloud ${installPath}/version.txt
   cp nodeconfig/installparam.txt ${installPath}
@@ -396,10 +396,10 @@ function __CreatePaasdataDir() {
     fi
 
   else
-    info "此次为标准安装升级，无需执行此步骤"
+    echo "此次为标准安装升级，无需执行此步骤"
   fi
   endTime=$(date +"%s%N")
-  info "paasdata 目录创建和赋权完成，耗时$( __CalcDuration ${startTime} ${endTime})"
+  echo "paasdata 目录创建和赋权完成，耗时$( __CalcDuration ${startTime} ${endTime})"
 
 
     
