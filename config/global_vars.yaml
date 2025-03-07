@@ -44,3 +44,4 @@ global_vars:
   dependenceOutsideMySQL: 0
   dependenceOutsidePrometheus: 0
   consulHost: 172.20.23.251
+  prometheusIp: 172.20.23.251
