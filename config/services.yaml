@@ -13,6 +13,7 @@ services:
       - "./script/env_check/checkDiskCapacity.sh"
       - "./script/env_check/checkMemory.sh"
       - "./script/env_check/checkTimeZone.sh"
+      - "./script/env_check/checkZcloudVersion.sh"
     env_init_scripts: #需要顺序执行
       - "./script/env_init/authLicence.sh"
       - "./script/env_init/configSysParam.sh"
@@ -26,18 +27,30 @@ services:
     local: true
     priority: 2 # 低数字优先执行
 
-  - name: "lowcode"
+  - name: "keeper"
     local: true
-    priority: 2
-
-  - name: "mogdb"
-    local: true
-    remote:
-      host: "192.168.48.174"
-      port: 22
-      user: "root"
-      password: "root@123"
     priority: 2 # 低数字优先执行
+
+  - name: "nginx"
+    local: true
+    priority: 2 # 低数字优先执行
+
+  - name: "mysql"
+    local: true
+    priority: 2 # 低数字优先执行
+
+#  - name: "lowcode"
+#    local: true
+#    priority: 2
+#
+#  - name: "mogdb"
+#    local: true
+#    remote:
+#      host: "192.168.48.174"
+#      port: 22
+#      user: "root"
+#      password: "root@123"
+#    priority: 2 # 低数字优先执行
 
 #  - name: "mysql"
 #    local: true
@@ -59,13 +72,5 @@ services:
 #    install_path: "/opt/dbaas"
 #    priority: 2 # 低数字优先执行
 
-#  - name: "nginx"
-#    local: true
-#    remote:
-#      host: "192.168.48.174"
-#      port: 22
-#      user: "root"
-#      password: "root@123"
-#    install_path: "/opt/dbaas"
-#    priority: 2 # 低数字优先执行
+
 

@@ -6,12 +6,11 @@ installPath=#{installPath}
 . ./script/lib/common.sh
 . ./script/lib/dir_auth.sh
 
-# 非Root安装JDK
 function __CheckJava {
     homedir=`cd ~ && pwd`
     if [[ ((! -e ${homedir}/.bashrc) || ($(cat ${homedir}/.bashrc|grep JAVA_HOME|wc -l) = 0)) || ! -e ${installPath}/soft/java/jdk-17.0.11+9 ]]
     then
-      __InstallJavakes
+      __InstallJava
     fi
     __GetJavaVersion
 
@@ -29,9 +28,9 @@ function __InstallJava {
     info "This Machine Not Install JDK, Will Install JDK 17 "
     __CreateDir "${installPath}/soft/java/"
     if [[ ${osType}  = "Kylin_arm" || ${osType}  = "uos_arm" || ${osType}  = "openEuler_arm"  || ${osType}  = "bcLinux_arm" ]];then
-      tar -zxf services/jdk/soft_pkg/OpenJDK17U-jdk_aarch64_linux_hotspot_17.0.11_9.tar.gz -C "${installPath}/soft/java/"
+      tar -zxf soft/java/OpenJDK17U-jdk_aarch64_linux_hotspot_17.0.11_9.tar.gz -C "${installPath}/soft/java/"
     else
-      tar -zxf services/jdk/soft_pkg/OpenJDK17U-jdk_x64_linux_hotspot_17.0.11_9.tar.gz -C "${installPath}/soft/java/"
+      tar -zxf soft/java/OpenJDK17U-jdk_x64_linux_hotspot_17.0.11_9.tar.gz -C "${installPath}/soft/java/"
     fi
     retCode=$?
     # retCode=0
@@ -92,5 +91,7 @@ function __GetJavaVersion {
         exit 1
     fi
 }
+
+
 
 __CheckJava

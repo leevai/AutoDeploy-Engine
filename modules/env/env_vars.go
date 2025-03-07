@@ -33,8 +33,11 @@ func LoadGlobalEnvVars() error {
 	if err := getExecUser(config); err != nil {
 		return fmt.Errorf("exec user env vars load failed: %v", err)
 	}
-	if err := getRepoCommand(config); err != nil {
+	if err := execEnvVarsScript(config, "./script/env_vars/repo_command.sh"); err != nil {
 		return fmt.Errorf("repoCommand env vars load failed: %v", err)
+	}
+	if err := execEnvVarsScript(config, "./script/env_vars/release.sh"); err != nil {
+		return fmt.Errorf("release env vars load failed: %v", err)
 	}
 	return nil
 }
@@ -102,8 +105,8 @@ func getExecUser(config *config2.ServiceConfig) error {
 	return nil
 }
 
-func getRepoCommand(config *config2.ServiceConfig) error {
-	data, err := utils.ExecuteShellCommandUseBash(config, "./script/env_vars/repo_command.sh", true)
+func execEnvVarsScript(config *config2.ServiceConfig, scriptFile string) error {
+	data, err := utils.ExecuteShellCommandUseBash(config, scriptFile, true)
 	if err != nil {
 		return err
 	}

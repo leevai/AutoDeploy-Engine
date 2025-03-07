@@ -1,21 +1,36 @@
 global_vars:
   host: localhost
-  hostIp: localhost
+  hostIp: 172.20.23.251
+  workflowIp: 172.20.23.251
+  webIp: 172.20.23.251
   port: 5432
   user: dbuser
   password: dbpass
   endpoint: https://api.example.com
   timeout: 30
+
   mysqluser: root
   mysqlpassword: 123456
-  mysqlhost: 192.168.48.154
+  mysqlhost: 172.20.23.251
   mysqlhostport: 3306
+
+  mysql_dbaas_username: dbaas
+  mysql_dbaas_password: nvrUrDgFoxdvjJdxOrJ0mA==
+  mysql_activiti_username: activiti
+  mysql_activiti_password: G2Hrv+Crgw+m62ZL6s2UNg==
+  mysql_scheduler_username: dbaas
+  mysql_scheduler_password: nvrUrDgFoxdvjJdxOrJ0mA==
+  mysql_monitormanager_username: monitormanager
+  mysql_monitormanager_password: qjpf2chvHxCdX21+88OGW/IBc2OTvs7NLf6LlFWdiXI=
+  mysql_taskmanagement_username: dbaas
+  mysql_taskmanagement_password: nvrUrDgFoxdvjJdxOrJ0mA==
+
   mogdbuser: dbaas
   mogdbpassword: Zcloud12345
   mogdbport: 26000
-  mogdbhost: 172.20.23.243
-  mysql_password: dbaas@123
-  outsidePrometheus: 0
+  mogdbhost: 172.20.23.251
+
+
   defaultCoreNum: 16
   diskCapacity: 20
   defaultMemorySize: 30
@@ -24,3 +39,8 @@ global_vars:
   databaseType: MySQL
   release: standard
   theme: ""
+  ui_url_port: 8080
+  dependenceOutsideMogdb: 0
+  dependenceOutsideMySQL: 0
+  dependenceOutsidePrometheus: 0
+  consulHost: 172.20.23.251

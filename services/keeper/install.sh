@@ -1,5 +1,3 @@
-
-
 installNodeType=#{installNodeType}
 workdir=#{workdir}
 homePath=#{homePath}
@@ -9,14 +7,19 @@ configPath=#{configPath}
 installType=#{installType}
 databaseType=#{databaseType}
 release=#{release}
+oldRelease=#{oldRelease}
 javaIoTempDir=#{javaIoTempDir}
 bakPath=#{bakPath}
+hostIp=#{hostIp}
+consulHost=#{consulHost}
+dependenceOutsideMySQL=#{dependenceOutsideMySQL}
+dependenceOutsidePrometheus=#{dependenceOutsidePrometheus}
 bakTime=
 
 
 
 
-nodeNum=1
+nodeNum=#{nodeNum}
 
 function __AddServiceToKeeper() {
     serviceName=$1
@@ -31,18 +34,13 @@ function __AddServiceToKeeper() {
       sed -i "${endLine}r temp.yaml" ${keeperConf}
       rm -f temp.yaml
 
-      if [[ ${installNodeType} == "OneNode" ]]; then
-        hostIp=$( __ReadValue nodeconfig/installparam.txt hostIp)
-      else
-        hostIp=$( __readINI zcloud.cfg multiple consul.host )
-      fi
       if [[ -f ${homePath}/dbaas/zcloud-config/consultoken.txt ]];then
         consulToken=`less ${homePath}/dbaas/zcloud-config/consultoken.txt | grep SecretID|awk '{print $2}'`
         sed -i "s|#consulToken#|${consulToken}|g" ${keeperConf}
       fi
 
       sed -i "s|#installPath#|${installPath}|g" ${keeperConf}
-      sed -i "s|#localIP#|${hostIp}|g" ${keeperConf}
+      sed -i "s|#localIP#|${consulHost}|g" ${keeperConf}
       sed -i "s|#logPath#|${logPath}|g" ${keeperConf}
 
       echo " add service ${serviceName} to keeper success"
@@ -84,14 +82,9 @@ function __InitKeeperConfig {
     cp conf/keeper.yaml ${configPath}
   fi
 
-  if [[ ${installNodeType} == "OneNode" || ${nodeNum} == 1  ]]; then
-    hostIp=$( __ReadValue nodeconfig/installparam.txt hostIp)
-  else
-    hostIp=$( __readINI zcloud.cfg multiple consul.host )
-  fi
   keeperConf=${configPath}/keeper.yaml
   sed -i "s|#installPath#|${installPath}|g" ${keeperConf}
-  sed -i "s|#localIP#|${hostIp}|g" ${keeperConf}
+  sed -i "s|#localIP#|${consulHost}|g" ${keeperConf}
   sed -i "s|#logPath#|${logPath}|g" ${keeperConf}
   if [[ -f ${homePath}/dbaas/zcloud-config/consultoken.txt ]];then
     consulToken=`less ${homePath}/dbaas/zcloud-config/consultoken.txt | grep SecretID|awk '{print $2}'`
@@ -135,11 +128,11 @@ function __InitKeeperConfig {
               __RemoveServiceFromKeeper ${service} ${configPath}/keeper.yaml
            fi
         elif [[ ${service} == mysql ]] ;then
-           if [[ ${nodeNum} != $( __readINI nodeconfig/current.cfg service ${service} ) ]] || [[  $( __readINI zcloud.cfg multiple "dependence.outside.mysql" ) = 1 ]]; then
+           if [[ ${nodeNum} != $( __readINI nodeconfig/current.cfg service ${service} ) ]] || [[  ${dependenceOutsideMySQL} = 1 ]]; then
               __RemoveServiceFromKeeper ${service} ${configPath}/keeper.yaml
            fi
         elif [[ ${service} == dbaas-registrationHub ]] || [[ ${service} == prometheus ]] || [[ ${service} == alertmanager ]];then
-           if [[ ${nodeNum} != $( __readINI nodeconfig/current.cfg service ${service} ) ]] || [[  $( __readINI zcloud.cfg multiple "dependence.outside.prometheus" ) = 1 ]]; then
+           if [[ ${nodeNum} != $( __readINI nodeconfig/current.cfg service ${service} ) ]] || [[  ${dependenceOutsidePrometheus} = 1 ]]; then
               __RemoveServiceFromKeeper ${service} ${configPath}/keeper.yaml
            fi
         else
@@ -156,7 +149,7 @@ function __InitKeeperConfig {
       for service in `cat ${configPath}/keeper.yaml |grep  "\- serviceName: "| awk '{print $3}'`;
         do
           if  [[ ${service} == mysql ]] ;then
-             if [[  $( __readINI zcloud.cfg single "dependence.outside.mysql" ) = 1 ]]; then
+             if [[  ${dependenceOutsideMySQL} = 1 ]]; then
                 __RemoveServiceFromKeeper ${service} ${configPath}/keeper.yaml
              fi
           fi
@@ -183,12 +176,12 @@ function __InitKeeperConfig {
            fi
         elif [[ ${service} == mysql ]] ;then
            grepContent=`cat ${configPath}/keeper.yaml | grep "\- serviceName: ${service}" | wc -l `
-           if [[ ${nodeNum} == $( __readINI nodeconfig/current.cfg service ${service} ) && ${grepContent} == "0"  && $( __readINI zcloud.cfg multiple "dependence.outside.mysql" ) = 0 ]]; then
+           if [[ ${nodeNum} == $( __readINI nodeconfig/current.cfg service ${service} ) && ${grepContent} == "0"  && ${dependenceOutsideMySQL} = 0 ]]; then
               __AddServiceToKeeper ${service} ${configPath}/keeper.yaml
            fi
         elif [[ ${service} == dbaas-registrationHub ]] || [[ ${service} == prometheus ]] || [[ ${service} == alertmanager ]];then
            grepContent=`cat ${configPath}/keeper.yaml | grep "\- serviceName: ${service}" | wc -l `
-           if [[ ${nodeNum} == $( __readINI nodeconfig/current.cfg service ${service} ) && ${grepContent} == "0"  && $( __readINI zcloud.cfg multiple "dependence.outside.prometheus" ) = 0 ]]; then
+           if [[ ${nodeNum} == $( __readINI nodeconfig/current.cfg service ${service} ) && ${grepContent} == "0"  && ${dependenceOutsidePrometheus} = 0 ]]; then
               __AddServiceToKeeper ${service} ${configPath}/keeper.yaml
            fi
         else
@@ -305,4 +298,4 @@ chmod +x ${installPath}/keeper/script/startkeeper.sh
 
 __InitKeeperConfig
 
-__StartKeepService
+#__StartKeepService

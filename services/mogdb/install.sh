@@ -10,11 +10,12 @@ ip=#{mogdbhost}
 workdir=#{workdir}
 hostIp=#{hostIp}
 repoCommand=#{repoCommand}
-dependenceOutside=0
+dependenceOutside=#{dependenceOutsideMogdb}
 nodeNum=#{nodeNum}
 logFile=#{logFile}
 logPath=#{logPath}
 homePath=#{homePath}
+ui_url_port=#{ui_url_port}
 
 . ./script/lib/dir_auth.sh
 . ./script/lib/common.sh
@@ -214,7 +215,6 @@ function __InitMogDBData {
           ${installPath}/soft/mogdb/app/bin/gsql -d zcloud -h ${ip} -p ${port} -U ${user} -W ${password} -f dbsqlfile/mogdb/clear.sql
           ${installPath}/soft/mogdb/app/bin/gsql -d zcloud -h ${ip} -p ${port} -U ${user} -W ${password} -f dbsqlfile/mogdb/zcloud_full.sql
           __ReplaceText ${logPath}/evn.cfg "initedMogdb=" "initedMogdb=1"
-          ui_url_port=($( __readINI zcloud.cfg web "ui_url_port" ))
           sed -i "s/#zcloud_ip_addr_port#/${hostIp}:${ui_url_port}/g" dbsqlfile/mogdb/update.sql
           sed -i "s/#gateway_ip_addr#/${hostIp}:${ui_url_port}/g" dbsqlfile/mogdb/update.sql
           sed -i "s/#monitor_ip_addr#/${hostIp}/g" dbsqlfile/mogdb/update.sql
@@ -646,7 +646,7 @@ function __updateMogDBComponentIp {
 }
 
 __InstallMogDBAll
-
+__InitMogDBData
 __updateMogDBComponentIp
 
 

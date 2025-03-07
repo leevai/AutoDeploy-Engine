@@ -1,0 +1,15 @@
+service:
+  name: "keeper"
+  local: true
+#  install_package: "./services/jdk/install.tar.gz"
+#  upgrade_package: "./services/mysql/upgrade.tar.gz"
+  install_script: "./services/keeper/install.sh"
+#  backup_script: "./services/mysql/upgrade.py"
+#  rollback_script: "./services/mysql/rollback.url"
+#  check_health_script: "./services/mysql/check_health_script.sh"
+#  upgrade_script: "./services/mysql/upgrade.py"
+#  change_ip_script: "./services/mysql/change_ip.sh"
+#  install_path: "/opt/mysql"
+#  start_command: "systemctl start mysql"
+#  stop_command: "systemctl stop mysql"
+  priority: 2 # 低数字优先执行

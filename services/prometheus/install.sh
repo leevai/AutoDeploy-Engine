@@ -12,7 +12,6 @@ outsidePrometheus=#{outsidePrometheus}
 #else
 #  outsidePrometheus=$(__readINI ${zcloudCfg} multiple dependence.outside.prometheus)
 #fi
-if [[  ${outsidePrometheus} = 0 ]]; then
   tar -xf ./services/prometheus/soft_pkg/prometheus.tar.gz
   __CreateDir "${installPath}/prometheus"
   if [[ ! -e ${installPath}/prometheus/log ]];then
@@ -98,11 +97,7 @@ admin: \$2a\$12\$nDpHH3wLUuXVrPDPkHVjgeZqH0bIjuc1hcN1Z1JiNMmmQjHDriawa" >> ${ins
     \cp -r ./services/prometheus/soft_pkg/prometheus/recoding_rule.yml  ${installPath}/prometheus/
     info "prometheus重启成功"
   fi
-#  todo
-#  cd ${workdir}
-#  cp script/other/start.sh ${installPath}/prometheus
-#  cp script/other/stop.sh ${installPath}/prometheus
-#  cd ${workdir}
-else
-      info "当前节点无需安装prometheus"
-fi
+  cd ${workdir}
+  cp script/other/start.sh ${installPath}/prometheus
+  cp script/other/stop.sh ${installPath}/prometheus
+  cd ${workdir}
