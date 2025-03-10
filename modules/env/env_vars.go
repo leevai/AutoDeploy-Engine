@@ -58,6 +58,7 @@ func getPath(config *config2.ServiceConfig) error {
 	config2.InsertToGlobalVars("bakPath", fmt.Sprintf("%s/dbaas/soft-bak", homePath))
 	config2.InsertToGlobalVars("configPath", fmt.Sprintf("%s/dbaas/zcloud-config", homePath))
 	config2.InsertToGlobalVars("javaIoTempDir", fmt.Sprintf("%s/dbaas/zcloud-log/java-io-tmpdir", homePath))
+	config2.InsertToGlobalVars("keeperConf", fmt.Sprintf("%s/dbaas/zcloud-config/keeper.yaml", homePath))
 
 	workdirCmd := "cd \"$( dirname \"${BASH_SOURCE[0]}\" )\" && pwd"
 	workdir, stderr, err := utils.ExecuteShellCommand(config, workdirCmd)

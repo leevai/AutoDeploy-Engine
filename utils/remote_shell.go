@@ -72,7 +72,7 @@ func RemoteSSH(service *config.ServiceConfig, cmdstr string) (stdout, stderr str
 
 func AddScriptExecutorForRemote(cmdstr string) string {
 	if strings.HasSuffix(cmdstr, "sh") {
-		cmdstr = fmt.Sprintf("%s", cmdstr)
+		cmdstr = fmt.Sprintf("bash -c %s", cmdstr)
 	} else if strings.HasSuffix(cmdstr, "py") {
 		cmdstr = fmt.Sprintf("python %s", cmdstr)
 	} else if strings.HasSuffix(cmdstr, "url") {

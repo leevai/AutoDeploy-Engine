@@ -1,11 +1,15 @@
+nodes:
+  - name: "node1"
+    host: "192.168.48.174"
+    port: 22
+    user: "root"
+    password: "root@123"
+
+
 services:
   - name: "zcloud"
     local: true
-    remote:
-      host: "192.168.48.174"
-      port: 22
-      user: "root"
-      password: "root@123"
+    remote_name: "node1"
     priority: 1 # 低数字优先执行
     pre_check_scripts:
       - "./script/env_check/checkCpuCore.sh"
@@ -42,14 +46,13 @@ services:
 #  - name: "lowcode"
 #    local: true
 #    priority: 2
-#
+
+
 #  - name: "mogdb"
-#    local: true
-#    remote:
-#      host: "192.168.48.174"
-#      port: 22
-#      user: "root"
-#      password: "root@123"
+#    local: false
+#    remote_name: "node1"
+#    pkg_copy_map: #拷包示例：当前资源路径、目标主机路径
+#      - soft/mogdb: "soft/mogdb"
 #    priority: 2 # 低数字优先执行
 
 #  - name: "mysql"

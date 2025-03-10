@@ -9,6 +9,9 @@ import (
 )
 
 func Install() error {
+	if err := env.CopyScriptLibRemote(); err != nil {
+		return fmt.Errorf("copy script failed: %v", err)
+	}
 	fmt.Println("全局变量加载")
 	if err := env.LoadGlobalEnvVars(); err != nil {
 		return fmt.Errorf("env vars load failed: %v", err)

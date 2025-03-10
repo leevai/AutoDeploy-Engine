@@ -2,6 +2,7 @@ installPath=#{installPath}
 configPath=#{configPath}
 installType=#{installType}
 outsidePrometheus=#{outsidePrometheus}
+keeperConf=#{keeperConf}
 
 . ./script/lib/dir_auth.sh
 . ./script/lib/common.sh
