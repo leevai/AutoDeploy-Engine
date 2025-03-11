@@ -54,7 +54,7 @@ func CopyScriptLibRemote() error {
 					return fmt.Errorf("failed to mkdir remote service directory for %s: %v", "zcloud/script/", err)
 				}
 			}
-			if err := utils.RemoteSCP(service, "./script/lib", "./zcloud/script/"); err != nil {
+			if err := utils.RemoteSCP(service, "./script/lib", "~/zcloud/script/"); err != nil {
 				return fmt.Errorf("failed to copy install package for service %s: %v", service.Name, err)
 			}
 		}

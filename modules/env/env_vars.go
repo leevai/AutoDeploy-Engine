@@ -113,7 +113,7 @@ func execEnvVarsScript(config *config2.ServiceConfig, scriptFile string) error {
 	}
 	varValList := strings.Split(data, ";")
 	for _, varVal := range varValList {
-		kv := strings.SplitN(data, "=", 2)
+		kv := strings.SplitN(varVal, "=", 2)
 		if len(kv) != 2 {
 			return fmt.Errorf("data err: %s", varVal)
 		}

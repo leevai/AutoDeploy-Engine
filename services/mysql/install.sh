@@ -68,7 +68,6 @@ function __initMySQLData() {
   outsideMysql=${dependenceOutsideMySQL}
   mysqlServiceIp=${mysqlhost}
   eurekaIp=${webIp}
-  mysqlhostport=${mysqlhostip}
   __mysqlRootPwd=${mysqlpassword}
 
   initMySQL=($( __ReadValue ${logPath}/evn.cfg initMySQL))
@@ -164,7 +163,6 @@ function __updateComponentIp() {
 
     localIP=${hostIp}
     mysqlServiceIp=${mysqlhost}
-    mysqlhostport=${mysqlhostip}
     __mysqlRootPwd=${mysqlpassword}
 
     echo "" >  other/updateAfterMysqlInstall.sql
@@ -541,7 +539,6 @@ function __InstallMysql() {
   outsideMysql=${dependenceOutsideMySQL}
   mysqlServiceIp=${mysqlhost}
   eurekaIp=${webIp}
-  mysqlhostport=${mysqlhostip}
   __mysqlRootPwd=${mysqlpassword}
 
   startTime=$(date +"%s%N")
@@ -553,8 +550,8 @@ function __InstallMysql() {
   fi
   if [[ ${installType} = 4 && ! -f /usr/lib/systemd/system/mysqld.service ]];then
     if [[ -d ${installPath}/soft/mysql ]];then
-      \cp -f ${workdir}script/other/start.sh ${installPath}/soft/mysql
-      \cp -f ${workdir}script/other/stop.sh ${installPath}/soft/mysql
+      \cp -f ${workdir}/script/other/start.sh ${installPath}/soft/mysql
+      \cp -f ${workdir}/script/other/stop.sh ${installPath}/soft/mysql
 
        # 升级的时候清除没有用的用户
       info "delete mysql user not used......"
@@ -674,8 +671,8 @@ function __InstallMysql() {
       fi
     fi
     if [[ -d ${installPath}/soft/mysql ]];then
-      \cp -f ${workdir}script/other/start.sh ${installPath}/soft/mysql
-      \cp -f ${workdir}script/other/stop.sh ${installPath}/soft/mysql
+      \cp -f ${workdir}/script/other/start.sh ${installPath}/soft/mysql
+      \cp -f ${workdir}/script/other/stop.sh ${installPath}/soft/mysql
     fi
   fi
   if [[ ${outsideMysql} == 1 ]];then
@@ -686,12 +683,12 @@ function __InstallMysql() {
   mysqlAddr="${installPath}/soft/mysql/mysql/bin/mysql"
   if [[ ${release} == "standard" ]];then
     ##标准版需要加权限白名单
-    ${mysqlAddr} -uroot -p${__mysqlRootPwd} -h${mysqlIp} -P${mysqlhostport} < ${workdir}other/addStandardPermissionBlack.sql >> ${logFile} 2>&1
+    ${mysqlAddr} -uroot -p${__mysqlRootPwd} -h${mysqlIp} -P${mysqlhostport} < ${workdir}/other/addStandardPermissionBlack.sql >> ${logFile} 2>&1
 
   fi
   if [[ ${release} == "enterprise" && ${oldRelease} == "standard" ]];then
     ##企业版需要删除权限白名单
-    ${mysqlAddr} -uroot -p${__mysqlRootPwd} -h${mysqlIp} -P${mysqlhostport} < ${workdir}other/deleteStandardPermissionBlack.sql >> ${logFile} 2>&1
+    ${mysqlAddr} -uroot -p${__mysqlRootPwd} -h${mysqlIp} -P${mysqlhostport} < ${workdir}/other/deleteStandardPermissionBlack.sql >> ${logFile} 2>&1
   fi
 
 }
@@ -706,11 +703,11 @@ function __deletePlatformComponent() {
     mysqlAddr="${installPath}/soft/mysql/mysql/bin/mysql"
     if [[ ${release} == "standard" ]];then
       ##标准版需要加权限白名单
-      ${mysqlAddr} -uroot -p${__mysqlRootPwd} -h${mysqlIp} -P${mysqlhostport} < ${workdir}other/addStandardPermissionBlack.sql >> ${logFile} 2>&1
+      ${mysqlAddr} -uroot -p${__mysqlRootPwd} -h${mysqlIp} -P${mysqlhostport} < ${workdir}/other/addStandardPermissionBlack.sql >> ${logFile} 2>&1
     fi
     if [[ ${release} == "enterprise" && ${oldRelease} == "standard" ]];then
       ##企业版需要删除权限白名单
-      ${mysqlAddr} -uroot -p${__mysqlRootPwd} -h${mysqlIp} -P${mysqlhostport} < ${workdir}other/deleteStandardPermissionBlack.sql >> ${logFile} 2>&1
+      ${mysqlAddr} -uroot -p${__mysqlRootPwd} -h${mysqlIp} -P${mysqlhostport} < ${workdir}/other/deleteStandardPermissionBlack.sql >> ${logFile} 2>&1
     fi
   else
      if [[ ${installNodeType} == "OneNode" ]]; then
@@ -728,11 +725,11 @@ function __deletePlatformComponent() {
     fi
     if [[ ${release} == "standard" ]];then
       export LD_LIBRARY_PATH=${installPath}/soft/mogdb/app/lib
-      ${installPath}/soft/mogdb/app/bin/gsql -d zcloud -h ${mogdbIp} -p ${port} -U ${user} -W ${password} -f ${workdir}other/addStandardPermissionBlack.sql
+      ${installPath}/soft/mogdb/app/bin/gsql -d zcloud -h ${mogdbIp} -p ${port} -U ${user} -W ${password} -f ${workdir}/other/addStandardPermissionBlack.sql
     fi
     if [[ ${release} == "enterprise" && ${oldRelease} == "standard" ]];then
       export LD_LIBRARY_PATH=${installPath}/soft/mogdb/app/lib
-      ${installPath}/soft/mogdb/app/bin/gsql -d zcloud -h ${mogdbIp} -p ${port} -U ${user} -W ${password} -f ${workdir}other/deleteStandardPermissionBlack.sql
+      ${installPath}/soft/mogdb/app/bin/gsql -d zcloud -h ${mogdbIp} -p ${port} -U ${user} -W ${password} -f ${workdir}/other/deleteStandardPermissionBlack.sql
     fi
   fi
 

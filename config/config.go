@@ -72,6 +72,7 @@ func LoadServiceConfig(configFile string) ([]*ServiceConfig, error) {
 	}
 
 	//log.Printf("Successfully loaded %d services from config file %s", len(servicesConfig.Services), configFile)
+	fmt.Printf("services config: %s ", servicesConfig.Services)
 	return servicesConfig.Services, nil
 }
 

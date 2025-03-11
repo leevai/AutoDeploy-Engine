@@ -1,9 +1,9 @@
 nodes:
   - name: "node1"
-    host: "192.168.48.174"
+    host: "172.20.23.251"
     port: 22
     user: "root"
-    password: "root@123"
+    password: "Enmotech@2025"
 
 
 services:
