@@ -1,6 +1,6 @@
 logPath=#{logPath}
 
-. ./script/lib/common_unroot.sh
+. ./script/lib/common.sh
 . ./script/lib/dir_auth.sh
 
 function __CheckOSVersion {

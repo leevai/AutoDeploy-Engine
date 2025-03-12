@@ -2,25 +2,16 @@ package deploy
 
 import (
 	"AutoDeploy-Engine/config"
-	"AutoDeploy-Engine/modules/task"
 	"AutoDeploy-Engine/utils"
 	"fmt"
 	"path/filepath"
 	"strings"
 )
 
-func Install() error {
-	fmt.Println("开始安装")
+func Upgrade() error {
+	fmt.Println("开始升级")
 	for _, service := range config.MicroServices {
-		task.AddTask(service, getTaskFun(service))
-	}
-	task.RunTask()
-	return nil
-}
-
-func getTaskFun(service *config.ServiceConfig) func() error {
-	installFunc := func() error {
-		fmt.Printf("Installing service: %s\n", service.Name)
+		fmt.Printf("Upgrade service: %s\n", service.Name)
 		serviceDetail, err := config.LoadSingleServiceConfig(fmt.Sprintf("./services/%s/service.yaml", service.Name))
 		if err != nil {
 			return err
@@ -42,11 +33,10 @@ func getTaskFun(service *config.ServiceConfig) func() error {
 				if err != nil {
 					return err
 				}
-				fmt.Printf("copy %s to remote: %s:%s success\n", source, service.Remote.Host, target)
 			}
 		}
 
-		cmdStr := serviceDetail.InstallScript
+		cmdStr := serviceDetail.UpgradeScript
 		if service.ServiceName != "" {
 			cmdStr = cmdStr + " " + service.ServiceName
 		}
@@ -55,7 +45,6 @@ func getTaskFun(service *config.ServiceConfig) func() error {
 			return fmt.Errorf("failed to install service %s: %v", service.Name, err)
 		}
 		fmt.Println(output)
-		return nil
 	}
-	return installFunc
+	return nil
 }

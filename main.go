@@ -4,18 +4,17 @@ import (
 	"AutoDeploy-Engine/core"
 	"AutoDeploy-Engine/modules/checker"
 	"fmt"
+	"os"
 )
 
 func main() {
-	//if len(os.Args) < 2 {
-	//	fmt.Println("Usage: install-deploy <install|upgrade|uninstall|backup|rollback|change-ip>")
-	//	return
-	//}
-	//fmt.Println(config.GlobalConfigMap)
+	if len(os.Args) < 2 {
+		fmt.Println("Usage: install-deploy <install|upgrade|uninstall|backup|rollback|change-ip>")
+		return
+	}
 	checker.CronCheckSourceLimit()
 
-	//action := os.Args[1]
-	action := "install"
+	action := os.Args[1]
 	switch action {
 	case "install":
 		if err := core.Install(); err != nil {
@@ -24,11 +23,16 @@ func main() {
 		}
 		//fmt.Println("Installation completed successfully!")
 
-	//case "upgrade":
-	//	if err := business.Upgrade(); err != nil {
-	//		fmt.Println("Upgrade failed:", err)
-	//		return
-	//	}
+	case "upgrade":
+		if err := core.Upgrade(); err != nil {
+			fmt.Println("Upgrade failed:", err)
+			return
+		}
+	case "Unload":
+		if err := core.Unload(); err != nil {
+			fmt.Println("Upgrade failed:", err)
+			return
+		}
 	//	//fmt.Println("Upgrade completed successfully!")
 	//
 	//case "uninstall":

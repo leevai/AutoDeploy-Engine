@@ -18,6 +18,7 @@ type RemoteConfig struct {
 type ServiceConfig struct {
 	Name              string            `yaml:"name"`
 	Local             bool              `yaml:"local"`
+	ServiceName       string            `yaml:"service_name"`
 	RemoteName        string            `yaml:"remote_name"`
 	Remote            *RemoteConfig     `yaml:"remote,omitempty"`
 	PreCheckScripts   []string          `yaml:"pre_check_scripts"`
@@ -56,6 +57,7 @@ func LoadServiceConfig(configFile string) ([]*ServiceConfig, error) {
 	for _, remoteConfig := range servicesConfig.Nodes {
 		nodeMap[remoteConfig.Name] = remoteConfig
 	}
+	Nodes = servicesConfig.Nodes
 
 	sort.SliceStable(servicesConfig.Services, func(i, j int) bool {
 		return servicesConfig.Services[i].Priority < servicesConfig.Services[j].Priority
@@ -77,6 +79,7 @@ func LoadServiceConfig(configFile string) ([]*ServiceConfig, error) {
 }
 
 var MicroServices []*ServiceConfig
+var Nodes []*RemoteConfig
 
 func init() {
 	var err error

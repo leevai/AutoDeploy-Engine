@@ -30,7 +30,7 @@ func ExecMysqlSQL(sqlStatement string) (err error) {
 }
 
 func ExecMogDBSQL(sqlStatement string) (err error) {
-	dsn := fmt.Sprintf("host=%v port=%v user=%v password=%v dbname=postgres sslmode=disable",
+	dsn := fmt.Sprintf("host=%v port=%v user=%v password=%v dbname=zcloud sslmode=disable",
 		config.GlobalConfigMap["mogdbhost"],
 		config.GlobalConfigMap["mogdbport"],
 		config.GlobalConfigMap["mogdbuser"],

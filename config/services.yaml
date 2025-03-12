@@ -1,6 +1,6 @@
 nodes:
   - name: "node1"
-    host: "172.20.23.251"
+    host: "172.20.23.111"
     port: 22
     user: "root"
     password: "Enmotech@2025"
@@ -8,7 +8,7 @@ nodes:
 
 services:
   - name: "zcloud"
-    local: true
+    local: false
     remote_name: "node1"
     priority: 1 # 低数字优先执行
     pre_check_scripts:
@@ -25,27 +25,36 @@ services:
       - "./script/env_init/creatUser.sh"
       - "./script/env_init/installDependence.sh"
       - "./script/env_init/authInstallPackage.sh"
+      - "./script/env_init/movePubLib.sh"
 #      - "./script/env_init/copyPackage.sh"
 
   - name: "jdk"
-    local: true
-    priority: 2 # 低数字优先执行
-
-  - name: "keeper"
-    local: true
-    priority: 2 # 低数字优先执行
-
-  - name: "nginx"
-    local: true
-    priority: 2 # 低数字优先执行
-
-  - name: "mysql"
-    local: true
+    local: false
+    remote_name: "node1"
+    pkg_copy_map: #拷包示例：当前资源路径、目标主机路径
+      soft/java: "~/zcloud/soft/java"
     priority: 2 # 低数字优先执行
 
   - name: "flyway"
     local: true
     priority: 2 # 低数字优先执行
+
+#  - name: "java-service"
+#    local: true
+#    service_name: "apiGateWay"
+#    priority: 2 # 低数字优先执行
+
+#  - name: "keeper"
+#    local: true
+#    priority: 2 # 低数字优先执行
+#
+#  - name: "nginx"
+#    local: true
+#    priority: 2 # 低数字优先执行
+#
+#  - name: "mysql"
+#    local: true
+#    priority: 2 # 低数字优先执行
 
 #  - name: "lowcode"
 #    local: true
