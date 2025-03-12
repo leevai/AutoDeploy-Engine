@@ -44,3 +44,9 @@ func InsertToGlobalVars(key string, value interface{}) {
 	defer globalVarsLock.Unlock()
 	GlobalConfigMap[key] = value
 }
+
+func GetGlobalVars(key string) interface{} {
+	globalVarsLock.Lock()
+	defer globalVarsLock.Unlock()
+	return GlobalConfigMap[key]
+}

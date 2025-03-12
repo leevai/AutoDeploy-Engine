@@ -43,6 +43,10 @@ services:
     local: true
     priority: 2 # 低数字优先执行
 
+  - name: "flyway"
+    local: true
+    priority: 2 # 低数字优先执行
+
 #  - name: "lowcode"
 #    local: true
 #    priority: 2
