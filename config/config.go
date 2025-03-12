@@ -66,7 +66,7 @@ func LoadServiceConfig(configFile string) ([]*ServiceConfig, error) {
 			if _, ok := nodeMap[config.RemoteName]; ok {
 				config.Remote = nodeMap[config.RemoteName]
 			} else {
-				return nil, fmt.Errorf("failed to parse node : %s", config.RemoteName)
+				return nil, fmt.Errorf("failed to parse service: %s; node : %s", config.Name, config.RemoteName)
 			}
 		}
 	}

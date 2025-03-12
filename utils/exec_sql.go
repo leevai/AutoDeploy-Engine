@@ -4,6 +4,7 @@ import (
 	"AutoDeploy-Engine/config"
 	"database/sql"
 	"fmt"
+	_ "gitee.com/opengauss/openGauss-connector-go-pq"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -14,6 +15,28 @@ func ExecMysqlSQL(sqlStatement string) (err error) {
 		config.GlobalConfigMap["mysqlhost"],
 	)
 	db, err := sql.Open("mysql", dsn)
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+	if err := db.Ping(); err != nil {
+		return err
+	}
+	_, err = db.Exec(sqlStatement)
+	if err != nil {
+		return err
+	}
+	return
+}
+
+func ExecMogDBSQL(sqlStatement string) (err error) {
+	dsn := fmt.Sprintf("host=%v port=%v user=%v password=%v dbname=postgres sslmode=disable",
+		config.GlobalConfigMap["mogdbhost"],
+		config.GlobalConfigMap["mogdbport"],
+		config.GlobalConfigMap["mogdbuser"],
+		config.GlobalConfigMap["mogdbpassword"],
+	)
+	db, err := sql.Open("mogdb", dsn)
 	if err != nil {
 		return err
 	}

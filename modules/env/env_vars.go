@@ -16,10 +16,6 @@ func LoadGlobalEnvVars() error {
 			break
 		}
 	}
-	stdout, err := utils.ExecuteShellCommandUseBash(config, "chmod a+x -R ./script", false)
-	if err != nil {
-		return fmt.Errorf("chmod failed msg:%s, err: %v", stdout, err)
-	}
 
 	if err := getPath(config); err != nil {
 		return fmt.Errorf("path env vars load failed: %v", err)

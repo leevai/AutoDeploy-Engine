@@ -24,8 +24,7 @@ func CopyPackageToRemote(service *config.ServiceConfig) error {
 func RemoteSCP(service *config.ServiceConfig, localFile string, remoteFile string) error {
 	host := service.Remote.Host
 	user := service.Remote.User
-	password := service.Remote.Password
-	cmdStr := fmt.Sprintf("sshpass -p %s scp -o StrictHostKeyChecking=no -r %s %s@%s:%s", password, localFile, user, host, remoteFile)
+	cmdStr := fmt.Sprintf("scp -o StrictHostKeyChecking=no -r %s %s@%s:%s", localFile, user, host, remoteFile)
 	cmd := exec.Command("bash", "-c", cmdStr)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
@@ -66,13 +65,14 @@ func RemoteSSH(service *config.ServiceConfig, cmdstr string) (stdout, stderr str
 	}
 	stdout = string(output)
 
+	fmt.Printf("remote ssh cmd: %s \ndata is: %s\n", cmdstr, stdout)
 	return
 
 }
 
 func AddScriptExecutorForRemote(cmdstr string) string {
 	if strings.HasSuffix(cmdstr, "sh") {
-		cmdstr = fmt.Sprintf("bash -c %s", cmdstr)
+		cmdstr = fmt.Sprintf("bash -c \"cd ./zcloud; %s\"", cmdstr)
 	} else if strings.HasSuffix(cmdstr, "py") {
 		cmdstr = fmt.Sprintf("python %s", cmdstr)
 	} else if strings.HasSuffix(cmdstr, "url") {

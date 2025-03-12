@@ -46,14 +46,18 @@ func ExecuteShellCommandUseBash(service *config.ServiceConfig, execScript string
 		if err != nil {
 			return "", fmt.Errorf("read file %s failed.%s", newExecScript, err.Error())
 		}
-		err = ExecMysqlSQL(string(data))
+		if config.GlobalConfigMap["databaseType"] == "MySQL" {
+			err = ExecMysqlSQL(string(data))
+		} else {
+			err = ExecMogDBSQL(string(data))
+		}
 		if err != nil {
 			return "", err
 		}
 		return "sql execute success", nil
 	}
-	if !service.Local {
-		newExecScript = filepath.Join("./zcloud", filepath.Base(newExecScript))
+	if !service.Local && isFile {
+		newExecScript = filepath.Join("~/zcloud", filepath.Base(newExecScript))
 	}
 	stdout, stderr, err := ExecuteShellCommand(service, newExecScript)
 	if err != nil {
