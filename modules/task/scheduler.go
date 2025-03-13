@@ -24,13 +24,19 @@ func init() {
 		}
 
 		//todo 计算节点goroutine数
-		nodeS.goroutineNum = 2
+		nodeS.goroutineNum = 1
 		nodeTaskMap[nodeConfig.Name] = nodeS
 	}
 }
 
 func AddTask(service *config.ServiceConfig, task func() error) {
-	taskNode := nodeTaskMap[service.RemoteName]
+	var taskNode *nodeScheduler
+	if service.Local {
+		taskNode = nodeTaskMap["local"]
+	} else {
+		taskNode = nodeTaskMap[service.RemoteName]
+	}
+
 	if service.Priority == 2 {
 		taskNode.taskPriority2 <- task
 	} else {
@@ -43,13 +49,16 @@ func RunTask() {
 	p2HealthCheckSuccess := false
 	var mu sync.Mutex
 	cond := sync.NewCond(&mu)
+	wg := sync.WaitGroup{}
 
 	for _, taskNode := range nodeTaskMap {
 		//关闭通道
 		close(taskNode.taskPriority2)
 		close(taskNode.taskPriority3)
-		for i := 1; i < taskNode.goroutineNum; i++ {
+		for i := 1; i <= taskNode.goroutineNum; i++ {
+			wg.Add(1)
 			go func(taskNode *nodeScheduler) {
+				defer wg.Done()
 				for {
 					task, ok := <-taskNode.taskPriority2
 					if ok {
@@ -95,6 +104,7 @@ func RunTask() {
 			break
 		}
 	}
+	wg.Wait()
 
 }
 

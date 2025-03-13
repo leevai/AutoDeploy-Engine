@@ -3,6 +3,7 @@ configPath=#{configPath}
 installType=#{installType}
 outsidePrometheus=#{outsidePrometheus}
 keeperConf=#{keeperConf}
+workdir=#{workdir}
 
 . ./script/lib/dir_auth.sh
 . ./script/lib/common.sh
@@ -13,14 +14,14 @@ keeperConf=#{keeperConf}
 #else
 #  outsidePrometheus=$(__readINI ${zcloudCfg} multiple dependence.outside.prometheus)
 #fi
-  tar -xf ./services/prometheus/soft_pkg/prometheus.tar.gz
+  tar -xf ./jar/prometheus.tar.gz
   __CreateDir "${installPath}/prometheus"
   if [[ ! -e ${installPath}/prometheus/log ]];then
     mkdir -p ${installPath}/prometheus/log
   fi
   if [[ ! -f ${installPath}/prometheus/prometheus ]]; then
     #解压prometheus
-    tar -xf ./services/prometheus/soft_pkg/prometheus.tar.gz -C "${installPath}"
+    tar -xf ./jar/prometheus.tar.gz -C "${installPath}"
     if [[ -f /usr/lib/systemd/system/zcloud_prometheus.service ]];then
       dataDir=($( __ReadValue ${logPath}/evn.cfg prometheusDataDir))
       nohup ${installPath}/prometheus/prometheus --storage.tsdb.path=${dataDir} --config.file=${installPath}/prometheus/prometheus.yml --query.lookback-delta=15m --web.enable-lifecycle --web.listen-address=:8093 --web.config.file=${installPath}/prometheus/web.yml --log.level=error --web.enable-admin-api --enable-feature=promgl-at-modifier --storage.tsdb.retention.time=15y &>>${installPath}/prometheus/log/prometheus.log &
@@ -94,11 +95,11 @@ admin: \$2a\$12\$nDpHH3wLUuXVrPDPkHVjgeZqH0bIjuc1hcN1Z1JiNMmmQjHDriawa" >> ${ins
       sleep 5s
     fi
     info "替换prometheus配置文件"
-    \cp -r ./services/prometheus/soft_pkg/prometheus/prometheus.yml ${installPath}/prometheus/
-    \cp -r ./services/prometheus/soft_pkg/prometheus/recoding_rule.yml  ${installPath}/prometheus/
+    \cp -r ./jar/prometheus/prometheus.yml ${installPath}/prometheus/
+    \cp -r ./jar/prometheus/recoding_rule.yml  ${installPath}/prometheus/
     info "prometheus重启成功"
   fi
   cd ${workdir}
-  cp script/other/start.sh ${installPath}/prometheus
-  cp script/other/stop.sh ${installPath}/prometheus
+  cp ./script/other/start.sh ${installPath}/prometheus
+  cp ./script/other/stop.sh ${installPath}/prometheus
   cd ${workdir}

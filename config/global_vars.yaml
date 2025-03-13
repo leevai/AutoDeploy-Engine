@@ -1,8 +1,8 @@
 global_vars:
   host: localhost
-  hostIp: 172.20.23.111
-  workflowIp: 172.20.23.111
-  webIp: 172.20.23.111
+  hostIp: 172.20.23.251
+  workflowIp: 172.20.23.251
+  webIp: 172.20.23.251
   port: 5432
   user: dbuser
   password: dbpass
@@ -11,7 +11,7 @@ global_vars:
 
   mysqluser: root
   mysqlpassword: 123456
-  mysqlhost: 172.20.23.111
+  mysqlhost: 172.20.23.251
   mysqlhostport: 3306
 
   mysql_dbaas_username: dbaas
@@ -28,7 +28,7 @@ global_vars:
   mogdbuser: dbaas
   mogdbpassword: Zcloud12345
   mogdbport: 26000
-  mogdbhost: 172.20.23.111
+  mogdbhost: 172.20.23.251
 
 
   defaultCoreNum: 16
@@ -43,5 +43,5 @@ global_vars:
   dependenceOutsideMogdb: 0
   dependenceOutsideMySQL: 0
   dependenceOutsidePrometheus: 0
-  consulHost: 172.20.23.111
-  prometheusIp: 172.20.23.111
+  consulHost: 172.20.23.251
+  prometheusIp: 172.20.23.251

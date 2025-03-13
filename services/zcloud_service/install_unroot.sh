@@ -5,11 +5,13 @@
 . ./service/zcloud/zcloud_server_install.sh
 . ./service/zcloud/monitor_component_install_unroot.sh
 
+serviceName=$1
+
 if [[ ${theme} == "zData" ]];then
   theme=zData
   databaseType=MySQL
   hostIp=127.0.0.1
-  sed -ri  "s|mysql.root.paasword=.*|mysql.root.paasword=zdata_2019|g" ${workdir}zcloud.cfg
+  sed -ri  "s|mysql.root.paasword=.*|mysql.root.paasword=zdata_2019|g" ${workdir}/zcloud.cfg
 fi
 cd ${workdir}
 

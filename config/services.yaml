@@ -8,8 +8,7 @@ nodes:
 
 services:
   - name: "zcloud"
-    local: false
-    remote_name: "node1"
+    local: true
     priority: 1 # 低数字优先执行
     pre_check_scripts:
       - "./script/env_check/checkCpuCore.sh"
@@ -28,16 +27,37 @@ services:
       - "./script/env_init/movePubLib.sh"
 #      - "./script/env_init/copyPackage.sh"
 
-  - name: "jdk"
-    local: false
-    remote_name: "node1"
-    pkg_copy_map: #拷包示例：当前资源路径、目标主机路径
-      soft/java: "~/zcloud/soft/java"
-    priority: 2 # 低数字优先执行
+#  - name: "jdk"
+#    local: false
+#    remote_name: "node1"
+#    pkg_copy_map: #拷包示例：当前资源路径、目标主机路径
+#      soft/java: "~/zcloud/soft/java"
+#    priority: 2 # 低数字优先执行
 
-  - name: "flyway"
+  - name: "jdk"
     local: true
     priority: 2 # 低数字优先执行
+
+  - name: "lowcode"
+    local: true
+    priority: 2
+
+  - name: "nginx"
+    local: true
+    priority: 2 # 低数字优先执行
+
+  - name: "mysql"
+    local: true
+    priority: 2 # 低数字优先执行
+
+  - name: "keeper"
+    local: true
+    priority: 2 # 低数字优先执行
+
+  - name: "prometheus"
+    local: true
+    priority: 2 # 低数字优先执行
+
 
 #  - name: "java-service"
 #    local: true
@@ -48,17 +68,9 @@ services:
 #    local: true
 #    priority: 2 # 低数字优先执行
 #
-#  - name: "nginx"
-#    local: true
-#    priority: 2 # 低数字优先执行
-#
-#  - name: "mysql"
-#    local: true
-#    priority: 2 # 低数字优先执行
 
-#  - name: "lowcode"
-#    local: true
-#    priority: 2
+
+
 
 
 #  - name: "mogdb"

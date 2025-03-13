@@ -63,6 +63,7 @@ func LoadServiceConfig(configFile string) ([]*ServiceConfig, error) {
 		return servicesConfig.Services[i].Priority < servicesConfig.Services[j].Priority
 	})
 
+	hasLocal := false
 	for _, config := range servicesConfig.Services {
 		if !config.Local {
 			if _, ok := nodeMap[config.RemoteName]; ok {
@@ -70,7 +71,15 @@ func LoadServiceConfig(configFile string) ([]*ServiceConfig, error) {
 			} else {
 				return nil, fmt.Errorf("failed to parse service: %s; node : %s", config.Name, config.RemoteName)
 			}
+		} else {
+			hasLocal = true
 		}
+	}
+
+	if hasLocal {
+		Nodes = append(Nodes, &RemoteConfig{
+			Name: "local",
+		})
 	}
 
 	//log.Printf("Successfully loaded %d services from config file %s", len(servicesConfig.Services), configFile)

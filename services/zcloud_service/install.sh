@@ -1,4 +1,4 @@
-#!/bin/bash
+
 serviceAppName=#{serviceAppName}
 nodeNum=#{nodeNum}
 installNodeType=#{installNodeType}
@@ -32,14 +32,17 @@ ssPath=($( __ReadValue ${logPath}/evn.cfg ssPath))
 oldVersion1=($( __ReadValue ${logPath}/evn.cfg oldVersion))
 bakTime=($( __ReadValue ${logPath}/evn.cfg bakTimeS))
 
-. ./service/zcloud/zcloud_server_install.sh
+. ./service/zcloud_service/zcloud_server_install.sh
+. ./script/lib/dir_auth.sh
+. ./script/lib/common.sh
 
+serviceName=$1
 
 function __InstallUnRoot {
   if [[ ${executeUser} = "root" ]];then
-    su - zcloud -s /bin/bash $workdir/lib/install_unroot.sh  $workdir
+    su - zcloud -s /bin/bash ./service/zcloud_service/install_unroot.sh $serviceName
   else
-    lib/install_unroot.sh
+    ./service/zcloud_service/install_unroot.sh $serviceName
   fi
 }
 
