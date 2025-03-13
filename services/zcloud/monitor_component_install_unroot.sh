@@ -3,8 +3,8 @@
 . ./script/lib/common.sh
 
 function __Install_node_exporter {
-  info ""
-  info "开始安装node-exporter"
+  echo ""
+  echo "开始安装node-exporter"
   keeperConf=${homePath}/dbaas/zcloud-config/keeper.yaml
   if [[ $(ps -ef|grep ${installPath}/node-exporter/node_exporter|grep -v grep|wc -l) -gt 0 ]];then
     ps -ef|grep ${installPath}/node-exporter/node_exporter|grep -v grep| awk '{print $2}' | xargs kill -9
@@ -15,17 +15,17 @@ function __Install_node_exporter {
   fi
   __CreateDir "${installPath}/node-exporter/"
   __CreateDir "${installPath}/node-exporter/log"
-  cp ${workdir}soft/node-exporter/node_exporter ${installPath}/node-exporter/
+  cp ${workdir}/soft/node-exporter/node_exporter ${installPath}/node-exporter/
   cd ${installPath}/node-exporter/
   nohup ${installPath}/node-exporter/node_exporter --collector.disable-defaults --web.disable-exporter-metrics --collector.cpu --collector.meminfo --collector.uname --collector.stat --collector.os --collector.textfile --web.listen-address=:8092 &>>${installPath}/node-exporter/log/node_exporter.log &
   serviceName=node-exporter
   serviceNameLine=`sed -n "/serviceName: node-exporter\$/=" ${keeperConf}`
   offset=`sed -n "$[${serviceNameLine}+1],\$"p ${keeperConf} |grep -n defaultProcessNum:|head -n 1|awk -F':' '{print $1}'`
   if [[ ${serviceNameLine} == "" ]];then
-    serviceNameLine=`sed -n "/serviceName: ${serviceName}\$/=" ${workdir}conf/keeper.yaml`
-    offset=`sed -n "$[${serviceNameLine}+1],\$"p ${workdir}conf/keeper.yaml |grep -n defaultProcessNum:|head -n 1|awk -F':' '{print $1}'`
+    serviceNameLine=`sed -n "/serviceName: ${serviceName}\$/=" ${workdir}/conf/keeper.yaml`
+    offset=`sed -n "$[${serviceNameLine}+1],\$"p ${workdir}/conf/keeper.yaml |grep -n defaultProcessNum:|head -n 1|awk -F':' '{print $1}'`
     if [[ ${serviceNameLine} != "" ]];then
-      sed -n "${serviceNameLine},$[${serviceNameLine}+${offset}]p" ${workdir}conf/keeper.yaml>temp.yaml
+      sed -n "${serviceNameLine},$[${serviceNameLine}+${offset}]p" ${workdir}/conf/keeper.yaml>temp.yaml
       endLine=`awk '{print NR}' ${keeperConf} |tail -n1`
       sed -i "${endLine}r temp.yaml" ${keeperConf}
       rm -f temp.yaml
@@ -42,18 +42,18 @@ function __Install_node_exporter {
   cd ${workdir}
   cp script/other/start.sh ${installPath}/node-exporter
   cp script/other/stop.sh ${installPath}/node-exporter
-  info "node-exporter安装完成"
+  echo "node-exporter安装完成"
 }
 
 function __InstallAgent {
      #切换到agent目录
-     info ""
-     info "开始安装agent"
-     cd ${workdir}jar/agent
+     echo ""
+     echo "开始安装agent"
+     cd ${workdir}/jar/agent
      __CreateDir "${installPath}/agent/"
      keeperConf=${homePath}/dbaas/zcloud-config/keeper.yaml
      if [[ $(ps -ef|grep agentServer|grep root|grep -v grep|wc -l) -gt 0 ]];then
-       info "root用户已安装agent，无需重复安装"
+       echo "root用户已安装agent，无需重复安装"
        serviceNameLine=`sed -n "/serviceName: agent\$/=" ${keeperConf}`
        enableOffset=`sed -n "$[${serviceNameLine}+1],\$"p ${keeperConf} |grep -n enable:|head -n 1|awk -F':' '{print $1}'`
        lineNum=$[ ${serviceNameLine} + ${enableOffset} ]
@@ -76,19 +76,19 @@ function __InstallAgent {
        #执行脚本
        sed -i "s|<root level=\"WARN\">|<root level=\"INFO\">|g" ${installPath}/agent/agent/agent/lib/logback.xml
        sed -i "s|#logHome#|${installPath}/agent/agent/log|g" ${installPath}/agent/agent/agent/lib/logback.xml
-       info "nohup ${installPath}/soft/java/jdk-17.0.11+9/bin/java -jar -Xms256m -Xmx512m -Djava.io.tmpdir=${javaIoTempDir} -XX:ParallelGCThreads=8 -XX:ErrorFile=${logPath}/hserr/agentServer_%p.log -Dlogback.configurationFile=${installPath}/agent/agent/agent/lib/logback.xml ${installPath}/agent/agent/agent/lib/agentServer.jar -Dport=8100 -dagentServer >/dev/null 2>&1 &"
+       echo "nohup ${installPath}/soft/java/jdk-17.0.11+9/bin/java -jar -Xms256m -Xmx512m -Djava.io.tmpdir=${javaIoTempDir} -XX:ParallelGCThreads=8 -XX:ErrorFile=${logPath}/hserr/agentServer_%p.log -Dlogback.configurationFile=${installPath}/agent/agent/agent/lib/logback.xml ${installPath}/agent/agent/agent/lib/agentServer.jar -Dport=8100 -dagentServer >/dev/null 2>&1 &"
        nohup ${installPath}/soft/java/jdk-17.0.11+9/bin/java -jar -Xms256m -Xmx512m -Djava.io.tmpdir=${javaIoTempDir} -XX:ParallelGCThreads=8 -XX:ErrorFile=${logPath}/hserr/agentServer_%p.log -Dlogback.configurationFile=${installPath}/agent/agent/agent/lib/logback.xml ${installPath}/agent/agent/agent/lib/agentServer.jar -Dport=8100 -dagentServer >/dev/null 2>&1 &
        cd ${workdir}
        cp script/other/start.sh ${installPath}/agent/agent/agent/lib
        cp script/other/stop.sh ${installPath}/agent/agent/agent/lib
-       info "agent 安装成功"
+       echo "agent 安装成功"
      fi
 
 }
 #安装监控中心alertmanager
 function __InstallAlertmanager {
-     info ""
-     info "开始安装alertmanager"
+     echo ""
+     echo "开始安装alertmanager"
      #切换到Alertmanager
      cd jar
      if [[ $(ps -ef|grep soft-install/alertmanager/alertmanager|grep -v grep|wc -l) -gt 0 ]];then
@@ -143,21 +143,21 @@ function __InstallAlertmanager {
   admin: \$2a\$12\$nDpHH3wLUuXVrPDPkHVjgeZqH0bIjuc1hcN1Z1JiNMmmQjHDriawa" >> ${installPath}/alertmanager/web.yml
      fi
      if [[ `cat  ${configPath}/keeper.yaml |grep "\-\-web.config.file=${installPath}/alertmanager/web.yml" | wc -l` == 0 ]];then
-       info "增加alertmanager 认证文件web.yml"
+       echo "增加alertmanager 认证文件web.yml"
        sed -i "s|--web.listen-address=:8094|--web.listen-address=:8094 --web.config.file=${installPath}/alertmanager/web.yml|g" ${configPath}/keeper.yaml
      fi
-     #info "nohup ${installPath}/alertmanager/alertmanager --config.file=${installPath}/alertmanager/alertmanager.yml --web.listen-address=:8094 --web.config.file=${installPath}/alertmanager/web.yml --cluster.advertise-address=127.0.0.1:8094 --log.level=error &>>${installPath}/alertmanager/log/alertmanager.log &"
+     #echo "nohup ${installPath}/alertmanager/alertmanager --config.file=${installPath}/alertmanager/alertmanager.yml --web.listen-address=:8094 --web.config.file=${installPath}/alertmanager/web.yml --cluster.advertise-address=127.0.0.1:8094 --log.level=error &>>${installPath}/alertmanager/log/alertmanager.log &"
      #nohup ${installPath}/alertmanager/alertmanager --config.file=${installPath}/alertmanager/alertmanager.yml --web.listen-address=:8094 --web.config.file=${installPath}/alertmanager/web.yml --cluster.advertise-address=127.0.0.1:8094 --log.level=error &>>${installPath}/alertmanager/log/alertmanager.log &
      cd ${workdir}
      cp script/other/start.sh ${installPath}/alertmanager
      cp script/other/stop.sh ${installPath}/alertmanager
-     info "alertmanager安装完成"
+     echo "alertmanager安装完成"
 }
 
 #安装监控中心zoramon-mgr
 function __InstallZcloud_zoramon_mgr {
-     info ""
-     info "开始安装 zoramon-mgr"
+     echo ""
+     echo "开始安装 zoramon-mgr"
      #切换到zoramon-mgr
      cd jar
      if [[ $(ps -ef|grep zcloud-zoramon-mgr|grep -v grep|wc -l) -gt 0 ]];then
@@ -181,7 +181,7 @@ function __InstallZcloud_zoramon_mgr {
      __GenAppProper_zoramon_mgr
      chmod u+x ${installPath}/zcloud-zoramon-mgr/zoramon_mgr
      #进入目录,执行脚本
-     #info "nohup ${installPath}/zcloud-zoramon-mgr/zoramon_mgr --conf.zoramon=${installPath}/zcloud-zoramon-mgr/conf/zoramon.yaml  --conf.clean=${installPath}/zcloud-zoramon-mgr/conf/dataclean.yaml  --log.filename=${logPath}/log/zoramon_mgr.log >/dev/null 2>&1 &"
+     #echo "nohup ${installPath}/zcloud-zoramon-mgr/zoramon_mgr --conf.zoramon=${installPath}/zcloud-zoramon-mgr/conf/zoramon.yaml  --conf.clean=${installPath}/zcloud-zoramon-mgr/conf/dataclean.yaml  --log.filename=${logPath}/log/zoramon_mgr.log >/dev/null 2>&1 &"
      #nohup ${installPath}/zcloud-zoramon-mgr/zoramon_mgr --conf.zoramon=${installPath}/zcloud-zoramon-mgr/conf/zoramon.yaml  --conf.clean=${installPath}/zcloud-zoramon-mgr/conf/dataclean.yaml  --log.filename=${logPath}/log/zoramon_mgr.log >/dev/null 2>&1 &
      if [[  -f  ${configPath}/keeper.xml ]];then
         serviceNameLine=`sed -n "/<serviceName>zoramon-mgr<\/serviceName>/=" ${configPath}/keeper.xml`
@@ -211,13 +211,13 @@ function __InstallZcloud_zoramon_mgr {
      cd ${workdir}
      cp script/other/start.sh ${installPath}/zcloud-zoramon-mgr
      cp script/other/stop.sh ${installPath}/zcloud-zoramon-mgr
-     info "zoramon-mgr 安装完成"
+     echo "zoramon-mgr 安装完成"
 }
 
 #安装监控中心slowmon-mgr
 function __InstallZcloud_slowmon_mgr {
-    info ""
-     info "开始安装slowmon-mgr "
+    echo ""
+     echo "开始安装slowmon-mgr "
      #slowmon-mgr
      cd jar
      if [[ $(ps -ef|grep slowmon_mgr|grep -v grep|wc -l) -gt 0 ]];then
@@ -242,18 +242,18 @@ function __InstallZcloud_slowmon_mgr {
      #进入目录,执行脚本
      chmod u+x ${installPath}/slowmon_mgr/slowmon_mgr
      nohup ${installPath}/slowmon_mgr/slowmon_mgr --no-log.console >/dev/null 2>&1 &
-     info "slowmon启动命令：nohup ${installPath}/slowmon_mgr/slowmon_mgr --no-log.console >/dev/null 2>&1 &"
+     echo "slowmon启动命令：nohup ${installPath}/slowmon_mgr/slowmon_mgr --no-log.console >/dev/null 2>&1 &"
      cd ${workdir}
      cp script/other/start.sh ${installPath}/slowmon_mgr
      cp script/other/stop.sh ${installPath}/slowmon_mgr
-     info "slowmon_mgr 安装完成"
+     echo "slowmon_mgr 安装完成"
 }
 
 #安装监控中心dbaas-mail-sender
 function __InstallDbaas_mail_sender {
-    info ""
-    info "开始安装 dbaas-mail-sender "
-    cd ${workdir}jar
+    echo ""
+    echo "开始安装 dbaas-mail-sender "
+    cd ${workdir}/jar
     javapath="`echo $JAVA_HOME`/bin/java"
     if [[ ! -e ${installPath}/dbaas-mail-sender ]]; then
     #全新安装
@@ -272,14 +272,14 @@ function __InstallDbaas_mail_sender {
       cd ${workdir}
 
     else
-      cd ${workdir}jar
+      cd ${workdir}/jar
       mailJar=`ls ${installPath}/dbaas-mail-sender/dbaas-mail-sender*.jar`
       nowVersion=$(ls dbaas-mail-sender/dbaas-mail-sender*.jar | awk -F'/' '{print $NF}' | awk -F'-' '{print $(NF-1)}')
       oldVersion=$(ls ${installPath}/dbaas-mail-sender/dbaas-mail-sender*.jar | awk -F'/' '{print $NF}' | awk -F'-' '{print $(NF-1)}')
       if [[ ${nowVersion} != ${oldVersion} ]]; then
         if [[ $(ps -ef|grep dbaas-mail-sender|grep -v grep|wc -l) -gt 0 ]];then
           ps -ef |grep dbaas-mail-sender|grep -v grep | awk '{print $2}' | xargs kill -9
-          info "关闭dbaas-mail-sender成功"
+          echo "关闭dbaas-mail-sender成功"
           sleep 2s
         fi
         port=$(__CheckPort zcloud_mail_sender)
@@ -298,11 +298,11 @@ function __InstallDbaas_mail_sender {
           sed -ri "s|${installPath}/dbaas-mail-sender/dbaas-mail-sender.*\.jar|${mailJar}|g" ${configPath}/keeper.yaml
           __startFromKeeper dbaas-mail-sender
         else
-          info "dbaas-mail-sender版本没有变化，且处于正常的运行状态，无需处理"
+          echo "dbaas-mail-sender版本没有变化，且处于正常的运行状态，无需处理"
         fi
       fi
     fi
-    info "dbaas-mail-sender 安装完成"
+    echo "dbaas-mail-sender 安装完成"
     cd ${workdir}
     \cp -f script/start.sh ${installPath}/dbaas-mail-sender
     \cp -f script/stop.sh ${installPath}/dbaas-mail-sender
@@ -311,9 +311,9 @@ function __InstallDbaas_mail_sender {
 #安装监控中心${senderName}
 function __Install_alert_sender {
     senderName=$1
-    info ""
-    info "开始安装 ${senderName} "
-    cd ${workdir}jar
+    echo ""
+    echo "开始安装 ${senderName} "
+    cd ${workdir}/jar
     javapath="`echo $JAVA_HOME`/bin/java"
     if [[ ! -e ${installPath}/${senderName} ]]; then
     #全新安装
@@ -329,14 +329,14 @@ function __Install_alert_sender {
       cd ${workdir}
 
     else
-      cd ${workdir}jar
+      cd ${workdir}/jar
       wxworkJar=`ls ${installPath}/${senderName}/${senderName}*.jar`
       nowVersion=$(ls ${senderName}/${senderName}*.jar | awk -F'/' '{print $NF}' | awk -F'-' '{print $(NF-1)}')
       oldVersion=$(ls ${installPath}/${senderName}/${senderName}*.jar | awk -F'/' '{print $NF}' | awk -F'-' '{print $(NF-1)}')
       if [[ ${nowVersion} != ${oldVersion} ]]; then
         if [[ $(ps -ef|grep ${senderName}|grep -v grep|wc -l) -gt 0 ]];then
           ps -ef |grep ${senderName}|grep -v grep | awk '{print $2}' | xargs kill -9
-          info "关闭${senderName}成功"
+          echo "关闭${senderName}成功"
           sleep 2s
         fi
         port=$(__CheckPort ${senderName})
@@ -355,16 +355,16 @@ function __Install_alert_sender {
           sed -ri "s|${installPath}/${senderName}/${senderName}.*\.jar|${wxworkJar}|g" ${configPath}/keeper.yaml
           __startFromKeeper ${senderName}
         else
-          info "${senderName}版本没有变化，且处于正常的运行状态，无需处理"
+          echo "${senderName}版本没有变化，且处于正常的运行状态，无需处理"
         fi
       fi
     fi
     keeperConf=${configPath}/keeper.yaml
     serviceNameLine=`sed -n "/serviceName: ${senderName}\$/=" ${keeperConf}`
     if [[ ${serviceNameLine} = "" ]];then
-      serviceNameLine=`sed -n "/serviceName: ${senderName}\$/=" ${workdir}conf/keeper.yaml`
-      offset=`sed -n "$[${serviceNameLine}+1],\$"p ${workdir}conf/keeper.yaml |grep -n defaultProcessNum:|head -n 1|awk -F':' '{print $1}'`
-      sed -n "${serviceNameLine},$[${serviceNameLine}+${offset}]p"  ${workdir}conf/keeper.yaml>temp.yaml
+      serviceNameLine=`sed -n "/serviceName: ${senderName}\$/=" ${workdir}/conf/keeper.yaml`
+      offset=`sed -n "$[${serviceNameLine}+1],\$"p ${workdir}/conf/keeper.yaml |grep -n defaultProcessNum:|head -n 1|awk -F':' '{print $1}'`
+      sed -n "${serviceNameLine},$[${serviceNameLine}+${offset}]p"  ${workdir}/conf/keeper.yaml>temp.yaml
       endLine=`awk '{print NR}' ${keeperConf} |tail -n1`
       sed -i "${endLine}r temp.yaml" ${keeperConf}
       rm -f temp.yaml
@@ -376,7 +376,7 @@ function __Install_alert_sender {
       sed -ri "${lineNum}s|enable: .*|enable: true|g" ${keeperConf}
     fi
     sed -ri "s|${installPath}/${senderName}/${senderName}.*\.jar|${wxworkJar}|g" ${configPath}/keeper.yaml
-    info "${senderName} 安装完成"
+    echo "${senderName} 安装完成"
     cd ${workdir}
     \cp -f script/start.sh ${installPath}/${senderName}
     \cp -f script/stop.sh ${installPath}/${senderName}
@@ -384,18 +384,18 @@ function __Install_alert_sender {
 
 #安装监控中心dbaas-registrationHub
 function __InstallDbaas_registrationHub {
-    info ""
-    info "开始安装dbaas-registrationHub"
-    cd ${workdir}jar
+    echo ""
+    echo "开始安装dbaas-registrationHub"
+    cd ${workdir}/jar
     keeperConf=${configPath}/keeper.yaml
     javapath="`echo $JAVA_HOME`/bin/java"
     cd ${workdir}
     if [[ ${installNodeType} == "OneNode" ]]; then
-          consul_ip=$( __ReadValue ${workdir}nodeconfig/installparam.txt hostIp)
+          consul_ip=$( __ReadValue ${workdir}/nodeconfig/installparam.txt hostIp)
     else
-          consul_ip=$( __readINI ${workdir}zcloud.cfg multiple consul.host )
+          consul_ip=$( __readINI ${workdir}/zcloud.cfg multiple consul.host )
     fi
-    cd ${workdir}jar
+    cd ${workdir}/jar
     consul_port="8500"
 
     if [[ -f ${configPath}/consultoken.txt ]]; then
@@ -421,7 +421,7 @@ function __InstallDbaas_registrationHub {
         jvmMin=256
       fi
       if [[ ${jvmMin} -gt ${jvmMax} ]];then
-        info "${jarName}配置参数为-Xms${jvmMin}m -Xmx${jvmMax}m, 最小值大于了最大值，使用默认jvm 参数-Xms256m -Xmx512m"
+        echo "${jarName}配置参数为-Xms${jvmMin}m -Xmx${jvmMax}m, 最小值大于了最大值，使用默认jvm 参数-Xms256m -Xmx512m"
         jvmMax=512
         jvmMin=256
       fi
@@ -439,10 +439,10 @@ function __InstallDbaas_registrationHub {
       __startFromKeeper dbaas-registrationHub
     else
       ## 升级的时候先停了zdbmon-mgr,以免生成错误的表名
-      cd ${workdir}jar
+      cd ${workdir}/jar
       if [[ $(ps -ef|grep zdbmon-mgr|grep -v grep|wc -l) -gt 0 ]];then
         ps -ef |grep zdbmon-mgr|grep -v grep | awk '{print $2}' | xargs kill -9
-        info "关闭zdbmon-mgr成功"
+        echo "关闭zdbmon-mgr成功"
       fi
       tar -xf dbaas-registrationHub.tar.gz
       jarName=$(ls ${installPath}/dbaas-registrationHub/dbaas-registrationHub*.jar )
@@ -454,7 +454,7 @@ function __InstallDbaas_registrationHub {
           jvmParam=`ps -ef|grep dbaas-registrationHub|egrep -o "\-Xms[0-9]*m \-Xmx[0-9]*m"`
           set -e
           ps -ef |grep dbaas-registrationHub|grep -v grep | awk '{print $2}' | xargs kill -9
-          info "关闭dbaas-registrationHub成功"
+          echo "关闭dbaas-registrationHub成功"
           sleep 2s
         fi
         port=$(__CheckPort zcloud_registrationHub)
@@ -469,8 +469,8 @@ function __InstallDbaas_registrationHub {
         offset=`sed -n "$[${serviceNameLine}+1],\$"p ${keeperConf} |grep -n defaultProcessNum:|head -n 1|awk -F':' '{print $1}'`
         xmsJvm=$(__queryJvmXms dbaas-registrationHub)
         xmxJvm=$(__queryJvmXmx dbaas-registrationHub)
-        info ${xmsJvm}
-        info ${xmxJvm}
+        echo ${xmsJvm}
+        echo ${xmxJvm}
         if [[ ${xmsJvm} != '' ]];then
           sed -ri "${serviceNameLine},$[${serviceNameLine}+${offset}]s|\-Xms[0-9]*m|${xmsJvm}|g" ${keeperConf}
         fi
@@ -496,13 +496,13 @@ function __InstallDbaas_registrationHub {
           sed -ri "s|${installPath}/dbaas-registrationHub/dbaas-registrationHub.*\.jar|${registrationHub}|g" ${configPath}/keeper.yaml
           __startFromKeeper dbaas-registrationHub
         else
-          info "registrationHub版本没有变化，且处于正常的运行状态，无需处理"
+          echo "registrationHub版本没有变化，且处于正常的运行状态，无需处理"
         fi
       fi
     fi
-    \cp -f ${workdir}script/start.sh ${installPath}/dbaas-registrationHub
-    \cp -f ${workdir}script/stop.sh ${installPath}/dbaas-registrationHub
-    info "dbaas-registrationHub 安装完成"
+    \cp -f ${workdir}/script/start.sh ${installPath}/dbaas-registrationHub
+    \cp -f ${workdir}/script/stop.sh ${installPath}/dbaas-registrationHub
+    echo "dbaas-registrationHub 安装完成"
     cd ${workdir}
 }
 #安装监控中心prometheus
@@ -517,7 +517,7 @@ function __InstallPrometheus {
 
 
 
-    cd "${workdir}jar"
+    cd "${workdir}/jar"
     tar -xf prometheus.tar.gz
     __CreateDir "${installPath}/prometheus"
     if [[ ! -e ${installPath}/prometheus/log ]];then
@@ -525,7 +525,7 @@ function __InstallPrometheus {
     fi
     if [[ ! -f ${installPath}/prometheus/prometheus ]]; then
       #解压prometheus
-      tar -xf ${workdir}jar/prometheus.tar.gz -C "${installPath}"
+      tar -xf ${workdir}/jar/prometheus.tar.gz -C "${installPath}"
       if [[ -f /usr/lib/systemd/system/zcloud_prometheus.service ]];then
         dataDir=($( __ReadValue ${logPath}/evn.cfg prometheusDataDir))
         nohup ${installPath}/prometheus/prometheus --storage.tsdb.path=${dataDir} --config.file=${installPath}/prometheus/prometheus.yml --query.lookback-delta=15m --web.enable-lifecycle --web.listen-address=:8093 --web.config.file=${installPath}/prometheus/web.yml --log.level=error --web.enable-admin-api --enable-feature=promgl-at-modifier --storage.tsdb.retention.time=15y &>>${installPath}/prometheus/log/prometheus.log &
@@ -543,9 +543,9 @@ function __InstallPrometheus {
         nohup ${installPath}/prometheus/prometheus --storage.tsdb.path=${installPath}/prometheus/data/ --config.file=${installPath}/prometheus/prometheus.yml --query.lookback-delta=15m --web.enable-lifecycle --web.listen-address=:8093 --web.config.file=${installPath}/prometheus/web.yml --log.level=error --web.enable-admin-api --enable-feature=promgl-at-modifier --storage.tsdb.retention.time=15y &>>${installPath}/prometheus/log/prometheus.log &
       fi
       chmod u+x ${installPath}/prometheus/promtool
-      info "prometheus 安装成功 "
+      echo "prometheus 安装成功 "
     else
-      info "prometheus安装文件已存在，不需要重新安装"
+      echo "prometheus安装文件已存在，不需要重新安装"
       if [[  -f  ${configPath}/keeper.xml ]];then
         serviceNameLine=`sed -n "/<serviceName>prometheus<\/serviceName>/=" ${configPath}/keeper.xml`
         prefix=`sed -n $[${serviceNameLine}+2]p ${configPath}/keeper.xml |awk -F'>' '{print $2}'|awk -F'<' '{print $1}'`
@@ -577,7 +577,7 @@ function __InstallPrometheus {
       echo "basic_auth_users:
   admin: \$2a\$12\$nDpHH3wLUuXVrPDPkHVjgeZqH0bIjuc1hcN1Z1JiNMmmQjHDriawa" >> ${installPath}/prometheus/web.yml
         fi
-        if [[ `cat  ${configPath}/keeper.yaml |grep "\-\-storage.tsdb.retention.time=.*d " | wc -l` > 0 ]];then
+        if [[ `cat  ${configPath}/keeper.yaml |grep "\-\-storage.tsdb.retention.time=.*d " | wc -l` -gt 0 ]];then
           save_day=`cat  ${configPath}/keeper.yaml |grep "\-\-storage.tsdb.retention.time=.*d " |awk -F"storage.tsdb.retention.time=" '{print $2}' |awk -F"d" '{print $1}'`
           sed -ri "s/--storage.tsdb.retention.time=.* /--storage.tsdb.retention.time=10y /g" ${configPath}/keeper.yaml
         fi
@@ -589,33 +589,33 @@ function __InstallPrometheus {
         fi
         sed -ri "s/--enable-feature=.* --storage.tsdb/--enable-feature=promgl-at-modifier --storage.tsdb/g" ${configPath}/keeper.yaml
         if [[ `cat  ${configPath}/keeper.yaml |grep "\-\-web.config.file=${installPath}/prometheus/web.yml" | wc -l` == 0 ]];then
-          info "增加prometheus 认证文件web.yml"
+          echo "增加prometheus 认证文件web.yml"
           sed -i "s|--web.listen-address=:8093|--web.listen-address=:8093 --web.config.file=${installPath}/prometheus/web.yml|g" ${configPath}/keeper.yaml
         fi
       fi
       if [[ `ps -ef|grep soft-install/prometheus/prometheus |grep -v grep| awk '{print $2}'|wc -l ` -gt 0 ]]; then
-        info "关闭prometheus进程"
+        echo "关闭prometheus进程"
         ps -ef |grep soft-install/prometheus/prometheus|grep -v grep | awk '{print $2}' | xargs kill -15
         sleep 5s
       fi
-      info "替换prometheus配置文件"
-      \cp -r ${workdir}jar/prometheus/prometheus.yml ${installPath}/prometheus/
-      \cp -r ${workdir}jar/prometheus/recoding_rule.yml  ${installPath}/prometheus/
-      info "prometheus重启成功"
+      echo "替换prometheus配置文件"
+      \cp -r ${workdir}/jar/prometheus/prometheus.yml ${installPath}/prometheus/
+      \cp -r ${workdir}/jar/prometheus/recoding_rule.yml  ${installPath}/prometheus/
+      echo "prometheus重启成功"
     fi
     cd ${workdir}
     cp script/other/start.sh ${installPath}/prometheus
     cp script/other/stop.sh ${installPath}/prometheus
     cd ${workdir}
   else
-        info "当前节点无需安装prometheus"
+        echo "当前节点无需安装prometheus"
   fi
 }
 
 #安装智能基线训练smart-baseline
 function __InstallZcloud_smart_baseline {
-     info ""
-     info "开始安装 smart-baseline"
+     echo ""
+     echo "开始安装 smart-baseline"
      #smart-baseline
      cd jar
      if [[ $(ps -ef|grep smart_baseline|grep -v grep|wc -l) -gt 0 ]];then
@@ -640,17 +640,17 @@ function __InstallZcloud_smart_baseline {
      cd "${installPath}/smart_baseline"
      chmod u+x start
      nohup ${installPath}/smart_baseline/start >/dev/null 2>&1 &
-     info "smart-baseline启动：nohup ${installPath}/smart_baseline/start >/dev/null 2>&1 &"
+     echo "smart-baseline启动：nohup ${installPath}/smart_baseline/start >/dev/null 2>&1 &"
      cd ${workdir}
      cp script/other/start.sh ${installPath}/smart_baseline
      cp script/other/stop.sh ${installPath}/smart_baseline
-     info "smart-baseline 安装完成"
+     echo "smart-baseline 安装完成"
 }
 
 #替换zoramon-mgr配置文件属性
 function __GenAppProper_zoramon_mgr() {
     #typeset -r appName=${1}
-    #info "[Step $item]:  initialize Application [${appName}] ..."
+    #echo "[Step $item]:  initialize Application [${appName}] ..."
     if [[ ${databaseType} = "MogDB" ]];then
       if [[ ${installNodeType} == "OneNode" ]]; then
         server_ip=$(__readINI ${zcloudCfg} single mogdb.service.ip)
@@ -682,7 +682,7 @@ function __GenAppProper_zoramon_mgr() {
     dbaas_paasword_encode=`cd ${workdir}/lib;${installPath}/soft/java/jdk-17.0.11+9/bin/java -classpath ./ SecurityUtils encode ${dbaas_paasword}`
 
     cd ${workdir}
-    info "mgr connect db:"${server_ip}
+    echo "mgr connect db:"${server_ip}
     __ReplaceText "${installPath}/zcloud-zoramon-mgr/conf/zoramon.yaml" "type" "      type: \"${type}\""
     __ReplaceText "${installPath}/zcloud-zoramon-mgr/conf/zoramon.yaml" "user" "      user: \"${dbaas_username}\""
     __ReplaceText "${installPath}/zcloud-zoramon-mgr/conf/zoramon.yaml" "pwd" "      pwd: \"${dbaas_paasword_encode}\""
@@ -693,7 +693,7 @@ function __GenAppProper_zoramon_mgr() {
 #替换slowmon_mgr配置文件属性
 function __GenAppProper_slowmon_mgr() {
     #typeset -r appName=${1}
-    #info "[Step $item]:  initialize Application [${appName}] ..."
+    #echo "[Step $item]:  initialize Application [${appName}] ..."
     if [[ ${databaseType} = "MogDB" ]];then
       if [[ ${installNodeType} == "OneNode" ]]; then
         server_ip=$(__readINI ${zcloudCfg} single mogdb.service.ip)
@@ -786,76 +786,76 @@ function __GenAppProper_smart_baseline {
 function __InstallMonitorComponent() {
 
     if [[  ${serviceAppName} == 'node-exporter' ]]; then
-        __Install_node_exporter
+      __Install_node_exporter
     else
-        info "当前节点无需安装node-exporter"
+      echo "当前节点无需安装node-exporter"
     fi
 
     ## __InstallAgent
 
     cd ${workdir}
     if [[ ${installNodeType} == "OneNode" ]]; then
-              outsidePrometheus=$(__readINI zcloud.cfg single dependence.outside.prometheus)
+      outsidePrometheus=$(__readINI zcloud.cfg single dependence.outside.prometheus)
     else
-              outsidePrometheus=$(__readINI zcloud.cfg multiple dependence.outside.prometheus)
+      outsidePrometheus=$(__readINI zcloud.cfg multiple dependence.outside.prometheus)
     fi
     if [[  ${outsidePrometheus} = 0 && ${serviceAppName} == 'alertmanager' ]]; then
-    __InstallAlertmanager
+      __InstallAlertmanager
     else
-        info "当前节点无需安装alertmanager"
+      echo "当前节点无需安装alertmanager"
     fi
     if [[ ${serviceAppName} == 'zoramon-mgr' ]]; then
-    __InstallZcloud_zoramon_mgr
+      __InstallZcloud_zoramon_mgr
     else
-        info "当前节点无需安装zoramon-mgr"
+      echo "当前节点无需安装zoramon-mgr"
     fi
-    if [[ && ${serviceAppName} == 'smart-baseline' ]]; then
-    __InstallZcloud_smart_baseline
+    if [[ ${serviceAppName} == 'smart-baseline' ]]; then
+      __InstallZcloud_smart_baseline
     else
-        info "当前节点无需安装smart-baseline"
+      echo "当前节点无需安装smart-baseline"
     fi
-    if [[ -e ${workdir}jar/dbaas-mail-sender && ${serviceAppName} == 'dbaas-mail-sender' ]]; then
+    if [[ -e ${workdir}/jar/dbaas-mail-sender && ${serviceAppName} == 'dbaas-mail-sender' ]]; then
       __InstallDbaas_mail_sender
     else
       __RemoveServiceFromKeeper dbaas-mail-sender ${configPath}/keeper.yaml
-      info "当前节点无需安装dbaas-mail-sender"
+      echo "当前节点无需安装dbaas-mail-sender"
     fi
     if [[ ${theme} != "zData" ]];then
-      if [[  -e ${workdir}jar/dbaas-wxwork-sender && -e ${workdir}jar/dbaas-mail-sender && ${serviceAppName} == 'dbaas-wxwork-sender' ]]; then
+      if [[  -e ${workdir}/jar/dbaas-wxwork-sender && -e ${workdir}/jar/dbaas-mail-sender && ${serviceAppName} == 'dbaas-wxwork-sender' ]]; then
         __Install_alert_sender dbaas-wxwork-sender
       else
         __RemoveServiceFromKeeper dbaas-wxwork-sender ${configPath}/keeper.yaml
-        info "当前节点无需安装dbaas-wxwork-sender"
+        echo "当前节点无需安装dbaas-wxwork-sender"
       fi
 
-      if [[  && -e ${workdir}jar/dbaas-sender-common && ${serviceAppName} == 'dbaas-sender-common'  ]]; then
+      if [[ -e ${workdir}/jar/dbaas-sender-common && ${serviceAppName} == 'dbaas-sender-common'  ]]; then
         __Install_alert_sender dbaas-sender-common
       else
         __RemoveServiceFromKeeper dbaas-sender-common ${configPath}/keeper.yaml
-        info "当前节点无需安装dbaas-sender-common"
+        echo "当前节点无需安装dbaas-sender-common"
       fi
 
-      if [[ -e ${workdir}jar/dbaas-zabbix-sender && ${serviceAppName} == 'dbaas-zabbix-sender' ]]; then
+      if [[ -e ${workdir}/jar/dbaas-zabbix-sender && ${serviceAppName} == 'dbaas-zabbix-sender' ]]; then
         __Install_alert_sender dbaas-zabbix-sender
       else
         __RemoveServiceFromKeeper dbaas-zabbix-sender ${configPath}/keeper.yaml
-        info "当前节点无需安装dbaas-zabbix-sender"
+        echo "当前节点无需安装dbaas-zabbix-sender"
       fi
     fi
     if [[  ${serviceAppName} == 'slowmon_mgr' ]]; then
     __InstallZcloud_slowmon_mgr
     else
-        info "当前节点无需安装slowmon_mgr"
+        echo "当前节点无需安装slowmon_mgr"
     fi
 
     sleep 20
     if [[ ${outsidePrometheus} = 0  && ${serviceAppName} == 'dbaas-registrationHub' ]]; then
     __InstallDbaas_registrationHub
     else
-        info "当前节点无需安装dbaas-registrationHub"
+        echo "当前节点无需安装dbaas-registrationHub"
     fi
 
-    info "等待监控组件的启动，等待2分钟"
+    echo "等待监控组件的启动，等待2分钟"
     sleep 120
 }
 
