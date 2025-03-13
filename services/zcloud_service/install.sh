@@ -1,48 +1,105 @@
 
-nodeNum=#{nodeNum}
-installNodeType=#{installNodeType}
-installType=#{installType}
-installPath=#{installPath}
-homePath=#{homePath}
-workdir=#{workdir}
-osType=#{osType}
-osVersion=#{osVersion}
-oldRelease=#{oldRelease}
-release=#{release}
-realHostIp=#{hostIp}
-theme=#{theme}
-databaseType=#{databaseType}
-mysqluser=#{mysqluser}
-mysqlpassword=#{mysqlpassword}
-mysqlhost=#{mysqlhost}
-mysqlhostport=#{mysqlhostport}
-mogdbuser=#{mogdbuser}
-mogdbpassword=#{mogdbpassword}
-mogdbport=#{mogdbport}
-mogdbhost=#{mogdbhost}
-logPath="${homePath}/dbaas/zcloud-log"
-logFile="${homePath}/dbaas/zcloud-log/install.log"
-packagePath="${homePath}/dbaas/soft-package"
-bakPath="${homePath}/dbaas/soft-bak"
-configPath="${homePath}/dbaas/zcloud-config"
-javaIoTempDir="${logPath}/java-io-tmpdir"
-ipPath=($( __ReadValue ${logPath}/evn.cfg ipPath))
-ssPath=($( __ReadValue ${logPath}/evn.cfg ssPath))
-oldVersion1=($( __ReadValue ${logPath}/evn.cfg oldVersion))
-bakTime=($( __ReadValue ${logPath}/evn.cfg bakTimeS))
+export nodeNum=#{nodeNum}
+export installNodeType=#{installNodeType}
+export installType=#{installType}
+export installPath=#{installPath}
+export homePath=#{homePath}
+export workdir=#{workdir}
+export osType=#{osType}
+export osVersion=#{osVersion}
+export oldRelease=#{oldRelease}
+export release=#{release}
+export realHostIp=#{hostIp}
+export theme=#{theme}
+export databaseType=#{databaseType}
+export mysqluser=#{mysqluser}
+export mysqlpassword=#{mysqlpassword}
+export mysqlhost=#{mysqlhost}
+export mysqlhostport=#{mysqlhostport}
+export mogdbuser=#{mogdbuser}
+export mogdbpassword=#{mogdbpassword}
+export mogdbport=#{mogdbport}
+export mogdbhost=#{mogdbhost}
+export logPath="${homePath}/dbaas/zcloud-log"
+export logFile="${homePath}/dbaas/zcloud-log/install.log"
+export packagePath="${homePath}/dbaas/soft-package"
+export bakPath="${homePath}/dbaas/soft-bak"
+export configPath="${homePath}/dbaas/zcloud-config"
+export javaIoTempDir="${logPath}/java-io-tmpdir"
+export executeUser=#{executeUser}
 
-. ./service/zcloud_service/zcloud_server_install.sh
-. ./script/lib/dir_auth.sh
 . ./script/lib/common.sh
+. ./services/zcloud_service/zcloud_server_install.sh
+. ./services/zcloud_service/monitor_component_install_unroot.sh
 
-serviceName=$1
 
-function __InstallUnRoot {
-  if [[ ${executeUser} = "root" ]];then
-    su - zcloud -s /bin/bash ./service/zcloud_service/install_unroot.sh $serviceName
-  else
-    ./service/zcloud_service/install_unroot.sh $serviceName
+export ipPath=($( __ReadValue ${logPath}/evn.cfg ipPath))
+export ssPath=($( __ReadValue ${logPath}/evn.cfg ssPath))
+export oldVersion1=($( __ReadValue ${logPath}/evn.cfg oldVersion))
+export bakTime=($( __ReadValue ${logPath}/evn.cfg bakTimeS))
+
+export serviceName=$1
+
+function __InstallZcloudService() {
+
+. ./script/lib/common.sh
+. ./services/zcloud_service/zcloud_server_install.sh
+. ./services/zcloud_service/monitor_component_install_unroot.sh
+
+  if [[ ${theme} == "zData" ]];then
+    theme=zData
+    databaseType=MySQL
+    hostIp=127.0.0.1
+    sed -ri  "s|mysql.root.paasword=.*|mysql.root.paasword=zdata_2019|g" ${workdir}/zcloud.cfg
   fi
+  cd ${workdir}
+
+  monitorComponent=("node-exporter alertmanager zoramon-mgr smart-baseline dbaas-mail-sender dbaas-wxwork-sender dbaas-sender-common dbaas-zabbix-sender slowmon_mgr")
+  for item in "${monitorComponent[@]}";
+    do
+      if [[ "$item" == "$serviceName" ]]; then
+          h2 "[安装监控组件 ... ${serviceName}";
+              startTime=$(date +"%s%N")
+              __InstallMonitorComponent
+              endTime=$(date +"%s%N")
+          echo "安装监控组件${serviceName} 完成，耗时$( __CalcDuration ${startTime} ${endTime})"
+          break
+      fi
+    done
+
+
+  normalService=("dbaas-eureka-server" "dbaas-backend-damengdb" "dbaas-monitor" "dbaas-api-create-dg"
+  "dbaas-configuration" "dbaas-mariadb" "dbaas-db-manage" "dbaas-create-shardingsphere"
+  "dbaas-apigateway" "dbaas-infrastructure" "dbaas-operate-db" "dbaas-permissions"
+  "dbaas-reposerver" "task-management" "dbaas-database-snapshot" "dbaas-backend-mogdb"
+  "dbaas-common-db" "dbaas-lowcode-http-engine" "dbaas-management-database"
+  "dbaas-management-host")
+  for item in "${normalService[@]}";
+    do
+      if [[ "$item" == "$serviceName" ]]; then
+        __InstallNormalZcloudService
+        __CheckZcloudSingleServiceStatus
+        break
+      fi
+    done
+
+
+  if [[ ${serviceName} == "dbaas-flyway-manage" ]]; then
+    __InstallFlyway
+    __CheckZcloudSingleServiceStatus
+  fi
+
+  if [[ ${serviceName} == "zdbmon-mgr" ]]; then
+    __InstallZdbmonMgr
+    __CheckZcloudSingleServiceStatus
+  fi
+
+  if [[ ${serviceName} == "offline_health_check_collector" ]]; then
+    # 复制offline_health_check_collector 到/paasdata
+    move_collector_to_paasdata
+  fi
+
+  __ReplaceText ${logPath}/evn.cfg "realHostIp=" "realHostIp=${realHostIp}"
 }
 
 __ReplaceText ${logPath}/evn.cfg "step=" "step=${item}"
@@ -53,13 +110,18 @@ __ReplaceText ${logPath}/evn.cfg "ssPath=" "ssPath=${ssPath}"
 __ReplaceText ${logPath}/evn.cfg "theme=" "theme=${theme}"
 __ReplaceText ${logPath}/evn.cfg "realHostIp=" "realHostIp=${hostIp}"
 
-__InstallUnRoot
+if [[ ${executeUser} = "root" ]];then
+  function_call="$(declare -f __InstallZcloudService); __InstallZcloudService"
+  su --preserve-environmen zcloud -c "$function_call"
+else
+  __InstallZcloudService
+fi
 
 item=($( __ReadValue ${logPath}/evn.cfg step))
 realHostIp=($( __ReadValue ${logPath}/evn.cfg realHostIp))
 
 
-if [[ ${serviceAppName} == "changeZcloudCfg" ]]; then
+if [[ ${serviceName} == "changeZcloudCfg" ]]; then
   #修改zcloud配置文件内容
   __ChangeZcloudCfg
 fi

@@ -233,13 +233,38 @@ function __InitKeeperConfig {
 
 }
 
+function __AndMySQLStartSh() {
+      localip=${hostIp}
+      homedir=`cd ~ && pwd`
+      cd ${homedir}
+      info "创建mysql启动服务文件文件成功，文件：${installPath}/keeper/script/mysqlstart.sh"
+      echo "#!/bin/bash
+MYSQL_PID=\$(ps -ef | grep 'mysqld_safe' | grep -v grep | awk '{print \$2}')
+MYSQL_FILE=\$(ls ${installPath}/soft/mysql/mysql/bin/| grep 'mysqld_safe' | awk '{print \$1}')
+#如果存在该文件并且没有进程
+if [[ -z \$MYSQL_FILE ]]; then
+    echo 'Can not find mysqld_safe file!'
+else
+    if [[  -z \$MYSQL_PID ]]; then
+    echo 'Ready to start '\${MYSQL_FILE}
+    ${installPath}/soft/mysql/mysql/bin/mysqld_safe --defaults-file=${installPath}/soft/mysql/conf/my.cnf --user=zcloud &
+    echo '${installPath}/soft/mysql/mysql/bin/mysqld_safe --defaults-file=${installPath}/soft/mysql/conf/my.cnf --user=zcloud &'
+    else
+      echo 'MySQL running!'
+    fi
+fi
+" > ${installPath}/keeper/script/mysqlstart.sh
+chmod +x ${installPath}/keeper/script/mysqlstart.sh
+}
+
+
 function __StartKeepService(){
       localip=${hostIp}
       if [[ -d ${installPath}/keeper ]]; then
          rm -rf ${installPath}/keeper
       fi
-      echo "cp -r  ${workdir}jar/keeper/ ${installPath}"
-      cp -r ${workdir}jar/keeper/ ${installPath}
+      echo "cp -r  ${workdir}/jar/keeper/ ${installPath}"
+      cp -r ${workdir}/jar/keeper/ ${installPath}
       FILE_PATH=${installPath}/keeper/
       mkdir -p ${installPath}/keeper/script
       PID=$(ps -ef | grep 'zcloud-keeper-' | grep -v grep | awk '{print $2}')
@@ -255,7 +280,7 @@ function __StartKeepService(){
       else
           logdir=${logPath}
           #复制logback.xml
-          cp ${workdir}conf/logback/logback-default.xml ${installPath}/keeper/config/
+          cp ${workdir}/conf/logback/logback-default.xml ${installPath}/keeper/config/
           sed -i 's#name="logHome" value=.*#name="logHome" value="'${logdir}/keeper'/"/>#g' ${installPath}/keeper/config/logback-default.xml
           mv ${installPath}/keeper/config/logback-default.xml ${installPath}/keeper/config/logback.xml
           cd ${installPath}
@@ -298,4 +323,4 @@ chmod +x ${installPath}/keeper/script/startkeeper.sh
 
 __InitKeeperConfig
 
-#__StartKeepService
+__StartKeepService

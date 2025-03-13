@@ -58,10 +58,24 @@ services:
     local: true
     priority: 2 # 低数字优先执行
 
-
-  - name: "backup"
+  - name: "consul"
     local: true
     priority: 2 # 低数字优先执行
+
+  - name: "zcloud_service"
+    service_name: "dbaas-eureka-server"
+    local: true
+    priority: 2 # 低数字优先执行
+
+  - name: "zcloud_service"
+    service_name: "dbaas-infrastructure"
+    local: true
+    priority: 3 # 低数字优先执行
+
+
+#  - name: "backup"
+#    local: true
+#    priority: 2 # 低数字优先执行
 #  - name: "java-service"
 #    local: true
 #    service_name: "apiGateWay"

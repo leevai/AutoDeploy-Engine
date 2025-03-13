@@ -41,7 +41,7 @@ function __InstallConsul() {
   fi
 
   #如果已安装consul ,不再安装
-  if [[ $(ps -ef|grep consul/|grep -v grep|wc -l) -gt 0 ]]; then
+  if [[ $(ps -ef|grep /consul/consul|grep -v grep|wc -l) -gt 0 ]]; then
     tar -xf ${workdir}/soft/consul/consul.singlenode.tar.gz -C "${workdir}/soft/consul/"
     cp ${workdir}/soft/consul/consul/globalconfig.txt ${installPath}/soft/consul/consul/globalconfig.txt
     cp ${workdir}/soft/consul/consul/consul_kv.json ${installPath}/soft/consul/consul/consul_kv.json

@@ -61,8 +61,12 @@ func RemoteSSH(service *config.ServiceConfig, cmdstr string) (string, string, er
 	}
 	defer session.Close()
 
-	cmdstr = AddScriptExecutorForRemote(cmdstr)
-	if strings.HasSuffix(cmdstr, "sh") {
+	args := ""
+	if service.ServiceName != "" {
+		args = service.ServiceName
+	}
+	cmdstr = AddScriptExecutorForRemote(cmdstr, args)
+	if strings.Contains(cmdstr, ".sh") {
 		var outBuf, errBuf bytes.Buffer
 		// 获取命令的标准输出管道
 		stdoutP, err2 := session.StdoutPipe()
@@ -113,9 +117,9 @@ func RemoteSSH(service *config.ServiceConfig, cmdstr string) (string, string, er
 	}
 }
 
-func AddScriptExecutorForRemote(cmdstr string) string {
+func AddScriptExecutorForRemote(cmdstr string, args string) string {
 	if strings.HasSuffix(cmdstr, "sh") {
-		cmdstr = fmt.Sprintf("bash -c \"export TERM=xterm; cd ./zcloud; %s\"", cmdstr)
+		cmdstr = fmt.Sprintf("bash -c \"export TERM=xterm; cd ./zcloud; %s %s\"", cmdstr, args)
 	} else if strings.HasSuffix(cmdstr, "py") {
 		cmdstr = fmt.Sprintf("python %s", cmdstr)
 	} else if strings.HasSuffix(cmdstr, "url") {

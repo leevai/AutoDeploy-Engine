@@ -68,7 +68,11 @@ func ExecuteShellCommandUseBash(service *config.ServiceConfig, execScript string
 
 func ExecuteShellCommand(service *config.ServiceConfig, cmdstr string) (stdout, stderr string, err error) {
 	if service.Local {
-		return executeShellLocal(cmdstr)
+		args := ""
+		if service.ServiceName != "" {
+			args = service.ServiceName
+		}
+		return executeShellLocal(cmdstr + " " + args)
 	} else {
 		return RemoteSSH(service, cmdstr)
 	}

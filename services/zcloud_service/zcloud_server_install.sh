@@ -1,4 +1,3 @@
-#!/bin/bash
 
 function __StartService() {
   env=($(__readINI zcloud.cfg common "spring.profiles.active"))
@@ -23,8 +22,7 @@ function __StartService() {
   fi
 
   jarPath=$(ls -t ${installPath}/${jarDir}/${jarName}*.jar | head -n 1)
-  homedir=$(cd ~ && pwd)
-  source ${homedir}/.bashrc || true
+  source ${homePath}/.bashrc || true
   javapath=$(echo $JAVA_HOME)/bin/java
 
   memorySize=`free -h|grep Mem|awk '{print $2}'|sed -r "s/G$|Gi$//g"|awk -F'.' '{print $1}'`
@@ -112,7 +110,7 @@ function __StartService() {
     cd ${installPath}
     sed -ri "s|${installPath}/${jarDir}/.*\.jar|${jarPath}|g" ${configPath}/keeper.yaml
     __startFromKeeper ${jarName}
-    cd ${currDir}
+    cd ${homePath}
   else
     if [[ ${jarDir} == "dbaas-doc-retrieval" ]];then
       cd ${installPath}/${jarDir}
@@ -154,7 +152,7 @@ function __StartService() {
       info "等待服务的启动，sleep 120"
       sleep 120
     fi
-    cd ${currDir}
+    cd ${homePath}
   fi
 
   cd ${workdir}
@@ -643,7 +641,8 @@ function __removeKeeperIfNotExist() {
 
 
 function __InstallNormalZcloudService() {
-  if [[ `find jar -type -f -name "${serviceName}*.jar" | grep -q .` ]]; then
+  find_result=$(find ./jar -type f -name "${serviceName}*.jar" -print -quit)
+  if [[ -n "$find_result" ]]; then
     h2 "[安装服务 ... ${serviceName}";
       startTime=$(date +"%s%N")
       cd ${workdir}

@@ -12,6 +12,9 @@ import (
 func Install() error {
 	fmt.Println("开始安装")
 	for _, service := range config.MicroServices {
+		if service.ServiceName == "zcloud" {
+			continue
+		}
 		task.AddTask(service, getTaskFun(service))
 	}
 	task.RunTask()
@@ -46,11 +49,7 @@ func getTaskFun(service *config.ServiceConfig) func() error {
 			}
 		}
 
-		cmdStr := serviceDetail.InstallScript
-		if service.ServiceName != "" {
-			cmdStr = cmdStr + " " + service.ServiceName
-		}
-		output, err := utils.ExecuteShellCommandUseBash(service, cmdStr, true)
+		output, err := utils.ExecuteShellCommandUseBash(service, serviceDetail.InstallScript, true)
 		if err != nil {
 			return fmt.Errorf("failed to install service %s: %v", service.Name, err)
 		}

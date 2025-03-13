@@ -8,7 +8,7 @@ service:
     password: "password"
   install_package: "./services/zcloud/install.tar.gz"
   upgrade_package: "./services/zcloud/upgrade.tar.gz"
-  install_script: "./services/zcloud/install.sh"
+  install_script: "./services/zcloud_service/install.sh"
   backup_script: "./services/zcloud/backup.sh"
   rollback_script: "./services/zcloud/rollback.url"
   check_health_script: "./services/zcloud/check_health_script.sh"

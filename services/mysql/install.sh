@@ -735,29 +735,7 @@ function __deletePlatformComponent() {
 
 }
 
-function __AndMySQLStartSh() {
-      localip=${hostIp}
-      homedir=`cd ~ && pwd`
-      cd ${homedir}
-      info "创建mysql启动服务文件文件成功，文件：${installPath}/keeper/script/mysqlstart.sh"
-      echo "#!/bin/bash
-MYSQL_PID=\$(ps -ef | grep 'mysqld_safe' | grep -v grep | awk '{print \$2}')
-MYSQL_FILE=\$(ls ${installPath}/soft/mysql/mysql/bin/| grep 'mysqld_safe' | awk '{print \$1}')
-#如果存在该文件并且没有进程
-if [[ -z \$MYSQL_FILE ]]; then
-    echo 'Can not find mysqld_safe file!'
-else
-    if [[  -z \$MYSQL_PID ]]; then
-    echo 'Ready to start '\${MYSQL_FILE}
-    ${installPath}/soft/mysql/mysql/bin/mysqld_safe --defaults-file=${installPath}/soft/mysql/conf/my.cnf --user=zcloud &
-    echo '${installPath}/soft/mysql/mysql/bin/mysqld_safe --defaults-file=${installPath}/soft/mysql/conf/my.cnf --user=zcloud &'
-    else
-      echo 'MySQL running!'
-    fi
-fi
-" > ${installPath}/keeper/script/mysqlstart.sh
-chmod +x ${installPath}/keeper/script/mysqlstart.sh
-}
+
 
 __InstallMysql
 info "开始更新组件ip"

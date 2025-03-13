@@ -1,4 +1,3 @@
-#!/bin/bash
 
 . ./script/lib/common.sh
 
