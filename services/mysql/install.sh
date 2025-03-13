@@ -762,3 +762,6 @@ chmod +x ${installPath}/keeper/script/mysqlstart.sh
 __InstallMysql
 info "开始更新组件ip"
 __updateComponentIp
+if [[ ${theme} == "ZData" ]]; then
+    __initZDataConfig
+fi
