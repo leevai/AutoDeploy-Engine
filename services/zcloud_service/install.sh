@@ -54,7 +54,7 @@ function __InstallZcloudService() {
   fi
   cd ${workdir}
 
-  monitorComponent=("node-exporter alertmanager zoramon-mgr smart-baseline dbaas-mail-sender dbaas-wxwork-sender dbaas-sender-common dbaas-zabbix-sender slowmon_mgr")
+  monitorComponent=("node-exporter","alertmanager","zoramon-mgr","smart-baseline","dbaas-mail-sender","dbaas-wxwork-sender","dbaas-sender-common","dbaas-zabbix-sender","slowmon_mgr")
   for item in "${monitorComponent[@]}";
     do
       if [[ "$item" == "$serviceName" ]]; then

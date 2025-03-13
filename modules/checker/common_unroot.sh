@@ -128,7 +128,7 @@ function __ReadValue() {
 
 function __CheckPort() {
   typeset -r serviceName=${1}
-  port=$(__ReadValue ${workdir}conf/port.cfg  "${serviceName}=" )
+  port=$(__ReadValue ${workdir}/conf/port.cfg  "${serviceName}=" )
   if [[ ${serviceName} = "nginx" ]];then
     ui_url_port=($( __readINI zcloud.cfg web "ui_url_port" ))
     port=${ui_url_port}

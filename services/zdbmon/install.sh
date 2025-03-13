@@ -40,7 +40,7 @@ function __InstallZdbmonMgr {
   consulHost=${consulIp}
   keeperConf=${configPath}/keeper.yaml
   if [[ ! -f ${keeperConf} ]];then
-     cp  ${workdir}conf/keeper.yaml ${configPath}
+     cp  ${workdir}/conf/keeper.yaml ${configPath}
      sed -i "s|#installPath#|${installPath}|g" ${configPath}/keeper.yaml
 
      sed -i "s|#localIP#|${consulIp}|g" ${configPath}/keeper.yaml
@@ -57,7 +57,7 @@ function __InstallZdbmonMgr {
   if [[ -d ${installPath}/zdbmon-mgr ]];then
     rm -rf ${installPath}/zdbmon-mgr
   fi
-  cp -r ${workdir}jar/zdbmon-mgr ${installPath}
+  cp -r ${workdir}/jar/zdbmon-mgr ${installPath}
   consulPort=8500
   watchEnable=false
   CONSUL_TOKEN_PARAM="--spring.cloud.consul.config.acl-token=${consulToken}"
@@ -67,7 +67,7 @@ function __InstallZdbmonMgr {
   javapath=$(echo $JAVA_HOME)/bin/java
   runcmd="-Xms4096m -Xmx8092m -Djava.io.tmpdir=${javaIoTempDir} -XX:ParallelGCThreads=8 -XX:ErrorFile=#logPath#/hserr/${serviceName}_%p.log -Duser.timezone=GMT+08"
   serviceNameLine=`sed -n "/serviceName: ${serviceName}\$/=" ${keeperConf}`
-  cp ${workdir}conf/logback/logback-default.xml ${installPath}/${serviceName}/config/
+  cp ${workdir}/conf/logback/logback-default.xml ${installPath}/${serviceName}/config/
   sed -i 's#name="logHome" value=.*#name="logHome" value="'${logPath}/${serviceName}'/"/>#g' ${installPath}/${serviceName}/config/logback-default.xml
   mv ${installPath}/${serviceName}/config/logback-default.xml ${installPath}/${serviceName}/config/logback.xml
 
@@ -75,9 +75,9 @@ function __InstallZdbmonMgr {
   nohup ${javapath} ${runcmd} -jar ${jarPath} --thin.offline=true --thin.root=${installPath}/pub_libs --springProfilesActive=${env} --consulHost=${consulIp} --consulPort=${consulPort} ${CONSUL_TOKEN_PARAM} --watchEnable=${watchEnable} >/dev/null 2>&1 &
   if [[ ${serviceNameLine} == "" ]];then
 
-    serviceNameLine=`sed -n "/serviceName: ${serviceName}\$/=" ${workdir}conf/keeper.yaml`
+    serviceNameLine=`sed -n "/serviceName: ${serviceName}\$/=" ${workdir}/conf/keeper.yaml`
     offset=`sed -n "$[${serviceNameLine}+1],\$"p ${keeperConf} |grep -n defaultProcessNum:|head -n 1|awk -F':' '{print $1}'`
-    sed -n "${serviceNameLine},$[${serviceNameLine}+${offset}]p" ${workdir}conf/keeper.yaml>temp.yaml
+    sed -n "${serviceNameLine},$[${serviceNameLine}+${offset}]p" ${workdir}/conf/keeper.yaml>temp.yaml
     endLine=`awk '{print NR}' ${keeperConf} |tail -n1`
     sed -i "${endLine}r temp.yaml" ${keeperConf}
     rm -f temp.yaml

@@ -93,7 +93,7 @@ function __InstallDocCenter {
     else
       jvmTemplate="256G"
     fi
-    jvmParam=($(__readINI ${workdir}script/jvm_param/jvm_template.cfg ${jvmTemplate} dbaas-doc-retrieval ))
+    jvmParam=($(__readINI ${workdir}/script/jvm_param/jvm_template.cfg ${jvmTemplate} dbaas-doc-retrieval ))
     jvmMin=`echo ${jvmParam}|awk -F'/' '{print $1}'`
     jvmMax=`echo ${jvmParam}|awk -F'/' '{print $NF}'`
     if [[ `echo ${jvmMax} |egrep "^([1-9][0-9]*|-[1-9][0-9]*)$" |wc -l` = 0 || `echo ${jvmMin} |egrep "^([1-9][0-9]*|-[1-9][0-9]*)$"|wc -l` = 0 ]];then
@@ -108,7 +108,7 @@ function __InstallDocCenter {
 
    sed -ri "s|logPath=.*|logPath=${logPath}/dbaas-doc-retrieval|g" config/application.properties
    #sed -ri "s|lucene.index.dir=.*|lucene.index.dir=${installPath}/dbaas-doc-retrieval/lucene/index/|g" config/application.properties
-   #ui_url_port=($( __readINI ${workdir}zcloud.cfg web "ui_url_port" ))
+   #ui_url_port=($( __readINI ${workdir}/zcloud.cfg web "ui_url_port" ))
    #sed -ri "s|web.url.prefix=.*|web.url.prefix=http://${hostIp}:${ui_url_port}/zh/zcloud/|g" config/application.properties
    #sed -ri "s|upload.file.path=.*|upload.file.path=${installPath}/dbaas-doc-retrieval/attachment/|g" config/application.properties
    sed -i "s|\${logPath}|${logPath}/dbaas-doc-retrieval|g" config/logback.xml
@@ -120,7 +120,7 @@ function __InstallDocCenter {
    if [[ ${serviceNameLine} != "" ]];then
      sed -i "${serviceNameLine},$[${serviceNameLine}+${offset}]d" ${keeperConf}
    fi
-   serviceNameLine=`sed -n "/serviceName: ${serviceName}\$/=" ${workdir}conf/keeper.yaml`
+   serviceNameLine=`sed -n "/serviceName: ${serviceName}\$/=" ${workdir}/conf/keeper.yaml`
    offset=`sed -n "$[${serviceNameLine}+1],\$"p ${workdir}conf/keeper.yaml |grep -n defaultProcessNum:|head -n 1|awk -F':' '{print $1}'`
    if [[ ${serviceNameLine} != "" ]];then
      sed -n "${serviceNameLine},$[${serviceNameLine}+${offset}]p" ${workdir}conf/keeper.yaml>temp.yaml
