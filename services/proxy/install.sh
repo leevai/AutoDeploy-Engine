@@ -197,7 +197,7 @@ function __initProxy() {
     sed -i "s|#proxyversion#|${proxyVersion}|g" ${workdir}/dbsqlfile/init_proxy_mysql.sql
 
     mysqlAddr="${installPath}/soft/mysql/mysql/bin/mysql"
-    ${mysqlAddr} -uroot -p${mysqlpassword} -h${mysqlhost} -P${mysqlhostport} < ${workdir}/dbsqlfile/zcloud_paasdata_proxy_init.sql >> ${logFile} 2>&1
+    ${mysqlAddr} -uroot -p${mysqlpassword} -h${mysqlhost} -P${mysqlhostport} < ${workdir}/dbsqlfile/init_proxy_mysql.sql >> ${logFile} 2>&1
   else
 
     sed -i "s|#hostname#|${hostname}|g" ${workdir}/dbsqlfile/init_proxy_mogdb.sql
@@ -210,7 +210,7 @@ function __initProxy() {
     sed -i "s|#hostip#|${hostip}|g" ${workdir}/dbsqlfile/init_proxy_mogdb.sql
     sed -i "s|#osversion#|${osVersion}|g" ${workdir}/dbsqlfile/init_proxy_mogdb.sql
     sed -i "s|#proxyversion#|${proxyVersion}|g" ${workdir}/dbsqlfile/init_proxy_mogdb.sql
-    ${installPath}/soft/mogdb/app/bin/gsql -d zcloud -h ${mogdbhost} -p ${mogdbport} -U ${mogdbuser} -W ${mogdbpassword} -f dbsqlfile/zcloud_paasdata_proxy_init.sql
+    ${installPath}/soft/mogdb/app/bin/gsql -d zcloud -h ${mogdbhost} -p ${mogdbport} -U ${mogdbuser} -W ${mogdbpassword} -f dbsqlfile/init_proxy_mogdb.sql
   fi
 
 }
@@ -220,4 +220,5 @@ if [[ ${theme} == 'zData' ]]; then
     __installZdataAgentAndProxy
 else
   __installZcloudProxy
+  __initProxy
 fi
