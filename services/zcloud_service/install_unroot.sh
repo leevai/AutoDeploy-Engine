@@ -19,11 +19,11 @@ monitorComponent=("node-exporter,alertmanager,zoramon-mgr,smart-baseline,dbaas-m
 for item in "${list1[@]}"; 
   do
     if [[ "$item" == "$serviceName" ]]; then
-        h2 "[安装监控组件 ... ${serviceAppName}";
+        h2 "[安装监控组件 ... ${serviceName}";
             startTime=$(date +"%s%N")
             __InstallMonitorComponent
             endTime=$(date +"%s%N")
-        echo "安装监控组件${serviceAppName} 完成，耗时$( __CalcDuration ${startTime} ${endTime})"
+        echo "安装监控组件${serviceName} 完成，耗时$( __CalcDuration ${startTime} ${endTime})"
         break
     fi
   done
@@ -45,17 +45,17 @@ for item in "${normalService[@]}";
   done
 
 
-if [[ ${serviceAppName} == "dbaas-flyway-manage" ]]; then
+if [[ ${serviceName} == "dbaas-flyway-manage" ]]; then
   __InstallFlyway
   __CheckZcloudSingleServiceStatus
 fi
 
-if [[ ${serviceAppName} == "zdbmon-mgr" ]]; then
+if [[ ${serviceName} == "zdbmon-mgr" ]]; then
   __InstallZdbmonMgr
   __CheckZcloudSingleServiceStatus
 fi
 
-if [[ ${serviceAppName} == "offline_health_check_collector" ]]; then
+if [[ ${serviceName} == "offline_health_check_collector" ]]; then
   # 复制offline_health_check_collector 到/paasdata
   move_collector_to_paasdata
 fi

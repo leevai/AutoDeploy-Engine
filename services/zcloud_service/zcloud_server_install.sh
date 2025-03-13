@@ -315,13 +315,13 @@ function __UpdateFlowWorkConsul() {
 }
 
 function __CheckZcloudServiceStatus()  {
-  if [[ -d ${installPath}/dbaas-apigateway && ${serviceAppName} == "dbaas-apigateway" ]];then
+  if [[ -d ${installPath}/dbaas-apigateway && ${serviceName} == "dbaas-apigateway" ]];then
     su - zcloud -c"cd ${installPath};./start.sh --name dbaas-apigateway"
   fi
-  if [[ -d ${installPath}/magic_cube && ${serviceAppName} == "magic-cube"  ]];then
+  if [[ -d ${installPath}/magic_cube && ${serviceName} == "magic-cube"  ]];then
     su - zcloud -c"cd ${installPath};./start.sh --name magic-cube"
   fi
-  if [[ -d ${installPath}/ansible_executor && ${serviceAppName} == "ansible_executor"  ]];then
+  if [[ -d ${installPath}/ansible_executor && ${serviceName} == "ansible_executor"  ]];then
     su - zcloud -c"cd ${installPath};./start.sh --name ansible_executor"
   fi
   info "Loop check three times"
@@ -643,8 +643,8 @@ function __removeKeeperIfNotExist() {
 
 
 function __InstallNormalZcloudService() {
-  if [[ `find jar -type -f -name "${serviceAppName}*.jar" | grep -q .` ]]; then
-    h2 "[安装服务 ... ${serviceAppName}";
+  if [[ `find jar -type -f -name "${serviceName}*.jar" | grep -q .` ]]; then
+    h2 "[安装服务 ... ${serviceName}";
       startTime=$(date +"%s%N")
       cd ${workdir}
         versionPath=${logPath}/${version}
@@ -652,26 +652,26 @@ function __InstallNormalZcloudService() {
           mkdir -p ${versionPath}
         fi
       info ""
-      info "Start App [${serviceAppName}]  ..."
-      __InstallService "${serviceAppName}"
-      echo "${serviceAppName}" >> ${installPath}/serviceTemp
+      info "Start App [${serviceName}]  ..."
+      __InstallService "${serviceName}"
+      echo "${serviceName}" >> ${installPath}/serviceTemp
 
       if [[ -e ${installPath}/dbaas-apigateway ]];then
         cd ${installPath}/dbaas-apigateway
         ./start.sh
       fi
       endTime=$(date +"%s%N")
-      echo "安装服务${serviceAppName}完成，耗时$( __CalcDuration ${startTime} ${endTime})"
+      echo "安装服务${serviceName}完成，耗时$( __CalcDuration ${startTime} ${endTime})"
   fi
 }
 
 function __InstallFlyway() {
-  if [[ `find jar -type -f -name "${serviceAppName}*.jar" | grep -q .`  ]]; then
+  if [[ `find jar -type -f -name "${serviceName}*.jar" | grep -q .`  ]]; then
     h2 "[安装服务 ... dbaas-flyway-manage";
     startTime=$(date +"%s%N")
-    echo "Start App [${serviceAppName}]  ..."
+    echo "Start App [${serviceName}]  ..."
     if [[ ${installType} == 4 ]];then
-      if [[  ${serviceAppName} == "dbaas-flyway-manage" && $( __readINI nodeconfig/current.cfg service ${app} ) == ${nodeNum} ]];then
+      if [[  ${serviceName} == "dbaas-flyway-manage" && $( __readINI nodeconfig/current.cfg service ${app} ) == ${nodeNum} ]];then
           if [[ ${databaseType} == "MySQL" ]];then
             mysql -uroot -p${dbaas_password} -h${server_ip} -P${server_port}  -e "delete from monitormanager.monitormanager_flyway_schema_history where version ='23.06.20.1010554.1';"
             mysql -uroot -p${dbaas_password} -h${server_ip} -P${server_port}  -e "delete from monitormanager.monitormanager_flyway_schema_history where version ='23.07.17.1010554.2';"
@@ -685,11 +685,11 @@ function __InstallFlyway() {
       fi
     fi
 
-    __InstallService "${serviceAppName}"
+    __InstallService "${serviceName}"
     echo "等待flyway写入，sleep 120"
     sleep 120
 
-    echo "${serviceAppName}" >> ${installPath}/serviceTemp
+    echo "${serviceName}" >> ${installPath}/serviceTemp
     if [[  $( __readINI nodeconfig/current.cfg service dbaas-web ) == ${nodeNum} ]]; then
       echo "等待服务的启动，sleep 120"
       sleep 120
@@ -700,10 +700,10 @@ function __InstallFlyway() {
 
 
 function __InstallZdbmonMgr() {
-  if [[ `find jar -type -f -name "${serviceAppName}*.jar" | grep -q .` ]]; then
+  if [[ `find jar -type -f -name "${serviceName}*.jar" | grep -q .` ]]; then
     startTime=$(date +"%s%N")
-    echo "${serviceAppName}" >> ${installPath}/serviceTemp
-    if [[ ${serviceAppName} == "zdbmon-mgr" && $( __readINI nodeconfig/current.cfg service ${app} ) == ${nodeNum} ]];then
+    echo "${serviceName}" >> ${installPath}/serviceTemp
+    if [[ ${serviceName} == "zdbmon-mgr" && $( __readINI nodeconfig/current.cfg service ${app} ) == ${nodeNum} ]];then
       # ip，port 修改账号和密码
       if [[ ${databaseType} == "MySQL" ]];then
         mysql -uroot -p${dbaas_password} -h${server_ip} -P${server_port}  -e "UPDATE zdbmon_config.t_data_node
@@ -754,7 +754,7 @@ function __InstallZdbmonMgr() {
         fi
       fi
     fi
-    __InstallService "${serviceAppName}"
+    __InstallService "${serviceName}"
     endTime=$(date +"%s%N")
     echo "安装服务 zdbmon-mgr 完成,耗时$( __CalcDuration ${startTime} ${endTime})"
   fi
@@ -763,13 +763,13 @@ function __InstallZdbmonMgr() {
 
 
 function __CheckZcloudSingleServiceStatus()  {
-  if [[ -d ${installPath}/dbaas-apigateway && ${serviceAppName} == "dbaas-apigateway"  ]];then
+  if [[ -d ${installPath}/dbaas-apigateway && ${serviceName} == "dbaas-apigateway"  ]];then
     su - zcloud -c"cd ${installPath};./start.sh --name dbaas-apigateway"
   fi
-  if [[ -d ${installPath}/magic_cube && ${serviceAppName} == "magic-cube"  ]];then
+  if [[ -d ${installPath}/magic_cube && ${serviceName} == "magic-cube"  ]];then
     su - zcloud -c"cd ${installPath};./start.sh --name magic-cube"
   fi
-  if [[ -d ${installPath}/ansible_executor && ${serviceAppName} == "ansible_executor" ]];then
+  if [[ -d ${installPath}/ansible_executor && ${serviceName} == "ansible_executor" ]];then
     su - zcloud -c"cd ${installPath};./start.sh --name ansible_executor"
   fi
   info "Loop check three times"
@@ -795,7 +795,7 @@ function __CheckZcloudSingleServiceStatus()  {
       }}')
       downApp=0
       for app  in  `ls ${installPath}  | egrep -v 'agent|zdbmon-mgr|keeper|zcloud-zoramon-mgr|aicure|dbaas-eureka-server|prometheus|alertmanager|slowmon_mgr|smart_baseline|dbaas-mail-sender|dbaas-registrationHub|soft|readme|start.sh|stop.sh|packages|version.txt|installparam.txt|serviceTemp|ansible_executor|DBaas-Lowcode-WorkFlow|open_workflow|magic_cube|zcloud_release.txt|dbType.txt|pub_libs|dbaas-wxwork-sender|dbaas-sender-common|dbaas-zabbix-sender|podman|magic-script-executor|logPath_IS_UNDEFINED|node-exporter|dbaas-operate-db|dbaas-monitor-dashboard|dbaas-api-create-dg|dbaas-configuration|dbaas-oceanbase|dbaas-backend-sql-server|dbaas-backend-db2|dbaas-backend-damengdb|dbaas-create-mongodb|dbaas-create-postgres|dbaas-create-redis|dbaas-create-shardingsphere|dbaas-lowcode-http-engine'`; do
-        if [[ ${serviceAppName} == $app ]]; then
+        if [[ ${serviceName} == $app ]]; then
           if [[ $app == "expert-knowledge-base" ]];then
             app="expert-knwl-base"
           fi

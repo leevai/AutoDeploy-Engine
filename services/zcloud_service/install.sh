@@ -1,5 +1,4 @@
 
-serviceAppName=#{serviceAppName}
 nodeNum=#{nodeNum}
 installNodeType=#{installNodeType}
 installType=#{installType}
