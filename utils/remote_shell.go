@@ -38,6 +38,19 @@ func RemoteSCP(service *config.ServiceConfig, localFile string, remoteFile strin
 	return nil
 }
 
+func SCPToLocal(service *config.ServiceConfig, localFile string, remoteFile string) error {
+	host := service.Remote.Host
+	user := service.Remote.User
+	cmdStr := fmt.Sprintf("scp -o StrictHostKeyChecking=no -r %s@%s:%s %s", user, host, remoteFile, localFile)
+	cmd := exec.Command("bash", "-c", cmdStr)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("failed to copy file to remote server: %v\nOutput: %s", err, string(output))
+	}
+
+	return nil
+}
+
 func RemoteSSH(service *config.ServiceConfig, cmdstr string) (string, string, error) {
 	clientConfig := &ssh.ClientConfig{
 		User: service.Remote.User,

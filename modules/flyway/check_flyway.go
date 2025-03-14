@@ -11,7 +11,7 @@ import (
 func CheckErrorFlyway() error {
 	var service *config.ServiceConfig
 	for _, item := range config.MicroServices {
-		if item.Name == "flyway" {
+		if item.ServiceName == "dbaas-flyway-manage" {
 			service = item
 			break
 		}
