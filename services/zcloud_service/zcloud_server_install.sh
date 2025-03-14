@@ -1,4 +1,6 @@
 
+. ./script/lib/common_unroot.sh
+
 function __StartService() {
   env=($(__readINI zcloud.cfg common "spring.profiles.active"))
   if [[ ${installNodeType} == "OneNode" ]]; then

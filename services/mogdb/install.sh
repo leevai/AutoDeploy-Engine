@@ -240,7 +240,8 @@ function __InitMogDBData {
     if [[ ${release} == "standard" ]];then
       ##标准版需要加权限白名单
       ${installPath}/soft/mogdb/app/bin/gsql -d zcloud -h ${ip} -p ${port} -U ${user} -W ${password} -f ${workdir}/other/addStandardPermissionBlack.sql
-    else
+    fi
+    if [[ ${release} == "enterprise"  &&  ${oldRelease} == "standard"  ]];then
       ##企业版需要删除权限白名单
       info "${installPath}/soft/mogdb/app/bin/gsql -d zcloud -h ${ip} -p ${port} -U ${user} -W ${password} -f ${workdir}/other/deleteStandardPermissionBlack.sql"
       ${installPath}/soft/mogdb/app/bin/gsql -d zcloud -h ${ip} -p ${port} -U ${user} -W ${password} -f ${workdir}/other/deleteStandardPermissionBlack.sql
