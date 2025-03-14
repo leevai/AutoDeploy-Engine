@@ -112,20 +112,6 @@ function __MovePubLib() {
     \cp -fr ${workdir}/jar/pub_libs/repository ${installPath}/pub_libs
 }
 
-function __CreateZdbmonSchema() {
-    __QueryDatabaseInfo
-    if [[ ${databaseType} == "MySQL" ]];then
-      mysql -uroot -p${mysqlpassword} -h${mysqlhost} -P${mysqlhostport}  -e "CREATE DATABASE IF NOT EXISTS zdbmon;"
-      mysql -uroot -p${mysqlpassword} -h${mysqlhost} -P${mysqlhostport}  -e "CREATE DATABASE IF NOT EXISTS zdbmon_config;"
-    else
-      set +e
-
-      ${installPath}/soft/mogdb/app/bin/gsql -d zcloud -h ${mogdbhost} -p ${mogdbport} -U ${mogdbuser} -W ${mogdbpassword} -c "CREATE SCHEMA zdbmon authorization dbaas" 2>/dev/null
-      ${installPath}/soft/mogdb/app/bin/gsql -d zcloud -h ${mogdbhost} -p ${mogdbport} -U ${mogdbuser} -W ${mogdbpassword} -c "CREATE SCHEMA zdbmon_config authorization dbaas" 2>/dev/null
-      set -e
-    fi
-}
-
 
 
 cd ${workdir}
@@ -142,7 +128,7 @@ fi
 #__CheckJava
 
 #__MovePubLib
-__CreateZdbmonSchema
+
 __InstallZdbmonMgr
 __InstallKeeper
 

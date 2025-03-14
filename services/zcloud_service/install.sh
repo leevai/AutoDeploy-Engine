@@ -27,6 +27,8 @@ export bakPath="${homePath}/dbaas/soft-bak"
 export configPath="${homePath}/dbaas/zcloud-config"
 export javaIoTempDir="${logPath}/java-io-tmpdir"
 export executeUser=#{executeUser}
+export dependenceOutsideMogdb=#{dependenceOutsideMogdb}
+export dependenceOutsideMySQL=#{dependenceOutsideMySQL}
 
 . ./script/lib/common.sh
 . ./services/zcloud_service/zcloud_server_install.sh
@@ -44,12 +46,13 @@ export versionPath=${logPath}/${version}
 
 export serviceName=$1
 
-function __InstallZcloudService() {
 
+function __InstallZcloudService() {
 . ./script/lib/common.sh
 . ./services/zcloud_service/zcloud_server_install.sh
 . ./services/zcloud_service/monitor_component_install_unroot.sh
 
+  __QueryDatabaseInfo
   if [[ ${theme} == "zData" ]];then
     theme=zData
     databaseType=MySQL
@@ -58,7 +61,7 @@ function __InstallZcloudService() {
   fi
   cd ${workdir}
 
-  monitorComponent=("node-exporter","alertmanager","zoramon-mgr","smart-baseline","dbaas-mail-sender","dbaas-wxwork-sender","dbaas-sender-common","dbaas-zabbix-sender","slowmon_mgr")
+  monitorComponent=("node-exporter" "alertmanager" "zoramon-mgr" "smart-baseline" "dbaas-mail-sender" "dbaas-wxwork-sender" "dbaas-sender-common" "dbaas-zabbix-sender" "slowmon_mgr")
   for item in "${monitorComponent[@]}";
     do
       if [[ "$item" == "$serviceName" ]]; then
@@ -116,7 +119,7 @@ __ReplaceText ${logPath}/evn.cfg "realHostIp=" "realHostIp=${hostIp}"
 
 if [[ ${executeUser} = "root" ]];then
   function_call="$(declare -f __InstallZcloudService); __InstallZcloudService"
-  su --preserve-environmen zcloud -c "$function_call"
+  su --preserve-environmen zcloud -c "HOME=$(getent passwd zcloud | cut -d: -f6); $function_call"
 else
   __InstallZcloudService
 fi
