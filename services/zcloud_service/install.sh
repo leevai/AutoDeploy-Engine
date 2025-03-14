@@ -38,6 +38,10 @@ export ssPath=($( __ReadValue ${logPath}/evn.cfg ssPath))
 export oldVersion1=($( __ReadValue ${logPath}/evn.cfg oldVersion))
 export bakTime=($( __ReadValue ${logPath}/evn.cfg bakTimeS))
 
+export version=`cat ${workdir}/version.txt`
+export versionPath=${logPath}/${version}
+
+
 export serviceName=$1
 
 function __InstallZcloudService() {

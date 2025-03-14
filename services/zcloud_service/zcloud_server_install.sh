@@ -641,7 +641,7 @@ function __removeKeeperIfNotExist() {
 
 
 function __InstallNormalZcloudService() {
-  find_result=$(find ./jar -type f -name "${serviceName}*.jar" -print -quit)
+  find_result=$(find ./jar -type f -iname "${serviceName}*.jar" -print -quit)
   if [[ -n "$find_result" ]]; then
     h2 "[安装服务 ... ${serviceName}";
       startTime=$(date +"%s%N")
@@ -665,7 +665,7 @@ function __InstallNormalZcloudService() {
 }
 
 function __InstallFlyway() {
-  find_result=$(find ./jar -type f -name "${serviceName}*.jar" -print -quit)
+  find_result=$(find ./jar -type f -iname "${serviceName}*.jar" -print -quit)
   if [[ -n "$find_result" ]]; then
     h2 "[安装服务 ... dbaas-flyway-manage";
     startTime=$(date +"%s%N")
@@ -700,7 +700,8 @@ function __InstallFlyway() {
 
 
 function __InstallZdbmonMgr() {
-  if [[ `find jar -type -f -name "${serviceName}*.jar" | grep -q .` ]]; then
+  find_result=$(find ./jar -type f -iname "${serviceName}*.jar" -print -quit)
+  if [[ -n "$find_result" ]]; then
     startTime=$(date +"%s%N")
     echo "${serviceName}" >> ${installPath}/serviceTemp
     if [[ ${serviceName} == "zdbmon-mgr" && $( __readINI nodeconfig/current.cfg service ${app} ) == ${nodeNum} ]];then

@@ -169,6 +169,51 @@ services:
     local: true
     priority: 3 # 低数字优先执行
 
+  - name: "zcloud_service"
+    service_name: "node-exporter"
+    local: true
+    priority: 3 # 低数字优先执行
+
+  - name: "zcloud_service"
+    service_name: "alertmanager"
+    local: true
+    priority: 3 # 低数字优先执行
+
+  - name: "zcloud_service"
+    service_name: "zoramon-mgr"
+    local: true
+    priority: 3 # 低数字优先执行
+
+  - name: "zcloud_service"
+    service_name: "smart-baseline"
+    local: true
+    priority: 3 # 低数字优先执行
+
+  - name: "zcloud_service"
+    service_name: "dbaas-mail-sender"
+    local: true
+    priority: 3 # 低数字优先执行
+
+  - name: "zcloud_service"
+    service_name: "dbaas-wxwork-sender"
+    local: true
+    priority: 3 # 低数字优先执行
+
+  - name: "zcloud_service"
+    service_name: "dbaas-sender-common"
+    local: true
+    priority: 3 # 低数字优先执行
+
+  - name: "zcloud_service"
+    service_name: "dbaas-zabbix-sender"
+    local: true
+    priority: 3 # 低数字优先执行
+
+  - name: "zcloud_service"
+    service_name: "dbaas-zabbix-sender"
+    local: true
+    priority: 3 # 低数字优先执行
+
 
 
 

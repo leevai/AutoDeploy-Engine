@@ -5,6 +5,8 @@ packagePath=#{packagePath}
 bakPath=#{bakPath}
 configPath=#{configPath}
 javaIoTempDir=#{javaIoTempDir}
+logPath=#{logPath}
+workdir=#{workdir}
 
 
 # 文件(夹) 创建和赋权给zcloud
@@ -83,6 +85,12 @@ function __CreateSoftInstallDir() {
   endTime=$(date +"%s%N")
   info "创建软件安装完成，耗时$( __CalcDuration ${startTime} ${endTime})"
 }
+
+version=`cat ${workdir}/version.txt`
+versionPath=${logPath}/${version}
+if [[ ! -d ${versionPath} ]];then
+  mkdir -p ${versionPath}
+fi
 
 
 __CreatePaasdataDir

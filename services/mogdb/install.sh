@@ -264,22 +264,6 @@ function __InitMogDBData {
 
   fi
 
-  if [[ ${installNodeType} == "OneNode" ]]; then
-    if [[ ${dependenceOutside} = "1" ]];then
-      serviceIp=$(__readINI ${zcloudCfg} single mogdb.service.ip)
-    else
-      serviceIp=${hostIp}
-    fi
-    port=$(__readINI ${zcloudCfg} single mogdb.port)
-    password=$(__readINI ${zcloudCfg} single mogdb.password)
-    user=$(__readINI ${zcloudCfg} single mogdb.user)
-  else
-    serviceIp=$(__readINI ${zcloudCfg} multiple mogdb.service.ip)
-    port=$(__readINI ${zcloudCfg} multiple mogdb.port)
-    password=$(__readINI ${zcloudCfg} multiple mogdb.password)
-    user=$(__readINI ${zcloudCfg} multiple mogdb.user)
-  fi
-  ip=${serviceIp}
   export LD_LIBRARY_PATH=${installPath}/soft/mogdb/app/lib
   if [[ ${release} == "standard" ]];then
     ##标准版需要禁用 扫描智能指标模板和训练智能指标 定时任务
