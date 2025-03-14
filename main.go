@@ -1,6 +1,7 @@
 package main
 
 import (
+	"AutoDeploy-Engine/config"
 	"AutoDeploy-Engine/core"
 	"AutoDeploy-Engine/modules/checker"
 	"fmt"
@@ -17,6 +18,7 @@ func main() {
 	action := os.Args[1]
 	switch action {
 	case "install":
+		config.InsertToGlobalVars("installType", 1)
 		if err := core.Install(); err != nil {
 			fmt.Println("Install failed:", err)
 			return
@@ -24,6 +26,7 @@ func main() {
 		//fmt.Println("Installation completed successfully!")
 
 	case "upgrade":
+		config.InsertToGlobalVars("installType", 4)
 		if err := core.Upgrade(); err != nil {
 			fmt.Println("Upgrade failed:", err)
 			return

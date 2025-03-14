@@ -20,9 +20,9 @@ func LoadGlobalEnvVars() error {
 	if err := getPath(config); err != nil {
 		return fmt.Errorf("path env vars load failed: %v", err)
 	}
-	if err := getInstallType(config); err != nil {
-		return fmt.Errorf("install type env vars load failed: %v", err)
-	}
+	//if err := getInstallType(config); err != nil {
+	//	return fmt.Errorf("install type env vars load failed: %v", err)
+	//}
 	if err := getOsTypeVer(config); err != nil {
 		return fmt.Errorf("os type env vars load failed: %v", err)
 	}

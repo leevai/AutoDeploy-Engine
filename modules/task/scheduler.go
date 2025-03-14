@@ -105,7 +105,6 @@ func RunTask() {
 		}
 	}
 	wg.Wait()
-
 }
 
 func healthCheck() bool {

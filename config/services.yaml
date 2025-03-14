@@ -68,9 +68,108 @@ services:
     priority: 2 # 低数字优先执行
 
   - name: "zcloud_service"
+    service_name: "dbaas-flyway-manage"
+    local: true
+    priority: 2 # 低数字优先执行
+
+
+  - name: "zcloud_service"
     service_name: "dbaas-infrastructure"
     local: true
     priority: 3 # 低数字优先执行
+
+
+  - name: "zcloud_service"
+    service_name: "dbaas-backend-damengdb"
+    local: true
+    priority: 3 # 低数字优先执行
+
+  - name: "zcloud_service"
+    service_name: "dbaas-monitor"
+    local: true
+    priority: 3 # 低数字优先执行
+
+  - name: "zcloud_service"
+    service_name: "dbaas-api-create-dg"
+    local: true
+    priority: 3 # 低数字优先执行
+
+  - name: "zcloud_service"
+    service_name: "dbaas-configuration"
+    local: true
+    priority: 3 # 低数字优先执行
+
+  - name: "zcloud_service"
+    service_name: "dbaas-mariadb"
+    local: true
+    priority: 3 # 低数字优先执行
+
+  - name: "zcloud_service"
+    service_name: "dbaas-db-manage"
+    local: true
+    priority: 3 # 低数字优先执行
+
+  - name: "zcloud_service"
+    service_name: "dbaas-create-shardingsphere"
+    local: true
+    priority: 3 # 低数字优先执行
+
+  - name: "zcloud_service"
+    service_name: "dbaas-apigateway"
+    local: true
+    priority: 3 # 低数字优先执行
+
+  - name: "zcloud_service"
+    service_name: "dbaas-operate-db"
+    local: true
+    priority: 3 # 低数字优先执行
+
+  - name: "zcloud_service"
+    service_name: "dbaas-permissions"
+    local: true
+    priority: 3 # 低数字优先执行
+
+  - name: "zcloud_service"
+    service_name: "dbaas-reposerver"
+    local: true
+    priority: 3 # 低数字优先执行
+
+  - name: "zcloud_service"
+    service_name: "task-management"
+    local: true
+    priority: 3 # 低数字优先执行
+
+  - name: "zcloud_service"
+    service_name: "dbaas-database-snapshot"
+    local: true
+    priority: 3 # 低数字优先执行
+
+  - name: "zcloud_service"
+    service_name: "dbaas-backend-mogdb"
+    local: true
+    priority: 3 # 低数字优先执行
+
+  - name: "zcloud_service"
+    service_name: "dbaas-common-db"
+    local: true
+    priority: 3 # 低数字优先执行
+
+  - name: "zcloud_service"
+    service_name: "dbaas-lowcode-http-engine"
+    local: true
+    priority: 3 # 低数字优先执行
+
+  - name: "zcloud_service"
+    service_name: "dbaas-management-database"
+    local: true
+    priority: 3 # 低数字优先执行
+
+  - name: "zcloud_service"
+    service_name: "dbaas-management-host"
+    local: true
+    priority: 3 # 低数字优先执行
+
+
 
 
 #  - name: "backup"

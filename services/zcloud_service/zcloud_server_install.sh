@@ -118,22 +118,22 @@ function __StartService() {
       cd ${installPath}
     fi
     if [[ ${jarDir} == "dbaas-infrastructure" ]];then
-      cp -f  ${workdir}soft/chisel/chisel ${installPath}/dbaas-infrastructure/
+      cp -f  ${workdir}/soft/chisel/chisel ${installPath}/dbaas-infrastructure/
       chmod 775 ${installPath}/dbaas-infrastructure/chisel
     fi
     serviceNameLine=`sed -n "/serviceName: ${serviceName}\$/=" ${keeperConf}`
     if [[ ${serviceNameLine} = "" ]];then
-      serviceNameLine=`sed -n "/serviceName: ${serviceName}\$/=" ${workdir}conf/keeper.yaml`
-      offset=`sed -n "$[${serviceNameLine}+1],\$"p ${workdir}conf/keeper.yaml |grep -n defaultProcessNum:|head -n 1|awk -F':' '{print $1}'`
-      sed -n "${serviceNameLine},$[${serviceNameLine}+${offset}]p"  ${workdir}conf/keeper.yaml>temp.yaml
+      serviceNameLine=`sed -n "/serviceName: ${serviceName}\$/=" ${workdir}/conf/keeper.yaml`
+      offset=`sed -n "$[${serviceNameLine}+1],\$"p ${workdir}/conf/keeper.yaml |grep -n defaultProcessNum:|head -n 1|awk -F':' '{print $1}'`
+      sed -n "${serviceNameLine},$[${serviceNameLine}+${offset}]p"  ${workdir}/conf/keeper.yaml>temp.yaml
       endLine=`awk '{print NR}' ${keeperConf} |tail -n1`
       sed -i "${endLine}r temp.yaml" ${keeperConf}
       rm -f temp.yaml
 
       if [[ ${installNodeType} == "OneNode" ]]; then
-          hostIp=$( __ReadValue ${workdir}nodeconfig/installparam.txt hostIp)
+          hostIp=$( __ReadValue ${workdir}/nodeconfig/installparam.txt hostIp)
       else
-          hostIp=$( __readINI ${workdir}zcloud.cfg multiple consul.host )
+          hostIp=$( __readINI ${workdir}/zcloud.cfg multiple consul.host )
       fi
       consulToken=`less ${configPath}/consultoken.txt | grep SecretID|awk '{print $2}'`
       sed -i "s|#installPath#|${installPath}|g" ${keeperConf}
@@ -179,8 +179,8 @@ function __InstallService() {
         mkdir -p ${installPath}${serviceNamePrefix}/${serviceName}/config
       fi
       if [[ ${serviceName} == "dbaas-monitor" ]];then
-        tar -xf ${workdir}jar/prometheus.tar.gz -C ${workdir}jar
-        \cp -f ${workdir}jar/prometheus/promtool ${installPath}${serviceNamePrefix}/${serviceName}
+        tar -xf ${workdir}/jar/prometheus.tar.gz -C ${workdir}/jar
+        \cp -f ${workdir}/jar/prometheus/promtool ${installPath}${serviceNamePrefix}/${serviceName}
         chmod u+x ${installPath}${serviceNamePrefix}/${serviceName}/promtool
       fi
       # 配置日志脱敏的服务,暂时只做了infrastructure和db-manage
@@ -232,8 +232,8 @@ function __InstallService() {
         serviceJarName=${serviceName}
       fi
       if [[ ${serviceName} == "dbaas-monitor" ]];then
-        tar -xf ${workdir}jar/prometheus.tar.gz -C ${workdir}jar
-        \cp -f ${workdir}jar/prometheus/promtool ${installPath}${serviceNamePrefix}/${serviceName}
+        tar -xf ${workdir}/jar/prometheus.tar.gz -C ${workdir}/jar
+        \cp -f ${workdir}/jar/prometheus/promtool ${installPath}${serviceNamePrefix}/${serviceName}
         chmod u+x ${installPath}${serviceNamePrefix}/${serviceName}/promtool
       fi
       nowVersion=$(ls jar${serviceNamePrefix}/${serviceName}/${serviceJarName}*.jar | awk -F'/' '{print $NF}' | awk -F'-' '{print $(NF-1)}')
@@ -562,7 +562,7 @@ function __MovePubLib() {
       mv  ${installPath}/pub_libs ${installPath}/pub_libs_bak_$(date '+%Y%m%d')
     fi
     __CreateDir ${installPath}/pub_libs
-    \cp -fr ${workdir}jar/pub_libs/* ${installPath}/pub_libs
+    \cp -fr ${workdir}/jar/pub_libs/* ${installPath}/pub_libs
     if [[ -f  ${installPath}/pub_libs/repository/com/enmo/dbaas/dbaas-zcloud-feign/6.6.0-SNAPSHOT/_remote.repositories ]];then
       rm -f ${installPath}/pub_libs/repository/com/enmo/dbaas/dbaas-zcloud-feign/6.6.0-SNAPSHOT/_remote.repositories
     fi
@@ -665,7 +665,8 @@ function __InstallNormalZcloudService() {
 }
 
 function __InstallFlyway() {
-  if [[ `find jar -type -f -name "${serviceName}*.jar" | grep -q .`  ]]; then
+  find_result=$(find ./jar -type f -name "${serviceName}*.jar" -print -quit)
+  if [[ -n "$find_result" ]]; then
     h2 "[安装服务 ... dbaas-flyway-manage";
     startTime=$(date +"%s%N")
     echo "Start App [${serviceName}]  ..."
@@ -730,26 +731,26 @@ function __InstallZdbmonMgr() {
        # 升级更新历史表结构
       if [[ ${installType} == 4 && ${oldVersion1} < "6.0.1" ]];then
         if [[ ${databaseType} == "MySQL" ]];then
-          mysql -uroot -p${dbaas_password} -h${server_ip} -P${server_port}  <  ${workdir}zdbmon_sql/6.0.1_for_mysql.sql
-          mysql -uroot -p${dbaas_password} -h${server_ip} -P${server_port}  <  ${workdir}zdbmon_sql/6.0.1_for_mysql_1.sql
+          mysql -uroot -p${dbaas_password} -h${server_ip} -P${server_port}  <  ${workdir}/zdbmon_sql/6.0.1_for_mysql.sql
+          mysql -uroot -p${dbaas_password} -h${server_ip} -P${server_port}  <  ${workdir}/zdbmon_sql/6.0.1_for_mysql_1.sql
         else
-          ${installPath}/soft/mogdb/app/bin/gsql -d zcloud -h ${server_ip} -p ${server_port} -U ${dbaas_username} -W ${dbaas_password} -f ${workdir}zdbmon_sql/6.0.1_for_mogdb.sql
+          ${installPath}/soft/mogdb/app/bin/gsql -d zcloud -h ${server_ip} -p ${server_port} -U ${dbaas_username} -W ${dbaas_password} -f ${workdir}/zdbmon_sql/6.0.1_for_mogdb.sql
         fi
       fi
       if [[ ${installType} == 4 && ${oldVersion1} < "6.1.0" ]];then
         if [[ ${databaseType} == "MySQL" ]];then
-           mysql -uroot -p${dbaas_password} -h${server_ip} -P${server_port}  <  ${workdir}zdbmon_sql/6.1.0_for_mysql_session_detail.sql
-           mysql -uroot -p${dbaas_password} -h${server_ip} -P${server_port}  <  ${workdir}zdbmon_sql/6.1.0_for_mysql_sql_stat.sql
-           mysql -uroot -p${dbaas_password} -h${server_ip} -P${server_port}  <  ${workdir}zdbmon_sql/6.1.0_for_mysql_sql_text.sql
+           mysql -uroot -p${dbaas_password} -h${server_ip} -P${server_port}  <  ${workdir}/zdbmon_sql/6.1.0_for_mysql_session_detail.sql
+           mysql -uroot -p${dbaas_password} -h${server_ip} -P${server_port}  <  ${workdir}/zdbmon_sql/6.1.0_for_mysql_sql_stat.sql
+           mysql -uroot -p${dbaas_password} -h${server_ip} -P${server_port}  <  ${workdir}/zdbmon_sql/6.1.0_for_mysql_sql_text.sql
         else
-          ${installPath}/soft/mogdb/app/bin/gsql -d zcloud -h ${server_ip} -p ${server_port} -U ${dbaas_username} -W ${dbaas_password} -f ${workdir}zdbmon_sql/6.1.0_for_mogdb.sql
+          ${installPath}/soft/mogdb/app/bin/gsql -d zcloud -h ${server_ip} -p ${server_port} -U ${dbaas_username} -W ${dbaas_password} -f ${workdir}/zdbmon_sql/6.1.0_for_mogdb.sql
         fi
       fi
       if [[ ${installType} == 4 && ${oldVersion1} < "6.2.1" ]];then
         if [[ ${databaseType} == "MySQL" ]];then
-           mysql -uroot -p${dbaas_password} -h${server_ip} -P${server_port}  <  ${workdir}zdbmon_sql/6.2.1_for_mysql_session_detail.sql
+           mysql -uroot -p${dbaas_password} -h${server_ip} -P${server_port}  <  ${workdir}/zdbmon_sql/6.2.1_for_mysql_session_detail.sql
         else
-          ${installPath}/soft/mogdb/app/bin/gsql -d zcloud -h ${server_ip} -p ${server_port} -U ${dbaas_username} -W ${dbaas_password} -f ${workdir}zdbmon_sql/6.2.1_for_mogdb.sql
+          ${installPath}/soft/mogdb/app/bin/gsql -d zcloud -h ${server_ip} -p ${server_port} -U ${dbaas_username} -W ${dbaas_password} -f ${workdir}/zdbmon_sql/6.2.1_for_mogdb.sql
         fi
       fi
     fi
