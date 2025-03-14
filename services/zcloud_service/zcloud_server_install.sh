@@ -1,4 +1,6 @@
 
+. ./script/lib/common.sh
+
 function __StartService() {
   env=($(__readINI zcloud.cfg common "spring.profiles.active"))
   if [[ ${installNodeType} == "OneNode" ]]; then
@@ -814,4 +816,21 @@ function __CheckZcloudSingleServiceStatus()  {
     fi
 
   done
+}
+
+function __QueryDatabaseInfo() {
+  if [[ ${databaseType} == "MogDB" ]];then
+    dependenceOutside=(${dependenceOutsideMogdb})
+    server_ip=${mogdbhost}
+    server_port=${mogdbport}
+    dbaas_username=${mogdbuser}
+    dbaas_password=${mogdbpassword}
+  else
+    dependenceOutside=(${dependenceOutsideMySQL})
+    server_ip=${mysqlhost}
+    server_port=${mysqlhostport}
+    dbaas_username=${mysqluser}
+    dbaas_password=${mysqlpassword}
+  fi
+  dbaas_paasword_encode=`cd ${workdir}/lib;${installPath}/soft/java/jdk-17.0.11+9/bin/java -classpath ./ SecurityUtils encode ${dbaas_password}`
 }

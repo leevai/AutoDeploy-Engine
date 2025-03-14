@@ -66,3 +66,10 @@ function __CheckPort() {
     fi
   fi
 }
+
+function h2() {
+    printf "\n${underline}${bold}${white}[zcloud dbaas] %s${reset}\n" "$@"
+    if [[ -f ${logFile} ]];then
+      echo "[zcloud dbaas][$(date "+%Y-%m-%d %H:%M:%S")]$@">> ${logFile}
+    fi
+}

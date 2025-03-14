@@ -534,6 +534,12 @@ function __StartInitMySQLNonRoot {
       info "MySQL database already initialized "
 }
 
+
+function __CreateZdbmonSchema() {
+  mysql -uroot -p${mysqlpassword} -h${mysqlhost} -P${mysqlhostport}  -e "CREATE DATABASE IF NOT EXISTS zdbmon;"
+  mysql -uroot -p${mysqlpassword} -h${mysqlhost} -P${mysqlhostport}  -e "CREATE DATABASE IF NOT EXISTS zdbmon_config;"
+}
+
 function __InstallMysql() {
 
   outsideMysql=${dependenceOutsideMySQL}
@@ -691,6 +697,7 @@ function __InstallMysql() {
     ${mysqlAddr} -uroot -p${__mysqlRootPwd} -h${mysqlIp} -P${mysqlhostport} < ${workdir}/other/deleteStandardPermissionBlack.sql >> ${logFile} 2>&1
   fi
 
+  __CreateZdbmonSchema
 }
 
 function __deletePlatformComponent() {
