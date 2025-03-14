@@ -1,5 +1,5 @@
 
-. ./script/lib/common_unroot.sh
+. ./script/lib/common.sh
 
 function __StartService() {
   env=($(__readINI zcloud.cfg common "spring.profiles.active"))

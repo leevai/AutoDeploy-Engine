@@ -31,6 +31,7 @@ export dependenceOutsideMogdb=#{dependenceOutsideMogdb}
 export dependenceOutsideMySQL=#{dependenceOutsideMySQL}
 
 . ./script/lib/common.sh
+. ./script/lib/license/fresh_license_user_identifier.sh
 . ./services/zcloud_service/zcloud_server_install.sh
 . ./services/zcloud_service/monitor_component_install_unroot.sh
 
@@ -104,6 +105,16 @@ function __InstallZcloudService() {
   if [[ ${serviceName} == "offline_health_check_collector" ]]; then
     # 复制offline_health_check_collector 到/paasdata
     move_collector_to_paasdata
+  fi
+
+  if [[ ${theme} != "zData" ]];then
+    if [[ ${installType} = 4 ]]; then
+        startTime=$(date +"%s%N")
+        info "刷新license的软件标识 ..."
+        __Fresh_user_identifier
+        endTime=$(date +"%s%N")
+        info "刷新license软件标识成功，耗时$( __CalcDuration ${startTime} ${endTime})"
+    fi
   fi
 
   __ReplaceText ${logPath}/evn.cfg "realHostIp=" "realHostIp=${realHostIp}"
