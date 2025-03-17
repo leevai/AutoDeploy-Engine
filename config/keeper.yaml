@@ -13,7 +13,7 @@ serviceList:
 - serviceName: nginx
   path: #installPath#/soft/nginx/nginx/sbin/nginx
   prefix: #installPath#/soft/nginx/nginx/sbin/nginx
-  suffix: ' -c #installPath#/soft/nginx/nginx/conf/nginx.conf'
+  suffix: '-p #installPath#/soft/nginx/nginx -c #installPath#/soft/nginx/nginx/conf/nginx.conf'
   enable: true
   defaultProcessNum: 1
 - serviceName: alertmanager

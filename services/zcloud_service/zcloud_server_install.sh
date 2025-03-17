@@ -1,6 +1,4 @@
 
-. ./script/lib/common.sh
-
 function __StartService() {
   env=($(__readINI zcloud.cfg common "spring.profiles.active"))
   if [[ ${installNodeType} == "OneNode" ]]; then
@@ -688,13 +686,13 @@ function __InstallFlyway() {
     fi
 
     __InstallService "${serviceName}"
-    echo "等待flyway写入，sleep 120"
-    sleep 120
+    echo "等待flyway写入，sleep 60"
+    sleep 60
 
     echo "${serviceName}" >> ${installPath}/serviceTemp
     if [[  $( __readINI nodeconfig/current.cfg service dbaas-web ) == ${nodeNum} ]]; then
-      echo "等待服务的启动，sleep 120"
-      sleep 120
+      echo "等待服务的启动，sleep 60"
+      sleep 60
     fi
     echo "安装服务 dbaas-flyway-manage 完成，耗时$( __CalcDuration ${startTime} ${endTime})"
   fi
@@ -767,28 +765,26 @@ function __InstallZdbmonMgr() {
 
 function __CheckZcloudSingleServiceStatus()  {
   if [[ -d ${installPath}/dbaas-apigateway && ${serviceName} == "dbaas-apigateway"  ]];then
-    su - zcloud -c"cd ${installPath};./start.sh --name dbaas-apigateway"
+    cd ${installPath}
+    ./start.sh --name dbaas-apigateway
   fi
   if [[ -d ${installPath}/magic_cube && ${serviceName} == "magic-cube"  ]];then
-    su - zcloud -c"cd ${installPath};./start.sh --name magic-cube"
+    cd ${installPath}
+    ./start.sh --name magic-cube
   fi
   if [[ -d ${installPath}/ansible_executor && ${serviceName} == "ansible_executor" ]];then
-    su - zcloud -c"cd ${installPath};./start.sh --name ansible_executor"
+    cd ${installPath};
+    ./start.sh --name ansible_executor
   fi
   info "Loop check three times"
   for loop in 1 2 3
   do
     info "start num ${loop} check"
-    info "Wait 2 minutes for the service to start"
+    info "Wait 1 minutes for the service to start"
       #睡眠2分钟
-    sleep 120s
-  if [[ ${installNodeType} == "OneNode" ]]; then
-    eurekaIp=$( __ReadValue nodeconfig/installparam.txt hostIp)
-  else
-    eurekaIp=$( __readINI zcloud.cfg multiple web.ip )
-  fi
+    sleep 60s
 
-    result=`curl -u admin:admin123 http://${eurekaIp}:8761/eureka/apps`
+    result=`curl -u admin:admin123 http://${webIp}:8761/eureka/apps`
     if [[ "${result}" == "" ]] ;then
         echo "连接eureka异常，请检查eureka节点防火墙是否关闭"
     else

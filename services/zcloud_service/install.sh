@@ -10,6 +10,8 @@ export osVersion=#{osVersion}
 export oldRelease=#{oldRelease}
 export release=#{release}
 export realHostIp=#{hostIp}
+export hostIp=#{hostIp}
+export webIp=#{webIp}
 export theme=#{theme}
 export databaseType=#{databaseType}
 export mysqluser=#{mysqluser}
@@ -50,6 +52,7 @@ export serviceName=$1
 
 function __InstallZcloudService() {
 . ./script/lib/common.sh
+. ./script/lib/license/fresh_license_user_identifier.sh
 . ./services/zcloud_service/zcloud_server_install.sh
 . ./services/zcloud_service/monitor_component_install_unroot.sh
 
@@ -85,9 +88,12 @@ function __InstallZcloudService() {
   for item in "${normalService[@]}";
     do
       if [[ "$item" == "$serviceName" ]]; then
-        __InstallNormalZcloudService
-        __CheckZcloudSingleServiceStatus
+        find_result=$(find ./jar -type f -iname "${serviceName}*.jar" -print -quit)
+        if [[ -n "$find_result" ]]; then
+          __InstallNormalZcloudService
+          __CheckZcloudSingleServiceStatus
         break
+        fi
       fi
     done
 

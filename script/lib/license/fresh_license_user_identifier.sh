@@ -1,5 +1,3 @@
-#!/bin/bash
-
 export query_old_soft_id="SELECT  user_id_software FROM dbaas.license_uid LIMIT 1"
 export query_license="SELECT content3 AS ct FROM dbaas.license_auth LIMIT 1"
 export update_user_id_software="update dbaas.license_uid set user_id_software="
@@ -124,45 +122,18 @@ function parseUid() {
 
 #记载配置信息
 function __QueryDatabaseInfoLicense() {
-  if [[ ${databaseType} = "MogDB" ]];then
-      driverName="org.opengauss.Driver"
-      if [[ ${installNodeType} == "OneNode" ]]; then
-        dependenceOutside=($( __readINI zcloud.cfg single "dependence.outside.mogdb" ))
-        if [[ ${dependenceOutside} = "1" ]];then
-          server_ip=$(__readINI ${zcloudCfg} single mogdb.service.ip)
-        else
-          server_ip=${hostIp}
-        fi
-        server_port=$(__readINI ${zcloudCfg} single mogdb.port)
-        dbaas_username=$(__readINI ${zcloudCfg} single mogdb.user)
-        dbaas_password=$(__readINI ${zcloudCfg} single mogdb.password)
-      else
-        dependenceOutside=($( __readINI zcloud.cfg multiple "dependence.outside.mogdb" ))
-        server_ip=$(__readINI ${zcloudCfg} multiple mogdb.service.ip)
-        server_port=$(__readINI ${zcloudCfg} multiple mogdb.port)
-        dbaas_username=$(__readINI ${zcloudCfg} multiple mogdb.user)
-        dbaas_password=$(__readINI ${zcloudCfg} multiple mogdb.password)
-      fi
+  if [[ ${databaseType} == "MogDB" ]];then
+      dependenceOutside=(${dependenceOutsideMogdb})
+      server_ip=${mogdbhost}
+      server_port=${mogdbport}
+      dbaas_username=${mogdbuser}
+      dbaas_password=${mogdbpassword}
     else
-      driverName="com.mysql.jdbc.Driver"
-      if [[ ${installNodeType} == "OneNode" ]]; then
-        dependenceOutside=($( __readINI zcloud.cfg single "dependence.outside.mysql" ))
-        if [[ ${dependenceOutside} = "1" ]];then
-          server_ip=$(__readINI ${zcloudCfg} single mysql.service.ip)
-        else
-          server_ip=${hostIp}
-        fi
-        server_port=$(__readINI ${zcloudCfg} single mysql.service.port)
-        dbaas_username=$(__readINI ${zcloudCfg} single mysql.username)
-        dbaas_password=$(__readINI ${zcloudCfg} single mysql.root.paasword)
-      else
-        dependenceOutside=($( __readINI zcloud.cfg multiple "dependence.outside.mysql" ))
-        server_ip=$(__readINI ${zcloudCfg} multiple mysql.service.ip)
-        server_port=$(__readINI ${zcloudCfg} multiple mysql.service.port)
-        dbaas_username=$(__readINI ${zcloudCfg} multiple mysql.username)
-        dbaas_password=$(__readINI ${zcloudCfg} multiple mysql.root.paasword)
-
-      fi
+      dependenceOutside=(${dependenceOutsideMySQL})
+      server_ip=${mysqlhost}
+      server_port=${mysqlhostport}
+      dbaas_username=${mysqluser}
+      dbaas_password=${mysqlpassword}
     fi
     dbaas_paasword_encode=`cd ${workdir}/lib;${installPath}/soft/java/jdk-17.0.11+9/bin/java -classpath ./ Utils encode ${dbaas_password}`
 }

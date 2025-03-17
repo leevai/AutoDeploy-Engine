@@ -1,7 +1,8 @@
-
+bold=$(tput bold)
 reset=$(tput sgr0)
 red=$(tput setaf 1)
 white=$(tput setaf 7)
+underline=$(tput sgr 0 1)
 
 function __ReplaceText() {
     typeset -r fileNmae=${1}

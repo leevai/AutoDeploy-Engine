@@ -1,6 +1,4 @@
 
-. ./script/lib/common.sh
-
 function __Install_node_exporter {
   echo ""
   echo "开始安装node-exporter"
@@ -779,6 +777,29 @@ function __GenAppProper_smart_baseline {
       __ReplaceTextSed "${installPath}/smart_baseline/config.json" " \\\"database\\\": \\\"series\\\"" " \\\"database\\\": \\\"zcloud\\\""
       __ReplaceTextSed "${installPath}/smart_baseline/config.json" " \\\"type\\\": \\\"mysql\\\"" " \\\"type\\\": \\\"mogdb\\\""
     fi
+}
+
+function __RemoveServiceFromKeeper() {
+  serviceName=$1
+  info " remove service ${serviceName} from keeper"
+  keeperConf=$2
+  serviceNameLine=`sed -n "/serviceName: ${serviceName}\$/=" ${keeperConf}`
+  offset=`sed -n "$[${serviceNameLine}+1],\$"p ${keeperConf} |grep -n defaultProcessNum:|head -n 1|awk -F':' '{print $1}'`
+  pathOffset=`sed -n "$[${serviceNameLine}+1],\$"p ${keeperConf} |grep -n path:|head -n 1|awk -F':' '{print $1}'`
+
+  servicePath=`sed -n "$[${serviceNameLine}+${pathOffset}]p" ${keeperConf}|awk '{print $2}'`
+  if [[ ${serviceNameLine} != "" ]];then
+    sed -i "${serviceNameLine},$[${serviceNameLine}+${offset}]d" ${keeperConf}
+
+    info "old service ${serviceName} path ${servicePath}"
+    serviceNum=`ps -ef | grep "${servicePath}" |grep -v grep |wc -l`
+    info "old service count num ${serviceNum}"
+    if [[ ${serviceNum} != 0 ]]; then
+        ps -ef | grep "${servicePath}" | grep -v grep | awk '{print $2}' | xargs kill -9
+    fi
+
+  fi
+  info " remove service ${serviceName} from keeper success"
 }
 
 #部署监控组件
