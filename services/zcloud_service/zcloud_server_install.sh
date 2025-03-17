@@ -1,4 +1,6 @@
 
+. ./script/lib/common.sh
+
 function __StartService() {
   env=($(__readINI zcloud.cfg common "spring.profiles.active"))
   if [[ ${installNodeType} == "OneNode" ]]; then
@@ -309,59 +311,6 @@ function __UpdateFlowWorkConsul() {
   if [[ ${serviceName} == "dbaas-permissions" ]];then
     curl -X PUT -H "X-Consul-Token: ${consulToken}" -d "${realHostIp}" http://${consulIp}:8500/v1/kv/zcloudconfig/prod/lcdp-workflow-manager/dbaas_permissions.host?dc=dc1
   fi
-
-}
-
-function __CheckZcloudServiceStatus()  {
-  if [[ -d ${installPath}/dbaas-apigateway && ${serviceName} == "dbaas-apigateway" ]];then
-    su - zcloud -c"cd ${installPath};./start.sh --name dbaas-apigateway"
-  fi
-  if [[ -d ${installPath}/magic_cube && ${serviceName} == "magic-cube"  ]];then
-    su - zcloud -c"cd ${installPath};./start.sh --name magic-cube"
-  fi
-  if [[ -d ${installPath}/ansible_executor && ${serviceName} == "ansible_executor"  ]];then
-    su - zcloud -c"cd ${installPath};./start.sh --name ansible_executor"
-  fi
-  info "Loop check three times"
-  for loop in 1 2 3
-  do
-    info "start num ${loop} check"
-    info "Wait 2 minutes for the service to start"
-      #睡眠2分钟
-    sleep 120s
-  if [[ ${installNodeType} == "OneNode" ]]; then
-    eurekaIp=$( __ReadValue nodeconfig/installparam.txt hostIp)
-  else
-    eurekaIp=$( __readINI zcloud.cfg multiple web.ip )
-  fi
-
-    result=`curl -u admin:admin123 http://${eurekaIp}:8761/eureka/apps`
-    if [[ "${result}" == "" ]] ;then
-        echo "连接eureka异常，请检查eureka节点防火墙是否关闭"
-    else
-      upapps=$(echo ${result}|awk -F'[<>]' '{for(i=1;i<=NF;i++){
-      if($i=="app"){appname=$(i+1)};
-      if($i=="status" && $(i+1)=="UP"){print appname}
-      }}')
-      downApp=0
-      for app  in  `ls ${installPath}  | egrep -v 'agent|zdbmon-mgr|keeper|zcloud-zoramon-mgr|aicure|dbaas-eureka-server|prometheus|alertmanager|slowmon_mgr|smart_baseline|dbaas-mail-sender|dbaas-registrationHub|soft|readme|start.sh|stop.sh|packages|version.txt|installparam.txt|serviceTemp|ansible_executor|DBaas-Lowcode-WorkFlow|open_workflow|magic_cube|zcloud_release.txt|dbType.txt|pub_libs|dbaas-wxwork-sender|dbaas-sender-common|dbaas-zabbix-sender|podman|magic-script-executor|logPath_IS_UNDEFINED|node-exporter|dbaas-operate-db|dbaas-monitor-dashboard|dbaas-api-create-dg|dbaas-configuration|dbaas-oceanbase|dbaas-backend-sql-server|dbaas-backend-db2|dbaas-backend-damengdb|dbaas-create-mongodb|dbaas-create-postgres|dbaas-create-redis|dbaas-create-shardingsphere|dbaas-lowcode-http-engine'`; do
-        if [[ $app == "expert-knowledge-base" ]];then
-          app="expert-knwl-base"
-        fi
-        cnt=$(echo "$upapps"|grep -i $app|wc -l)
-        if [[ $cnt -eq 0 ]]; then
-          info "app not start:$app"; downApp=`expr $downApp + 1`;
-#          if [[  ${app} == "dbaas-apigateway" ]];then
-#            su - zcloud -c"cd ${installPath};./start.sh --name dbaas-apigateway"
-#          fi
-        fi
-      done
-      if [ ${downApp} == 0 ];then
-        break
-      fi
-    fi
-
-  done
 
 }
 

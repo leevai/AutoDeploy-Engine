@@ -1,5 +1,5 @@
 #!/bin/bash
-serviceAppName=#{serviceAppName}
+export serviceName=$1
 nodeNum=#{nodeNum}
 installNodeType=#{installNodeType}
 installType=#{installType}

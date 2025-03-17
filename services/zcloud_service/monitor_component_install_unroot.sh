@@ -805,7 +805,7 @@ function __RemoveServiceFromKeeper() {
 #部署监控组件
 function __InstallMonitorComponent() {
 
-    if [[  ${serviceAppName} == 'node-exporter' ]]; then
+    if [[  ${serviceName} == 'node-exporter' ]]; then
       __Install_node_exporter
     else
       echo "当前节点无需安装node-exporter"
@@ -819,63 +819,63 @@ function __InstallMonitorComponent() {
     else
       outsidePrometheus=$(__readINI zcloud.cfg multiple dependence.outside.prometheus)
     fi
-    if [[  ${outsidePrometheus} = 0 && ${serviceAppName} == 'alertmanager' ]]; then
+    if [[  ${outsidePrometheus} = 0 && ${serviceName} == 'alertmanager' ]]; then
       __InstallAlertmanager
     else
       echo "当前节点无需安装alertmanager"
     fi
-    if [[ ${serviceAppName} == 'zoramon-mgr' ]]; then
+    if [[ -e ${workdir}/jar/zoramon-mgr && ${serviceName} == 'zoramon-mgr' ]]; then
       __InstallZcloud_zoramon_mgr
     else
       echo "当前节点无需安装zoramon-mgr"
     fi
-    if [[ ${serviceAppName} == 'smart-baseline' ]]; then
+    if [[ ${serviceName} == 'smart-baseline' ]]; then
       __InstallZcloud_smart_baseline
     else
       echo "当前节点无需安装smart-baseline"
     fi
-    if [[ -e ${workdir}/jar/dbaas-mail-sender && ${serviceAppName} == 'dbaas-mail-sender' ]]; then
+    if [[ -e ${workdir}/jar/dbaas-mail-sender && ${serviceName} == 'dbaas-mail-sender' ]]; then
       __InstallDbaas_mail_sender
     else
       __RemoveServiceFromKeeper dbaas-mail-sender ${configPath}/keeper.yaml
       echo "当前节点无需安装dbaas-mail-sender"
     fi
     if [[ ${theme} != "zData" ]];then
-      if [[  -e ${workdir}/jar/dbaas-wxwork-sender && -e ${workdir}/jar/dbaas-mail-sender && ${serviceAppName} == 'dbaas-wxwork-sender' ]]; then
+      if [[  -e ${workdir}/jar/dbaas-wxwork-sender && ${serviceName} == 'dbaas-wxwork-sender' ]]; then
         __Install_alert_sender dbaas-wxwork-sender
       else
         __RemoveServiceFromKeeper dbaas-wxwork-sender ${configPath}/keeper.yaml
         echo "当前节点无需安装dbaas-wxwork-sender"
       fi
 
-      if [[ -e ${workdir}/jar/dbaas-sender-common && ${serviceAppName} == 'dbaas-sender-common'  ]]; then
+      if [[ -e ${workdir}/jar/dbaas-sender-common && ${serviceName} == 'dbaas-sender-common'  ]]; then
         __Install_alert_sender dbaas-sender-common
       else
         __RemoveServiceFromKeeper dbaas-sender-common ${configPath}/keeper.yaml
         echo "当前节点无需安装dbaas-sender-common"
       fi
 
-      if [[ -e ${workdir}/jar/dbaas-zabbix-sender && ${serviceAppName} == 'dbaas-zabbix-sender' ]]; then
+      if [[ -e ${workdir}/jar/dbaas-zabbix-sender && ${serviceName} == 'dbaas-zabbix-sender' ]]; then
         __Install_alert_sender dbaas-zabbix-sender
       else
         __RemoveServiceFromKeeper dbaas-zabbix-sender ${configPath}/keeper.yaml
         echo "当前节点无需安装dbaas-zabbix-sender"
       fi
     fi
-    if [[  ${serviceAppName} == 'slowmon_mgr' ]]; then
+    if [[  ${serviceName} == 'slowmon_mgr' ]]; then
     __InstallZcloud_slowmon_mgr
     else
         echo "当前节点无需安装slowmon_mgr"
     fi
 
     sleep 20
-    if [[ ${outsidePrometheus} = 0  && ${serviceAppName} == 'dbaas-registrationHub' ]]; then
+    if [[ ${outsidePrometheus} = 0  && ${serviceName} == 'dbaas-registrationHub' ]]; then
     __InstallDbaas_registrationHub
     else
         echo "当前节点无需安装dbaas-registrationHub"
     fi
 
-    echo "等待监控组件的启动，等待2分钟"
+    echo "等待监控组件的启动，等待1分钟"
     sleep 120
 }
 

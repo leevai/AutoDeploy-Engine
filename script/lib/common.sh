@@ -74,3 +74,16 @@ function h2() {
       echo "[zcloud dbaas][$(date "+%Y-%m-%d %H:%M:%S")]$@">> ${logFile}
     fi
 }
+
+function __CalcDuration {
+  startTime=$1
+  endTime=$2
+  duration=$[(${endTime}-${startTime})/1000000]
+  if [[ ${duration} -lt 1000 ]];then
+    echo "${duration}ms"
+  elif [[ ${duration} -lt 60000 ]]; then
+    echo "$[${duration}/1000]s"
+  else
+    echo "$[${duration}/60000]m"
+  fi
+}

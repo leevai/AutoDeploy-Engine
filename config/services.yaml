@@ -80,7 +80,7 @@ services:
 
 
   - name: "zcloud_service"
-    service_name: "dbaas-backend-damengdb"
+    service_name: "dbaas-backend-script"
     local: true
     priority: 3 # 低数字优先执行
 
@@ -90,14 +90,14 @@ services:
     priority: 3 # 低数字优先执行
 
   - name: "zcloud_service"
-    service_name: "dbaas-api-create-dg"
+    service_name: "dbaas-common-backupcenter"
     local: true
     priority: 3 # 低数字优先执行
 
-  - name: "zcloud_service"
-    service_name: "dbaas-configuration"
-    local: true
-    priority: 3 # 低数字优先执行
+#  - name: "zcloud_service"
+#    service_name: "dbaas-configuration"
+#    local: true
+#    priority: 3 # 低数字优先执行
 
   - name: "zcloud_service"
     service_name: "dbaas-mariadb"
@@ -110,17 +110,12 @@ services:
     priority: 3 # 低数字优先执行
 
   - name: "zcloud_service"
-    service_name: "dbaas-create-shardingsphere"
+    service_name: "dbaas-ogg-management"
     local: true
     priority: 3 # 低数字优先执行
 
   - name: "zcloud_service"
     service_name: "dbaas-apigateway"
-    local: true
-    priority: 3 # 低数字优先执行
-
-  - name: "zcloud_service"
-    service_name: "dbaas-operate-db"
     local: true
     priority: 3 # 低数字优先执行
 
@@ -214,7 +209,13 @@ services:
     local: true
     priority: 3 # 低数字优先执行
 
+#  - name: "zdbmon"
+#    local: true
+#    priority: 3 # 低数字优先执行
 
+#  - name: "exportKnwlBase"
+#    local: true
+#    priority: 3 # 低数字优先执行
 
 
 #  - name: "backup"

@@ -84,7 +84,7 @@ function __InstallZcloudService() {
   "dbaas-apigateway" "dbaas-infrastructure" "dbaas-operate-db" "dbaas-permissions"
   "dbaas-reposerver" "task-management" "dbaas-database-snapshot" "dbaas-backend-mogdb"
   "dbaas-common-db" "dbaas-lowcode-http-engine" "dbaas-management-database"
-  "dbaas-management-host")
+  "dbaas-management-host","dbaas-backend-script","dbaas-ogg-management","dbaas-common-backupcenter")
   for item in "${normalService[@]}";
     do
       if [[ "$item" == "$serviceName" ]]; then

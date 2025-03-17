@@ -135,5 +135,5 @@ function __QueryDatabaseInfoLicense() {
       dbaas_username=${mysqluser}
       dbaas_password=${mysqlpassword}
     fi
-    dbaas_paasword_encode=`cd ${workdir}/lib;${installPath}/soft/java/jdk-17.0.11+9/bin/java -classpath ./ Utils encode ${dbaas_password}`
+    dbaas_paasword_encode=`cd ${workdir}/lib;${installPath}/soft/java/jdk-17.0.11+9/bin/java -classpath ./ SecurityUtils encode ${dbaas_password}`
 }
