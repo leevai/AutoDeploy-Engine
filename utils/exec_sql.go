@@ -9,10 +9,15 @@ import (
 )
 
 func ExecMysqlSQL(sqlStatement string) (err error) {
-	dsn := fmt.Sprintf("%v:%v@tcp(%v:3306)/learn-jooq",
+	return ExecMysqlSQLWithDB("", sqlStatement)
+}
+
+func ExecMysqlSQLWithDB(dataBase, sqlStatement string) (err error) {
+	dsn := fmt.Sprintf("%v:%v@tcp(%v:3306)/%s",
 		config.GlobalConfigMap["mysqluser"],
 		config.GlobalConfigMap["mysqlpassword"],
 		config.GlobalConfigMap["mysqlhost"],
+		dataBase,
 	)
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {

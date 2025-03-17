@@ -2,6 +2,8 @@ package task
 
 import (
 	"AutoDeploy-Engine/config"
+	"AutoDeploy-Engine/modules/checker"
+	"fmt"
 	"sync"
 	"time"
 )
@@ -24,7 +26,8 @@ func init() {
 		}
 
 		//todo 计算节点goroutine数
-		nodeS.goroutineNum = 1
+		//nodeS.goroutineNum = 2
+		nodeS.goroutineNum = 2
 		nodeTaskMap[nodeConfig.Name] = nodeS
 	}
 }
@@ -96,6 +99,8 @@ func RunTask() {
 		time.Sleep(5 * time.Second)
 		if healthCheck() {
 			//健康检查通过
+			//等一下flyway
+			time.Sleep(60 * time.Second)
 			mu.Lock()
 			p2HealthCheckSuccess = true
 			mu.Unlock()
@@ -108,5 +113,27 @@ func RunTask() {
 }
 
 func healthCheck() bool {
+	if ok := checker.CheckConsulStatus(fmt.Sprintf("%v:%d", config.GlobalConfigMap["consulHost"], 8500)); !ok {
+		return false
+	}
+	if ok := checker.CheckEurekaStatus(fmt.Sprintf("%v:%d", config.GlobalConfigMap["webIp"], 8761)); !ok {
+		return false
+	}
+	if ok := checker.CheckNginxStatus(fmt.Sprintf("%v:%d", config.GlobalConfigMap["webIp"], 8080)); !ok {
+		return false
+	}
+	if ok := checker.CheckPrometheusStatus(fmt.Sprintf("%v:%d", config.GlobalConfigMap["prometheusIp"], 8093)); !ok {
+		return false
+	}
+
+	if "MySQL" == fmt.Sprintf("%v", config.GlobalConfigMap["databaseType"]) {
+		if ok := checker.CheckMySQLStatus(); !ok {
+			return false
+		}
+	} else {
+		if ok := checker.CheckMogDBStatus(); !ok {
+			return false
+		}
+	}
 	return true
 }

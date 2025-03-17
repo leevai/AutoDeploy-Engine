@@ -310,8 +310,9 @@ function __InstallWeb {
           ps -ef |grep "nginx: worker process"|grep " 1 "| awk '{print $2}' | xargs kill -9
           sleep 5s
     fi
+    chown -R zcloud:zcloud ${installPath}/soft/nginx
     #启动nginx
-    ${nginx_path} -p ${installPath}/soft/nginx/nginx -c ${nginx_conf_path}
+    su - zcloud -c "${nginx_path} -p ${installPath}/soft/nginx/nginx -c ${nginx_conf_path}"
     retCode=$?
     # retCode=0
     if [[ ${retCode} == 0 ]]; then

@@ -876,7 +876,7 @@ function __InstallMonitorComponent() {
     fi
 
     echo "等待监控组件的启动，等待1分钟"
-    sleep 120
+    sleep 60
 }
 
 

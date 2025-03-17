@@ -35,7 +35,7 @@ type ServiceConfig struct {
 	ChangeIPScript    string            `yaml:"change_ip_script"`
 	InstallPath       string            `yaml:"install_path"`
 	StartCommand      string            `yaml:"start_command"`
-	Priority          int               `yaml:"priority"`
+	Priority          float64           `yaml:"priority"`
 }
 
 func LoadServiceConfig(configFile string) ([]*ServiceConfig, error) {

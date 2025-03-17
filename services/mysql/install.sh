@@ -634,7 +634,7 @@ function __InstallMysql() {
       info "无需initialize MySQL"
       endTime=$(date +"%s%N")
       info "MySQL initialize 完成"
-    elif [[ $( __readINI nodeconfig/current.cfg service mysql )  == 1 && $(ps -ef|grep mysqld|grep zcloud|grep -v grep|wc -l) = 0 && ! -f /usr/lib/systemd/system/mysqld.service ]]; then
+    elif [[ $(ps -ef|grep mysqld|grep zcloud|grep -v grep|wc -l) = 0 && ! -f /usr/lib/systemd/system/mysqld.service ]]; then
       typeset -r nodeType=${installNodeType}
       cd ${workdir}
       # shellcheck disable=SC2005

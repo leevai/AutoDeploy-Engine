@@ -11,6 +11,9 @@ import (
 func Upgrade() error {
 	fmt.Println("开始升级")
 	for _, service := range config.MicroServices {
+		if service.Name == "zcloud" {
+			continue
+		}
 		fmt.Printf("Upgrade service: %s\n", service.Name)
 		serviceDetail, err := config.LoadSingleServiceConfig(fmt.Sprintf("./services/%s/service.yaml", service.Name))
 		if err != nil {
@@ -36,15 +39,10 @@ func Upgrade() error {
 			}
 		}
 
-		cmdStr := serviceDetail.UpgradeScript
-		if service.ServiceName != "" {
-			cmdStr = cmdStr + " " + service.ServiceName
-		}
-		output, err := utils.ExecuteShellCommandUseBash(service, cmdStr, true)
+		_, err = utils.ExecuteShellCommandUseBash(service, serviceDetail.UpgradeScript, true)
 		if err != nil {
 			return fmt.Errorf("failed to install service %s: %v", service.Name, err)
 		}
-		fmt.Println(output)
 	}
 	return nil
 }

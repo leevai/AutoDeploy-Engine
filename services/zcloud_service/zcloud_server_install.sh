@@ -163,134 +163,130 @@ function __StartService() {
 function __InstallService() {
   serviceName=${1}
   serviceNamePrefix=${2}
-  if [[  $( __readINI nodeconfig/current.cfg service ${serviceName} ) == ${nodeNum} ]]; then
-    if [[ ${release} == "standard" && (${serviceName} == "dbaas-api-create-dg" || ${serviceName} == "dbaas-create-shardingsphere" || ${serviceName} == "dbaas-common-backupcenter" ) ]];then
-      return
+  if [[ ${release} == "standard" && (${serviceName} == "dbaas-api-create-dg" || ${serviceName} == "dbaas-create-shardingsphere" || ${serviceName} == "dbaas-common-backupcenter" ) ]];then
+    return
+  fi
+
+  __UpdateFlowWorkConsul ${serviceName}
+
+  echo "[${serviceName}]">>${versionPath}/version.cfg
+  if [[ ! -e ${installPath}${serviceNamePrefix}/${serviceName} ]]; then
+    echo "type=全新安装">>${versionPath}/version.cfg
+    echo "newVersion=${nowVersion}">>${versionPath}/version.cfg
+    cp -r "jar${serviceNamePrefix}/${serviceName}/" "${installPath}${serviceNamePrefix}/"
+    info "${installPath}${serviceNamePrefix}/${serviceName}/config"
+    if [[ ! -d ${installPath}${serviceNamePrefix}/${serviceName}/config ]];then
+      info "mkdir -p ${installPath}${serviceNamePrefix}/${serviceName}/config"
+      mkdir -p ${installPath}${serviceNamePrefix}/${serviceName}/config
+    fi
+    if [[ ${serviceName} == "dbaas-monitor" ]];then
+      tar -xf ${workdir}/jar/prometheus.tar.gz -C ${workdir}/jar
+      \cp -f ${workdir}/jar/prometheus/promtool ${installPath}${serviceNamePrefix}/${serviceName}
+      chmod u+x ${installPath}${serviceNamePrefix}/${serviceName}/promtool
+    fi
+    # 配置日志脱敏的服务,暂时只做了infrastructure和db-manage
+    if [[ ${theme} == "zData" ]];then
+      if [[ ${serviceName} == "dbaas-apigateway" ]]; then
+        cp conf/logback/logback-${serviceName}-zdata.xml ${installPath}${serviceNamePrefix}/${serviceName}/config/
+        sed -i 's#name="logHome" value=.*#name="logHome" value="'${logPath}${serviceNamePrefix}/${serviceName}'/"/>#g' ${installPath}${serviceNamePrefix}/${serviceName}/config/logback-${serviceName}-zdata.xml
+        mv ${installPath}${serviceNamePrefix}/${serviceName}/config/logback-${serviceName}-zdata.xml ${installPath}${serviceNamePrefix}/${serviceName}/config/logback.xml
+      elif [[ ${serviceName} == "dbaas-flyway-manage" || ${serviceName} == "dbaas-eureka-server" || ${serviceName} == "task-management" ]]; then
+        cp conf/logback/logback-default-zdata.xml ${installPath}${serviceNamePrefix}/${serviceName}/config/
+        info "sed -i 's#name=\"logHome\" value=.*#name=\"logHome\" value=\"'${logPath}${serviceNamePrefix}/${serviceName}'/\"/>#g' ${installPath}${serviceNamePrefix}/${serviceName}/config/logback-default-zdata.xml"
+        info "mv ${installPath}${serviceNamePrefix}/${serviceName}/config/logback-default-zdata.xml ${installPath}${serviceNamePrefix}/${serviceName}/config/logback.xml"
+        sed -i 's#name="logHome" value=.*#name="logHome" value="'${logPath}${serviceNamePrefix}/${serviceName}'/"/>#g' ${installPath}${serviceNamePrefix}/${serviceName}/config/logback-default-zdata.xml
+        mv ${installPath}${serviceNamePrefix}/${serviceName}/config/logback-default-zdata.xml ${installPath}${serviceNamePrefix}/${serviceName}/config/logback.xml
+      else
+        cp conf/logback/logback-default-with-mask-zdata.xml ${installPath}${serviceNamePrefix}/${serviceName}/config/
+        info "sed -i 's#name=\"logHome\" value=.*#name=\"logHome\" value=\"'${logPath}${serviceNamePrefix}/${serviceName}'/\"/>#g' ${installPath}${serviceNamePrefix}/${serviceName}/config/logback-default-with-mask-zdata.xml"
+        info "mv ${installPath}${serviceNamePrefix}/${serviceName}/config/logback-default-with-mask-zdata.xml ${installPath}${serviceNamePrefix}/${serviceName}/config/logback.xml"
+        sed -i 's#name="logHome" value=.*#name="logHome" value="'${logPath}${serviceNamePrefix}/${serviceName}'/"/>#g' ${installPath}${serviceNamePrefix}/${serviceName}/config/logback-default-with-mask-zdata.xml
+        mv ${installPath}${serviceNamePrefix}/${serviceName}/config/logback-default-with-mask-zdata.xml ${installPath}${serviceNamePrefix}/${serviceName}/config/logback.xml
+      fi
+    else
+      if [[ ${app} == "dbaas-db-manage" ]]; then
+        cp conf/logback/logback-default-with-mask.xml ${installPath}${serviceNamePrefix}/${serviceName}/config/
+        sed -i 's#name="logHome" value=.*#name="logHome" value="'${logPath}${serviceNamePrefix}/${serviceName}'/"/>#g' ${installPath}${serviceNamePrefix}/${serviceName}/config/logback-default-with-mask.xml
+        mv ${installPath}${serviceNamePrefix}/${serviceName}/config/logback-default-with-mask.xml ${installPath}${serviceNamePrefix}/${serviceName}/config/logback.xml
+      elif [ -f conf/logback/logback-${serviceName}.xml ]; then
+        cp conf/logback/logback-${serviceName}.xml ${installPath}${serviceNamePrefix}/${serviceName}/config/
+        sed -i 's#name="logHome" value=.*#name="logHome" value="'${logPath}${serviceNamePrefix}/${serviceName}'/"/>#g' ${installPath}${serviceNamePrefix}/${serviceName}/config/logback-${serviceName}.xml
+        mv ${installPath}${serviceNamePrefix}/${serviceName}/config/logback-${serviceName}.xml ${installPath}${serviceNamePrefix}/${serviceName}/config/logback.xml
+      else
+        cp conf/logback/logback-default.xml ${installPath}${serviceNamePrefix}/${serviceName}/config/
+        sed -i 's#name="logHome" value=.*#name="logHome" value="'${logPath}${serviceNamePrefix}/${serviceName}'/"/>#g' ${installPath}${serviceNamePrefix}/${serviceName}/config/logback-default.xml
+        mv ${installPath}${serviceNamePrefix}/${serviceName}/config/logback-default.xml ${installPath}${serviceNamePrefix}/${serviceName}/config/logback.xml
+      fi
     fi
 
-    __UpdateFlowWorkConsul ${serviceName}
+    port=$(__CheckPort ${serviceName})
+    if [[ ${port} -gt 0 ]];then
+      error "${port}端口已被占用，${serviceName}安装失败,安装中断"
+      exit 1
+    fi
 
-    echo "[${serviceName}]">>${versionPath}/version.cfg
-    if [[ ! -e ${installPath}${serviceNamePrefix}/${serviceName} ]]; then
-      echo "type=全新安装">>${versionPath}/version.cfg
+    __StartService "${serviceNamePrefix}${serviceName}" "${serviceName}"
+  else
+    if [[ ${serviceName} == "dbaas-apigateway" ]]; then
+      serviceJarName="dbaas-apiGateWay"
+    else
+      serviceJarName=${serviceName}
+    fi
+    if [[ ${serviceName} == "dbaas-monitor" ]];then
+      tar -xf ${workdir}/jar/prometheus.tar.gz -C ${workdir}/jar
+      \cp -f ${workdir}/jar/prometheus/promtool ${installPath}${serviceNamePrefix}/${serviceName}
+      chmod u+x ${installPath}${serviceNamePrefix}/${serviceName}/promtool
+    fi
+    nowVersion=$(ls jar${serviceNamePrefix}/${serviceName}/${serviceJarName}*.jar | awk -F'/' '{print $NF}' | awk -F'-' '{print $(NF-1)}')
+    oldVersion=$(ls ${installPath}${serviceNamePrefix}/${serviceName}/${serviceJarName}*.jar | awk -F'/' '{print $NF}' | awk -F'-' '{print $(NF-1)}')
+    if [[ ${nowVersion} != ${oldVersion} || "dbaas-apigateway" == ${serviceName} || "dbaas-monitor" == ${serviceName}  || "dbaas-infrastructure" == ${serviceName} ]]; then
+      echo "type=升级替换">>${versionPath}/version.cfg
       echo "newVersion=${nowVersion}">>${versionPath}/version.cfg
-      cp -r "jar${serviceNamePrefix}/${serviceName}/" "${installPath}${serviceNamePrefix}/"
-      info "${installPath}${serviceNamePrefix}/${serviceName}/config"
-      if [[ ! -d ${installPath}${serviceNamePrefix}/${serviceName}/config ]];then
-        info "mkdir -p ${installPath}${serviceNamePrefix}/${serviceName}/config"
-        mkdir -p ${installPath}${serviceNamePrefix}/${serviceName}/config
-      fi
-      if [[ ${serviceName} == "dbaas-monitor" ]];then
-        tar -xf ${workdir}/jar/prometheus.tar.gz -C ${workdir}/jar
-        \cp -f ${workdir}/jar/prometheus/promtool ${installPath}${serviceNamePrefix}/${serviceName}
-        chmod u+x ${installPath}${serviceNamePrefix}/${serviceName}/promtool
-      fi
-      # 配置日志脱敏的服务,暂时只做了infrastructure和db-manage
-      if [[ ${theme} == "zData" ]];then
-        if [[ ${serviceName} == "dbaas-apigateway" ]]; then
-          cp conf/logback/logback-${serviceName}-zdata.xml ${installPath}${serviceNamePrefix}/${serviceName}/config/
-          sed -i 's#name="logHome" value=.*#name="logHome" value="'${logPath}${serviceNamePrefix}/${serviceName}'/"/>#g' ${installPath}${serviceNamePrefix}/${serviceName}/config/logback-${serviceName}-zdata.xml
-          mv ${installPath}${serviceNamePrefix}/${serviceName}/config/logback-${serviceName}-zdata.xml ${installPath}${serviceNamePrefix}/${serviceName}/config/logback.xml
-        elif [[ ${serviceName} == "dbaas-flyway-manage" || ${serviceName} == "dbaas-eureka-server" || ${serviceName} == "task-management" ]]; then
-          cp conf/logback/logback-default-zdata.xml ${installPath}${serviceNamePrefix}/${serviceName}/config/
-          info "sed -i 's#name=\"logHome\" value=.*#name=\"logHome\" value=\"'${logPath}${serviceNamePrefix}/${serviceName}'/\"/>#g' ${installPath}${serviceNamePrefix}/${serviceName}/config/logback-default-zdata.xml"
-          info "mv ${installPath}${serviceNamePrefix}/${serviceName}/config/logback-default-zdata.xml ${installPath}${serviceNamePrefix}/${serviceName}/config/logback.xml"
-          sed -i 's#name="logHome" value=.*#name="logHome" value="'${logPath}${serviceNamePrefix}/${serviceName}'/"/>#g' ${installPath}${serviceNamePrefix}/${serviceName}/config/logback-default-zdata.xml
-          mv ${installPath}${serviceNamePrefix}/${serviceName}/config/logback-default-zdata.xml ${installPath}${serviceNamePrefix}/${serviceName}/config/logback.xml
-        else
-          cp conf/logback/logback-default-with-mask-zdata.xml ${installPath}${serviceNamePrefix}/${serviceName}/config/
-          info "sed -i 's#name=\"logHome\" value=.*#name=\"logHome\" value=\"'${logPath}${serviceNamePrefix}/${serviceName}'/\"/>#g' ${installPath}${serviceNamePrefix}/${serviceName}/config/logback-default-with-mask-zdata.xml"
-          info "mv ${installPath}${serviceNamePrefix}/${serviceName}/config/logback-default-with-mask-zdata.xml ${installPath}${serviceNamePrefix}/${serviceName}/config/logback.xml"
-          sed -i 's#name="logHome" value=.*#name="logHome" value="'${logPath}${serviceNamePrefix}/${serviceName}'/"/>#g' ${installPath}${serviceNamePrefix}/${serviceName}/config/logback-default-with-mask-zdata.xml
-          mv ${installPath}${serviceNamePrefix}/${serviceName}/config/logback-default-with-mask-zdata.xml ${installPath}${serviceNamePrefix}/${serviceName}/config/logback.xml
-        fi
-      else
-        if [[ ${app} == "dbaas-db-manage" ]]; then
-          cp conf/logback/logback-default-with-mask.xml ${installPath}${serviceNamePrefix}/${serviceName}/config/
-          sed -i 's#name="logHome" value=.*#name="logHome" value="'${logPath}${serviceNamePrefix}/${serviceName}'/"/>#g' ${installPath}${serviceNamePrefix}/${serviceName}/config/logback-default-with-mask.xml
-          mv ${installPath}${serviceNamePrefix}/${serviceName}/config/logback-default-with-mask.xml ${installPath}${serviceNamePrefix}/${serviceName}/config/logback.xml
-        elif [ -f conf/logback/logback-${serviceName}.xml ]; then
-          cp conf/logback/logback-${serviceName}.xml ${installPath}${serviceNamePrefix}/${serviceName}/config/
-          sed -i 's#name="logHome" value=.*#name="logHome" value="'${logPath}${serviceNamePrefix}/${serviceName}'/"/>#g' ${installPath}${serviceNamePrefix}/${serviceName}/config/logback-${serviceName}.xml
-          mv ${installPath}${serviceNamePrefix}/${serviceName}/config/logback-${serviceName}.xml ${installPath}${serviceNamePrefix}/${serviceName}/config/logback.xml
-        else
-          cp conf/logback/logback-default.xml ${installPath}${serviceNamePrefix}/${serviceName}/config/
-          sed -i 's#name="logHome" value=.*#name="logHome" value="'${logPath}${serviceNamePrefix}/${serviceName}'/"/>#g' ${installPath}${serviceNamePrefix}/${serviceName}/config/logback-default.xml
-          mv ${installPath}${serviceNamePrefix}/${serviceName}/config/logback-default.xml ${installPath}${serviceNamePrefix}/${serviceName}/config/logback.xml
-        fi
-      fi
+      echo "oldVersion=${oldVersion}">>${versionPath}/version.cfg
+      jarName=$(ls ${installPath}${serviceNamePrefix}/${serviceName}/${serviceJarName}*.jar | awk -F'/' '{print $NF}')
 
+      if [[ $(ps -ef | grep ${serviceName}/${serviceJarName} | grep -v grep | wc -l) -gt 0 ]]; then
+        echo "原安装包运行状态=active">>${versionPath}/version.cfg
+        ps -ef | grep ${serviceName}/${serviceJarName} | grep -v grep | awk '{print $2}' | xargs kill -9
+        info "关闭${serviceName}成功"
+        sleep 2s
+      else
+        echo "原安装包运行状态=inactive">>${versionPath}/version.cfg
+      fi
       port=$(__CheckPort ${serviceName})
       if [[ ${port} -gt 0 ]];then
         error "${port}端口已被占用，${serviceName}安装失败,安装中断"
         exit 1
       fi
-
+      mv ${installPath}${serviceNamePrefix}/${serviceName}/${jarName} ${installPath}${serviceNamePrefix}/${serviceName}/${jarName}.bak
+      cp jar${serviceNamePrefix}/${serviceName}/${serviceJarName}*.jar ${installPath}${serviceNamePrefix}/${serviceName}/
+      rm -f ${installPath}${serviceNamePrefix}/${serviceName}/config/messages*
+      info "复制${serviceName}到安装目录"
       __StartService "${serviceNamePrefix}${serviceName}" "${serviceName}"
+      info "重启${serviceName}成功"
     else
-      if [[ ${serviceName} == "dbaas-apigateway" ]]; then
-        serviceJarName="dbaas-apiGateWay"
-      else
-        serviceJarName=${serviceName}
-      fi
-      if [[ ${serviceName} == "dbaas-monitor" ]];then
-        tar -xf ${workdir}/jar/prometheus.tar.gz -C ${workdir}/jar
-        \cp -f ${workdir}/jar/prometheus/promtool ${installPath}${serviceNamePrefix}/${serviceName}
-        chmod u+x ${installPath}${serviceNamePrefix}/${serviceName}/promtool
-      fi
-      nowVersion=$(ls jar${serviceNamePrefix}/${serviceName}/${serviceJarName}*.jar | awk -F'/' '{print $NF}' | awk -F'-' '{print $(NF-1)}')
-      oldVersion=$(ls ${installPath}${serviceNamePrefix}/${serviceName}/${serviceJarName}*.jar | awk -F'/' '{print $NF}' | awk -F'-' '{print $(NF-1)}')
-      if [[ ${nowVersion} != ${oldVersion} || "dbaas-apigateway" == ${serviceName} || "dbaas-monitor" == ${serviceName}  || "dbaas-infrastructure" == ${serviceName} ]]; then
-        echo "type=升级替换">>${versionPath}/version.cfg
-        echo "newVersion=${nowVersion}">>${versionPath}/version.cfg
-        echo "oldVersion=${oldVersion}">>${versionPath}/version.cfg
-        jarName=$(ls ${installPath}${serviceNamePrefix}/${serviceName}/${serviceJarName}*.jar | awk -F'/' '{print $NF}')
-
-        if [[ $(ps -ef | grep ${serviceName}/${serviceJarName} | grep -v grep | wc -l) -gt 0 ]]; then
-          echo "原安装包运行状态=active">>${versionPath}/version.cfg
-          ps -ef | grep ${serviceName}/${serviceJarName} | grep -v grep | awk '{print $2}' | xargs kill -9
-          info "关闭${serviceName}成功"
-          sleep 2s
-        else
-          echo "原安装包运行状态=inactive">>${versionPath}/version.cfg
-        fi
+      echo "type=升级替换">>${versionPath}/version.cfg
+      echo "newVersion=${nowVersion}">>${versionPath}/version.cfg
+      echo "oldVersion=${oldVersion}">>${versionPath}/version.cfg
+      if [[ $(ps -ef | grep ${serviceName}/${serviceJarName} | grep -v grep | wc -l) == 0 ]]; then
+        echo "原安装包运行状态=inactive">>${versionPath}/version.cfg
+        info "原服务${serviceName}已停止，需要重新启动成功"
         port=$(__CheckPort ${serviceName})
         if [[ ${port} -gt 0 ]];then
           error "${port}端口已被占用，${serviceName}安装失败,安装中断"
           exit 1
         fi
-        mv ${installPath}${serviceNamePrefix}/${serviceName}/${jarName} ${installPath}${serviceNamePrefix}/${serviceName}/${jarName}.bak
-        cp jar${serviceNamePrefix}/${serviceName}/${serviceJarName}*.jar ${installPath}${serviceNamePrefix}/${serviceName}/
-        rm -f ${installPath}${serviceNamePrefix}/${serviceName}/config/messages*
-        info "复制${serviceName}到安装目录"
         __StartService "${serviceNamePrefix}${serviceName}" "${serviceName}"
         info "重启${serviceName}成功"
       else
-        echo "type=升级替换">>${versionPath}/version.cfg
-        echo "newVersion=${nowVersion}">>${versionPath}/version.cfg
-        echo "oldVersion=${oldVersion}">>${versionPath}/version.cfg
-        if [[ $(ps -ef | grep ${serviceName}/${serviceJarName} | grep -v grep | wc -l) == 0 ]]; then
-          echo "原安装包运行状态=inactive">>${versionPath}/version.cfg
-          info "原服务${serviceName}已停止，需要重新启动成功"
-          port=$(__CheckPort ${serviceName})
-          if [[ ${port} -gt 0 ]];then
-            error "${port}端口已被占用，${serviceName}安装失败,安装中断"
-            exit 1
-          fi
-          __StartService "${serviceNamePrefix}${serviceName}" "${serviceName}"
-          info "重启${serviceName}成功"
-        else
-          echo "原安装包运行状态=active">>${versionPath}/version.cfg
-          info "${serviceName}版本没有变化，且处于正常的运行状态，无需处理"
-        fi
+        echo "原安装包运行状态=active">>${versionPath}/version.cfg
+        info "${serviceName}版本没有变化，且处于正常的运行状态，无需处理"
       fi
     fi
-    \cp -f script/start.sh ${installPath}/${serviceName}
-    \cp -f script/stop.sh ${installPath}/${serviceName}
-    info "[${serviceName}]  安装完成"
-  else
-        info "当前节点无需安装${serviceName}"
   fi
+  \cp -f script/start.sh ${installPath}/${serviceName}
+  \cp -f script/stop.sh ${installPath}/${serviceName}
+  info "[${serviceName}]  安装完成"
 }
 
 function __UpdateFlowWorkConsul() {

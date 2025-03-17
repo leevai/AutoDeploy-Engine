@@ -3,7 +3,6 @@ package checker
 import (
 	"AutoDeploy-Engine/config"
 	"AutoDeploy-Engine/utils"
-	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"io/ioutil"
@@ -18,7 +17,7 @@ func CheckConsulStatus(consulAddr string) bool {
 }
 
 func CheckEurekaStatus(eurekaAddr string) bool {
-	return urlCheckStatus("Eureka", fmt.Sprintf("http://%s/eureka/apps", eurekaAddr))
+	return urlCheckStatus("Eureka", fmt.Sprintf("http://%s/login", eurekaAddr))
 }
 
 func CheckNginxStatus(nginxAddr string) bool {
@@ -94,34 +93,21 @@ func CheckPrometheusStatus(prometheusAddr string) bool {
 	return false
 }
 
-func CheckMySQLStatus(user, password, host, port string) bool {
-	// 构建数据库连接字符串
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/mysql", user, password, host, port)
-
-	// 打开数据库连接
-	db, err := sql.Open("mysql", dsn)
-	if err != nil {
-		fmt.Printf("无法打开数据库连接: %w", err)
-		return false
-	}
-	// 确保在函数结束时关闭数据库连接
-	defer db.Close()
-
-	// 尝试 ping 数据库，验证连接是否正常
-	err = db.Ping()
-	if err != nil {
-		fmt.Printf("无法连接到数据库: %w", err)
-		return false
-	}
-
-	// 执行 SELECT 1 语句
-	var result int
-	err = db.QueryRow("SELECT 1").Scan(&result)
+func CheckMySQLStatus() bool {
+	err := utils.ExecMysqlSQL("SELECT 1")
 	if err != nil {
 		fmt.Printf("执行 SELECT 1 语句时出错: %w", err)
 		return false
 	}
+	return true
+}
 
+func CheckMogDBStatus() bool {
+	err := utils.ExecMogDBSQL("SELECT 1")
+	if err != nil {
+		fmt.Printf("执行 SELECT 1 语句时出错: %w", err)
+		return false
+	}
 	return true
 }
 

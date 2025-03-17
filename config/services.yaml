@@ -204,10 +204,6 @@ services:
     local: true
     priority: 3 # 低数字优先执行
 
-  - name: "zcloud_service"
-    service_name: "dbaas-zabbix-sender"
-    local: true
-    priority: 3 # 低数字优先执行
 
 #  - name: "zdbmon"
 #    local: true
