@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func CheckErrorFlyway() error {
+func CheckErrorFlyway() (int, error) {
 	var service *config.ServiceConfig
 	for _, item := range config.MicroServices {
 		if item.ServiceName == "dbaas-flyway-manage" {
@@ -16,10 +16,9 @@ func CheckErrorFlyway() error {
 			break
 		}
 	}
-	var resErr error
 	//var wg sync.WaitGroup
 	if service.EnvInitScripts == nil || len(service.EnvInitScripts) == 0 {
-		return nil
+		return 0, nil
 	}
 	logPathInterface := config.GetGlobalVars("logPath")
 	logPath, _ := logPathInterface.(string)
@@ -27,19 +26,20 @@ func CheckErrorFlyway() error {
 	command := "FILE_PATH=\"/" + logPath + "\"  \n\n# 判断文件是否存在  \nif [ ! -f \"$FILE_PATH\" ]; then  \n    echo \"错误：文件 $FILE_PATH 不存在\" >&2  \n    exit 1  # 返回非零错误码  \nfi  \n\n# 读取最后500条数据（按行）  \ntail -n 500 \"$FILE_PATH\"  \nexit 0"
 	result, err := utils.ExecuteShellCommandUseBash(service, command, false)
 	if err != nil {
-		return fmt.Errorf("failed to getMemoryUsageByShell service %s: %v", service.Name, err)
+		return 0, fmt.Errorf("failed to getMemoryUsageByShell service %s: %v", service.Name, err)
 	}
-	dealError(result)
-	return resErr
+	return dealError(result), nil
+	//return resErr
 }
 
-func dealError(result string) {
+func dealError(result string) int {
 	re := regexp.MustCompile(`\r?\n`) // 匹配 \n 或 \r\n
 	lines := re.Split(result, -1)
 	var version string
 	var dbChecksum string
 	var fileChecksum string
 	var schemaTable string
+	errorCount := 0
 	for i := 0; i < len(lines); i++ { // 使用 for i 循环
 		line := strings.TrimSpace(lines[i])
 		//flyway 报错
@@ -77,6 +77,7 @@ func dealError(result string) {
 					_ = utils.ExecMogDBSQL(sql)
 				}
 				fmt.Println("flyway error ,file changed , version is "+version+",db checksum is ", dbChecksum, ",file checksum is ", fileChecksum)
+				errorCount++
 
 			} else if strings.Contains(line, "Detected applied migration not resolved locally") {
 				// 删除flyway记录
@@ -87,14 +88,15 @@ func dealError(result string) {
 					sql := "delete from " + schemaTable + " where \"version\" = '" + version + "'"
 					_ = utils.ExecMogDBSQL(sql)
 				}
+				errorCount++
 				fmt.Println("flyway is delete , version is " + version)
 			} else if strings.Contains(line, "contains a failed migration to version") {
 				// 记录错误日志
 				fmt.Println("flyway sql error , version is " + version)
 			}
-
 		}
 	}
+	return errorCount
 }
 
 func QuerySchemaTable(beanName string, dbType string) string {
