@@ -1,9 +1,12 @@
 installPath=$1
 bakPath=$2
 databaseType=$3
-bakTime="$(date '+%Y%m%d')"
-if [[ ! -d ${bakPath}/${bakTime} ]];then
-  mkdir ${bakPath}/${bakTime}
+bakTime=data
+if [[ ! -d ${bakPath}/data ]];then
+  rm -rf ${bakPath}/data
+fi
+if [[ ! -d ${bakPath}/data ]];then
+  mkdir ${bakPath}/data
 fi
 
 if [[ ! -d ${bakPath}/${bakTime}/prometheus ]];then
