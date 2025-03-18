@@ -75,7 +75,7 @@ function h2() {
     fi
 }
 
-function __CalcDuration {
+function __CalcDuration() {
   startTime=$1
   endTime=$2
   duration=$[(${endTime}-${startTime})/1000000]

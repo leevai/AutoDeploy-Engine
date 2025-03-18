@@ -55,8 +55,23 @@ func RunTask() {
 	wg := sync.WaitGroup{}
 
 	for _, taskNode := range nodeTaskMap {
-		//关闭通道
 		close(taskNode.taskPriority2)
+		for {
+			task, ok := <-taskNode.taskPriority2
+			if ok {
+				err := task()
+				if err != nil {
+					errChan <- err
+				}
+			} else {
+				break
+			}
+		}
+
+	}
+
+	for _, taskNode := range nodeTaskMap {
+		//关闭通道
 		close(taskNode.taskPriority3)
 		for i := 1; i <= taskNode.goroutineNum; i++ {
 			wg.Add(1)
@@ -100,7 +115,7 @@ func RunTask() {
 		if healthCheck() {
 			//健康检查通过
 			//等一下flyway
-			time.Sleep(60 * time.Second)
+			time.Sleep(180 * time.Second)
 			mu.Lock()
 			p2HealthCheckSuccess = true
 			mu.Unlock()
@@ -126,14 +141,14 @@ func healthCheck() bool {
 		return false
 	}
 
-	if "MySQL" == fmt.Sprintf("%v", config.GlobalConfigMap["databaseType"]) {
-		if ok := checker.CheckMySQLStatus(); !ok {
-			return false
-		}
-	} else {
-		if ok := checker.CheckMogDBStatus(); !ok {
-			return false
-		}
-	}
+	//if "MySQL" == fmt.Sprintf("%v", config.GlobalConfigMap["databaseType"]) {
+	//	if ok := checker.CheckMySQLStatus(); !ok {
+	//		return false
+	//	}
+	//} else {
+	//	if ok := checker.CheckMogDBStatus(); !ok {
+	//		return false
+	//	}
+	//}
 	return true
 }

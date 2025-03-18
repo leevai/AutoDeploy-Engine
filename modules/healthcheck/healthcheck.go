@@ -38,8 +38,7 @@ func HealthCheck() {
 	}
 
 	//todo
-	var user, pwd, ip, port string
-	if !checker.CheckMySQLStatus(user, pwd, ip, port) {
+	if !checker.CheckMySQLStatus() {
 		fmt.Printf("MySQL 状态检查失败")
 	}
 }

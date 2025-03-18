@@ -750,3 +750,6 @@ __updateComponentIp
 if [[ ${theme} == "ZData" ]]; then
     __initZDataConfig
 fi
+
+
+chown -R zcloud:zcloud ${installPath}/soft/mysql

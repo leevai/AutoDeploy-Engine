@@ -283,7 +283,9 @@ function __StartKeepService(){
           sed -i 's#name="logHome" value=.*#name="logHome" value="'${logdir}/keeper'/"/>#g' ${installPath}/keeper/config/logback-default.xml
           mv ${installPath}/keeper/config/logback-default.xml ${installPath}/keeper/config/logback.xml
           cd ${installPath}
-          nohup ${installPath}/soft/java/jdk-17.0.11+9/bin/java -Djava.io.tmpdir=${javaIoTempDir} -XX:ParallelGCThreads=8 -XX:ErrorFile=${logPath}/hserr/zcloud_keeper_%p.log -Xms256m -Xmx512m -jar $FILE_PATH${FILE_JAR} --spring.profiles.active=dev --logging.config=${installPath}/keeper/config/logback.xml >/dev/null 2>&1 &
+          su - zcloud -c "
+            nohup ${installPath}/soft/java/jdk-17.0.11+9/bin/java -Djava.io.tmpdir=${javaIoTempDir} -XX:ParallelGCThreads=8 -XX:ErrorFile=${logPath}/hserr/zcloud_keeper_%p.log -Xms256m -Xmx512m -jar $FILE_PATH${FILE_JAR} --spring.profiles.active=dev --logging.config=${installPath}/keeper/config/logback.xml >/dev/null 2>&1 &
+          "
           cd ${workdir}
       fi
 
@@ -323,3 +325,5 @@ chmod +x ${installPath}/keeper/script/startkeeper.sh
 __InitKeeperConfig
 
 __StartKeepService
+
+chown -R zcloud:zcloud ${installPath}/keeper

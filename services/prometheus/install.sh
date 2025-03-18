@@ -22,9 +22,12 @@ workdir=#{workdir}
   if [[ ! -f ${installPath}/prometheus/prometheus ]]; then
     #解压prometheus
     tar -xf ./jar/prometheus.tar.gz -C "${installPath}"
+    chown -R zcloud:zcloud ${installPath}/prometheus
     if [[ -f /usr/lib/systemd/system/zcloud_prometheus.service ]];then
       dataDir=($( __ReadValue ${logPath}/evn.cfg prometheusDataDir))
-      nohup ${installPath}/prometheus/prometheus --storage.tsdb.path=${dataDir} --config.file=${installPath}/prometheus/prometheus.yml --query.lookback-delta=15m --web.enable-lifecycle --web.listen-address=:8093 --web.config.file=${installPath}/prometheus/web.yml --log.level=error --web.enable-admin-api --enable-feature=promgl-at-modifier --storage.tsdb.retention.time=15y &>>${installPath}/prometheus/log/prometheus.log &
+      su - zcloud -c "
+        nohup ${installPath}/prometheus/prometheus --storage.tsdb.path=${dataDir} --config.file=${installPath}/prometheus/prometheus.yml --query.lookback-delta=15m --web.enable-lifecycle --web.listen-address=:8093 --web.config.file=${installPath}/prometheus/web.yml --log.level=error --web.enable-admin-api --enable-feature=promgl-at-modifier --storage.tsdb.retention.time=15y &>>${installPath}/prometheus/log/prometheus.log &
+      "
       serviceNameLine=`sed -n "/serviceName: prometheus\$/=" ${keeperConf}`
       offset=`sed -n "$[${serviceNameLine}+1],\$"p ${keeperConf} |grep -n defaultProcessNum:|head -n 1|awk -F':' '{print $1}'`
       enableOffset=`sed -n "$[${serviceNameLine}+1],\$"p ${keeperConf} |grep -n enable:|head -n 1|awk -F':' '{print $1}'`
@@ -36,7 +39,9 @@ workdir=#{workdir}
       enableOffset=`sed -n "$[${serviceNameLine}+1],\$"p ${keeperConf} |grep -n enable:|head -n 1|awk -F':' '{print $1}'`
       lineNum=$[ ${serviceNameLine}+${enableOffset} ]
       sed -ri "${lineNum}s|enable: .*|enable: true|g" ${keeperConf}
-      nohup ${installPath}/prometheus/prometheus --storage.tsdb.path=${installPath}/prometheus/data/ --config.file=${installPath}/prometheus/prometheus.yml --query.lookback-delta=15m --web.enable-lifecycle --web.listen-address=:8093 --web.config.file=${installPath}/prometheus/web.yml --log.level=error --web.enable-admin-api --enable-feature=promgl-at-modifier --storage.tsdb.retention.time=15y &>>${installPath}/prometheus/log/prometheus.log &
+      su - zcloud -c "
+        nohup ${installPath}/prometheus/prometheus --storage.tsdb.path=${installPath}/prometheus/data/ --config.file=${installPath}/prometheus/prometheus.yml --query.lookback-delta=15m --web.enable-lifecycle --web.listen-address=:8093 --web.config.file=${installPath}/prometheus/web.yml --log.level=error --web.enable-admin-api --enable-feature=promgl-at-modifier --storage.tsdb.retention.time=15y &>>${installPath}/prometheus/log/prometheus.log &
+      "
     fi
     chmod u+x ${installPath}/prometheus/promtool
     info "prometheus 安装成功 "

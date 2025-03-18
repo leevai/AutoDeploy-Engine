@@ -1,6 +1,7 @@
 package core
 
 import (
+	"AutoDeploy-Engine/modules/uninstall"
 	"fmt"
 	"os/user"
 )
@@ -13,7 +14,10 @@ func Unload() error {
 	if currentUser.Username != "root" {
 		return fmt.Errorf("执行用户只能为root")
 	}
-
+	err = uninstall.UnInstall()
+	if err != nil {
+		return err
+	}
 	fmt.Println("Upgrade completed successfully!")
 	return nil
 }

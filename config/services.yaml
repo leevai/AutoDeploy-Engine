@@ -25,6 +25,7 @@ services:
       - "./script/env_init/installDependence.sh"
       - "./script/env_init/authInstallPackage.sh"
       - "./script/env_init/movePubLib.sh"
+      - "./script/env_init/initCurrentCfg.sh"
 #      - "./script/env_init/copyPackage.sh"
 
 #  - name: "jdk"

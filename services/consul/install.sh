@@ -106,7 +106,10 @@ function __InstallConsul() {
     #进入目录,执行脚本安装consul
     info "配置consul的IP是:"${localconsulIP}
     mkdir -p ${installPath}/soft/consul/consul/logs
-    nohup ${installPath}/soft/consul/consul/consul agent -server -data-dir=${installPath}/soft/consul/consul/data/ -node=agent-one -config-dir=${installPath}/soft/consul/consul/config/ -bind=127.0.0.1 -bootstrap-expect=1 -client=0.0.0.0 -ui -log-file=${installPath}/soft/consul/consul/logs/ -log-rotate-bytes=10485760 -log-rotate-max-files=10 &>>${installPath}/soft/consul/log/info.log &
+    chown -R zcloud:zcloud ${installPath}/soft/consul
+    su - zcloud -c "
+      nohup ${installPath}/soft/consul/consul/consul agent -server -data-dir=${installPath}/soft/consul/consul/data/ -node=agent-one -config-dir=${installPath}/soft/consul/consul/config/ -bind=127.0.0.1 -bootstrap-expect=1 -client=0.0.0.0 -ui -log-file=${installPath}/soft/consul/consul/logs/ -log-rotate-bytes=10485760 -log-rotate-max-files=10 &>>${installPath}/soft/consul/log/info.log &
+    "
     #配置环境变量
     homedir=`cd ~ && pwd`
     if [[ ( ${osType} = "RedHat"  ||  ${osType} = "Oracle"  ) && ${osVersion} == 8.* ]]; then
@@ -513,3 +516,5 @@ __InitConsulData
 
 #其他节点修改keeper配置文件的consul token   todo
 #__UpdateConsulOtherNode
+
+chown -R zcloud:zcloud ${installPath}/soft/consul

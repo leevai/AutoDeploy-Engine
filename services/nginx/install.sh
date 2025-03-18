@@ -436,3 +436,5 @@ function __LowCodeWorkFlowConfig {
 }
 
 __CheckNginx
+
+chown -R zcloud:zcloud ${installPath}/soft/nginx

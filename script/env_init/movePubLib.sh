@@ -16,6 +16,7 @@ function __MovePubLib() {
     if [[ -f  ${installPath}/pub_libs/repository/com/enmo/dbaas/dbaas-zcloud-feign/6.6.0-SNAPSHOT/_remote.repositories ]];then
       rm -f ${installPath}/pub_libs/repository/com/enmo/dbaas/dbaas-zcloud-feign/6.6.0-SNAPSHOT/_remote.repositories
     fi
+    chown -R zcloud:zcloud ${workdir}
 }
 
 __MovePubLib

@@ -19,7 +19,7 @@ func ExecuteShellCommandUseBash(service *config.ServiceConfig, execScript string
 	var err error
 	newExecScript := execScript
 	if isFile {
-		newExecScript, err = ReplaceVarsForFile(execScript)
+		newExecScript, err = ReplaceVarsForFile(service.ServiceName, execScript)
 		if err != nil {
 			return "", err
 		}

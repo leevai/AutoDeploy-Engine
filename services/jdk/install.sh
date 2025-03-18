@@ -95,3 +95,5 @@ function __GetJavaVersion {
 
 
 __CheckJava
+
+chown -R zcloud:zcloud ${installPath}/soft/java
