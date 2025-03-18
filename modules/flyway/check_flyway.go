@@ -23,7 +23,7 @@ func CheckErrorFlyway() (int, error) {
 	logPathInterface := config.GetGlobalVars("logPath")
 	logPath, _ := logPathInterface.(string)
 	// 读取日志文件
-	command := "FILE_PATH=\"/" + logPath + "\"  \n\n# 判断文件是否存在  \nif [ ! -f \"$FILE_PATH\" ]; then  \n    echo \"错误：文件 $FILE_PATH 不存在\" >&2  \n    exit 1  # 返回非零错误码  \nfi  \n\n# 读取最后500条数据（按行）  \ntail -n 500 \"$FILE_PATH\"  \nexit 0"
+	command := "file=\"" + logPath + "/info.log\"\ntarget=\"Initializing Spring embedded WebApplicationContext\"\n\n# 检查是否存在匹配行\nif ! grep -q \"$target\" \"$file\"; then\n  echo \"未找到匹配行\" && exit 1\nfi\n\n# 定位最后一个匹配行\nlast_line=$(tac \"$file\" | grep -m1 -n \"$target\" | cut -d':' -f1)\ntotal_lines=$(wc -l < \"$file\")\nstart=$((total_lines - last_line + 2))  # 修正反向定位偏移\n\n# 提取内容并限制行数\ntail -n +$start \"$file\" | tail -n 500"
 	result, err := utils.ExecuteShellCommandUseBash(service, command, false)
 	if err != nil {
 		return 0, fmt.Errorf("failed to getMemoryUsageByShell service %s: %v", service.Name, err)
@@ -132,6 +132,6 @@ func QuerySchemaTable(beanName string, dbType string) string {
 }
 
 func main() {
-	a := "[2025-03-11 16:07:27] [main] [ERROR] [org.springframework.boot.SpringApplication:870] Application run failed\norg.springframework.beans.factory.BeanCreationException: Error creating bean with name 'flyway' defined in class path resource [com/enmo/flyway/config/MogdbFlywayAutoConfiguration.class]: Invocation of init method failed; nested exception is org.flywaydb.core.api.FlywayException: Validate failed: Migration checksum mismatch for migration 24.10.28.1040810.0\n-> Applied to database : -2056389094\n-> Resolved locally    : -2056389093"
-	dealError(a)
+	command := "FILE_PATH=\"/" + "s" + "/info.log\"  \n\n# 判断文件是否存在  \nif [ ! -f \"$FILE_PATH\" ]; then  \n    echo \"错误：文件 $FILE_PATH 不存在\" >&2  \n    exit 1  # 返回非零错误码  \nfi  \n\n# 读取最后500条数据（按行）  \ntail -n 500 \"$FILE_PATH\"  \nexit 0"
+	fmt.Println(command)
 }
