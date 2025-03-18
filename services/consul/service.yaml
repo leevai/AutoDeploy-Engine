@@ -12,7 +12,7 @@ service:
   backup_script: "./services/consul/upgrade.py"
   rollback_script: "./services/consul/rollback.url"
   check_health_script: "./services/consul/check_health_script.sh"
-  upgrade_script: "./services/consul/upgrade.py"
+  upgrade_script: "./services/consul/install.sh"
   change_ip_script: "./services/consul/change_ip.sh"
   install_path: "/opt/consul"
   start_command: "systemctl start consul"

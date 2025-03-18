@@ -1,3 +1,4 @@
+. ./script/lib/dir_auth.sh
 
 function __Install_node_exporter {
   echo ""

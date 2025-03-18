@@ -14,10 +14,9 @@ hostIp=#{hostIp}
 consulHost=#{consulHost}
 dependenceOutsideMySQL=#{dependenceOutsideMySQL}
 dependenceOutsidePrometheus=#{dependenceOutsidePrometheus}
-bakTime=
+bakTime=($( __ReadValue ${logPath}/evn.cfg bakTimeS))
 
-
-
+. ./script/lib/common.sh
 
 nodeNum=#{nodeNum}
 

@@ -45,22 +45,26 @@ function __installZcloudProxy {
     chown -R zcloud:zcloud /paasdata/Proxy
     proxy_size=`du -b ${proxyFileName} |awk '{print $1}'`
     proxy_md5=`md5sum  ${proxyFileName} |awk '{print $1}'`
-    sed -i "s|#proxy_file_name#|${proxyFileName}|g" ${workdir}/dbsqlfile/zcloud_paasdata_proxy_init.sql
-    sed -i "s|#proxy_size#|${proxy_size}|g" ${workdir}/dbsqlfile/zcloud_paasdata_proxy_init.sql
-    sed -i "s|#proxy_md5#|${proxy_md5}|g" ${workdir}/dbsqlfile/zcloud_paasdata_proxy_init.sql
+    sed -i "s|#proxy_file_name#|${proxyFileName}|g" ${workdir}/services/proxy/init_proxy_mogdb.sql
+    sed -i "s|#proxy_file_name#|${proxyFileName}|g" ${workdir}/services/proxy/init_proxy_mysql.sql
+    sed -i "s|#proxy_size#|${proxy_size}|g" ${workdir}/services/proxy/init_proxy_mogdb.sql
+    sed -i "s|#proxy_size#|${proxy_size}|g" ${workdir}/services/proxy/init_proxy_mysql.sql
+    sed -i "s|#proxy_md5#|${proxy_md5}|g" ${workdir}/services/proxy/init_proxy_mogdb.sql
+    sed -i "s|#proxy_md5#|${proxy_md5}|g" ${workdir}/services/proxy/init_proxy_mysql.sql
     if [[ ${osType} == "Kylin_arm" ]];then
       proxySpecialType="KylinProxy"
     else
       proxySpecialType="proxyTar"
     fi
-    sed -i "s|#proxySpecialType#|${proxySpecialType}|g" ${workdir}/dbsqlfile/zcloud_paasdata_proxy_init.sql
+    sed -i "s|#proxySpecialType#|${proxySpecialType}|g" ${workdir}/services/proxy/init_proxy_mogdb.sql
+    sed -i "s|#proxySpecialType#|${proxySpecialType}|g" ${workdir}/services/proxy/init_proxy_mysql.sql
     cd ${workdir}
 
     if [[ ${databaseType} == "MySQL" ]];then
       mysqlAddr="${installPath}/soft/mysql/mysql/bin/mysql"
-      ${mysqlAddr} -uroot -p${mysqlpassword} -h${mysqlhost} -P${mysqlhostport} < ${workdir}/dbsqlfile/zcloud_paasdata_proxy_init.sql >> ${logFile} 2>&1
+      ${mysqlAddr} -uroot -p${mysqlpassword} -h${mysqlhost} -P${mysqlhostport} < services/proxy/init_proxy_mogdb.sql >> ${logFile} 2>&1
     else
-      ${installPath}/soft/mogdb/app/bin/gsql -d zcloud -h ${mogdbhost} -p ${mogdbport} -U ${mogdbuser} -W ${mogdbpassword} -f dbsqlfile/zcloud_paasdata_proxy_init.sql
+      ${installPath}/soft/mogdb/app/bin/gsql -d zcloud -h ${mogdbhost} -p ${mogdbport} -U ${mogdbuser} -W ${mogdbpassword} -f services/proxy/init_proxy_mogdb.sql
     fi
 
     if [[ ! -e /zcloud ]];then

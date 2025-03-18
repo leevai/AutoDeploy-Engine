@@ -44,9 +44,18 @@ export oldVersion1=($( __ReadValue ${logPath}/evn.cfg oldVersion))
 export bakTime=($( __ReadValue ${logPath}/evn.cfg bakTimeS))
 export version=`cat ${workdir}/version.txt`
 export versionPath=${logPath}/${version}
-
+export keeperBakPath=${configPath}/keeper.yaml.bak.${bakTime}
 export serviceName=$1
 
+if [[ ${theme} != "zData" ]];then
+  if [[ ${installType} = 4 ]]; then
+      startTime=$(date +"%s%N")
+      info "刷新license的软件标识 ..."
+      __Fresh_user_identifier
+      endTime=$(date +"%s%N")
+      info "刷新license软件标识成功，耗时$( __CalcDuration ${startTime} ${endTime})"
+  fi
+fi
 
 function __UpgradeZcloudService() {
 . ./script/lib/common.sh
@@ -109,16 +118,6 @@ function __UpgradeZcloudService() {
   if [[ ${serviceName} == "offline_health_check_collector" ]]; then
     # 复制offline_health_check_collector 到/paasdata
     move_collector_to_paasdata
-  fi
-
-  if [[ ${theme} != "zData" ]];then
-    if [[ ${installType} = 4 ]]; then
-        startTime=$(date +"%s%N")
-        info "刷新license的软件标识 ..."
-        __Fresh_user_identifier
-        endTime=$(date +"%s%N")
-        info "刷新license软件标识成功，耗时$( __CalcDuration ${startTime} ${endTime})"
-    fi
   fi
 
   __ReplaceText ${logPath}/evn.cfg "realHostIp=" "realHostIp=${realHostIp}"

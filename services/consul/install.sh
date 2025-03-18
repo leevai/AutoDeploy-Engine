@@ -10,7 +10,7 @@ theme=#{theme}
 databaseType=#{databaseType}
 release=#{release}
 oldRelease=#{oldRelease}
-
+logPath=#{logPath}
 mogdbport=#{mogdbport}
 mogdbhost=#{mogdbhost}
 mogdbuser=#{mogdbuser}
