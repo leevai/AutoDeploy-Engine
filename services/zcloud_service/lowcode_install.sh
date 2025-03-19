@@ -487,9 +487,9 @@ function __InstallMagicScriptExecutor() {
   __CleanVarTmpDirForPodman
   consulToken=`less ${configPath}/consultoken.txt | grep SecretID|awk '{print $2}'`
   if [[ ${installNodeType} == "OneNode" ]]; then
-    consulIp=${hostIp}
+    consulIp=${consulHost}
   else
-    consulIp=$( __readINI ${workdir}/zcloud.cfg multiple consul.host )
+    consulIp=${consulHost}
   fi
   if [[ ${osType} = "RedHat" && ${osVersion} == 8.* ]]; then
     sudo ${installPath}/podman/podman --runtime ${installPath}/podman/runc run -d --network host -v /paasdata/:/paasdata/  --security-opt seccomp=unconfined  --name magic-script-executor magic_script_executor_app:v1.0.0 --consul.endpoint=http://${consulIp}:8500 --consul.token=${consulToken} --global.api_addr=:18291
@@ -704,7 +704,7 @@ function __InitLowCodeConsulData() {
     ${installPath}/soft/consul/consul/consul kv put zcloudconfig/prod/lcdp-workflow-manager/task_management.host ${localIP}
     ${installPath}/soft/consul/consul/consul kv put zcloudconfig/prod/lcdp-workflow-manager/dbaas_permissions.host ${localIP}
   else
-    consulIp=$( __readINI zcloud.cfg multiple consul.host )
+    consulIp=${consulHost}
     if [[ ${consulToken} = "" ]];then
       curl -X PUT -d "http://127.0.0.1:8915" http://${consulIp}:8500/v1/kv/zcloudconfig/prod/dbaas-lowcode-atomic-ability/lowcode.atomic.ability.api.excuter.url?dc=dc1
       if [[ ${theme} == "zData" ]];then
@@ -777,7 +777,7 @@ function __InitMagicCubeConsulData() {
       ${installPath}/soft/consul/consul/consul kv put zcloudconfig/prod/magic-cube/database.username ${dbaas_username}
     fi
   else
-    consulIp=$( __readINI zcloud.cfg multiple consul.host )
+    consulIp=${consulHost}
     if [[ ${consulToken} = "" ]];then
       # global
       curl -X PUT -d ":18281" http://${consulIp}:8500/v1/kv/zcloudconfig/prod/magic-cube/global.api_addr?dc=dc1
@@ -1104,9 +1104,9 @@ function __InstallMagicCube {
   __CreateDir ${logPath}/magic_cube
   consulToken=`less ${configPath}/consultoken.txt | grep SecretID|awk '{print $2}'`
   if [[ ${installNodeType} == "OneNode" ]]; then
-    consulIp=${hostIp}
+    consulIp=${consulHost}
   else
-    consulIp=$( __readINI ${workdir}/zcloud.cfg multiple consul.host )
+    consulIp=${consulHost}
   fi
   echo "nohup ${installPath}/magic_cube/magic_cube --consul.endpoint=http://${consulIp}:8500 --consul.token=${consulToken} >/dev/null 2>&1 &"
   nohup ${installPath}/magic_cube/magic_cube --consul.endpoint=http://${consulIp}:8500 --consul.token=${consulToken} >/dev/null 2>&1 &

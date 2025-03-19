@@ -600,7 +600,7 @@ function __InstallNormalZcloudService() {
       __InstallService "${serviceName}"
       echo "${serviceName}" >> ${installPath}/serviceTemp
 
-      if [[ -e ${installPath}/dbaas-apigateway ]];then
+      if [[ ${serviceName} == "dbaas-apigateway" &&  -e ${installPath}/dbaas-apigateway ]];then
         cd ${installPath}/dbaas-apigateway
         ./start.sh
       fi

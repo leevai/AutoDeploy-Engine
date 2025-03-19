@@ -31,6 +31,7 @@ export javaIoTempDir="${logPath}/java-io-tmpdir"
 export executeUser=#{executeUser}
 export dependenceOutsideMogdb=#{dependenceOutsideMogdb}
 export dependenceOutsideMySQL=#{dependenceOutsideMySQL}
+export consulHost=#{consulHost}
 
 . ./script/lib/common.sh
 . ./script/lib/license/fresh_license_user_identifier.sh
