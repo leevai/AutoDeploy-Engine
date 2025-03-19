@@ -73,20 +73,23 @@ services:
     local: true
     priority: 2 # 低数字优先执行
 
-
   - name: "zcloud_service"
     service_name: "dbaas-infrastructure"
     local: true
     priority: 3 # 低数字优先执行
 
-
   - name: "zcloud_service"
-    service_name: "dbaas-backend-script"
+    service_name: "dbaas-apigateway"
     local: true
     priority: 3 # 低数字优先执行
 
   - name: "zcloud_service"
-    service_name: "dbaas-monitor"
+    service_name: "dbaas-backend-mogdb"
+    local: true
+    priority: 3 # 低数字优先执行
+
+  - name: "zcloud_service"
+    service_name: "dbaas-backend-script"
     local: true
     priority: 3 # 低数字优先执行
 
@@ -96,7 +99,12 @@ services:
     priority: 3 # 低数字优先执行
 
   - name: "zcloud_service"
-    service_name: "dbaas-mariadb"
+    service_name: "dbaas-common-db"
+    local: true
+    priority: 3 # 低数字优先执行
+
+  - name: "zcloud_service"
+    service_name: "dbaas-database-snapshot"
     local: true
     priority: 3 # 低数字优先执行
 
@@ -105,13 +113,43 @@ services:
     local: true
     priority: 3 # 低数字优先执行
 
+#  - name: "zcloud_service"
+#    service_name: "dbaas-doc-retrieval"
+#    local: true
+#    priority: 3 # 低数字优先执行
+
   - name: "zcloud_service"
-    service_name: "dbaas-ogg-management"
+    service_name: "dbaas-lowcode-atomic-ability"
+    local: true
+    priority: 3 # 低数字优先执行
+
+#  - name: "zcloud_service"
+#    service_name: "dbaas-lowcode-http-engine"
+#    local: true
+#    priority: 3 # 低数字优先执行
+
+  - name: "zcloud_service"
+    service_name: "dbaas-management-database"
     local: true
     priority: 3 # 低数字优先执行
 
   - name: "zcloud_service"
-    service_name: "dbaas-apigateway"
+    service_name: "dbaas-management-host"
+    local: true
+    priority: 3 # 低数字优先执行
+
+  - name: "zcloud_service"
+    service_name: "dbaas-mariadb"
+    local: true
+    priority: 3 # 低数字优先执行
+
+  - name: "zcloud_service"
+    service_name: "dbaas-monitor"
+    local: true
+    priority: 3 # 低数字优先执行
+
+  - name: "zcloud_service"
+    service_name: "dbaas-ogg-management"
     local: true
     priority: 3 # 低数字优先执行
 
@@ -131,46 +169,20 @@ services:
     priority: 3 # 低数字优先执行
 
   - name: "zcloud_service"
-    service_name: "dbaas-database-snapshot"
-    local: true
-    priority: 3 # 低数字优先执行
-
-  - name: "zcloud_service"
-    service_name: "dbaas-backend-mogdb"
-    local: true
-    priority: 3 # 低数字优先执行
-
-  - name: "zcloud_service"
-    service_name: "dbaas-common-db"
-    local: true
-    priority: 3 # 低数字优先执行
-
-  - name: "zcloud_service"
     service_name: "zdbmon-mgr"
     local: true
     priority: 3 # 低数字优先执行
 
   - name: "zcloud_service"
-    service_name: "dbaas-doc-retrieval"
-    local: true
-    priority: 3 # 低数字优先执行
-  - name: "zcloud_service"
-    service_name: "dbaas-lowcode-atomic-ability"
+    service_name: "lowcode"
     local: true
     priority: 3 # 低数字优先执行
 
-  - name: "zcloud_service"
-    service_name: "dbaas-lowcode-http-engine"
-    local: true
-    priority: 3 # 低数字优先执行
+#  - name: "exportKnwlBase"
+#    local: true
+#    priority: 3 # 低数字优先执行
 
-  - name: "zcloud_service"
-    service_name: "dbaas-management-database"
-    local: true
-    priority: 3 # 低数字优先执行
-
-  - name: "zcloud_service"
-    service_name: "dbaas-management-host"
+  - name: "proxy"
     local: true
     priority: 3 # 低数字优先执行
 
@@ -214,14 +226,6 @@ services:
     local: true
     priority: 3 # 低数字优先执行
 
-
-#  - name: "zdbmon"
-#    local: true
-#    priority: 3 # 低数字优先执行
-
-#  - name: "exportKnwlBase"
-#    local: true
-#    priority: 3 # 低数字优先执行
 
 
 #  - name: "backup"

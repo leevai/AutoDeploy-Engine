@@ -1,4 +1,3 @@
-#!/bin/bash
 export serviceName=$1
 nodeNum=#{nodeNum}
 installNodeType=#{installNodeType}
@@ -25,7 +24,9 @@ logPath="${homePath}/dbaas/zcloud-log"
 logFile="${homePath}/dbaas/zcloud-log/install.log"
 packagePath="${homePath}/dbaas/soft-package"
 
-
+. ./script/lib/common.sh
+. ./script/lib/dir_auth.sh
+. ./services/zcloud_service/zcloud_server_install.sh
 function __InstallDocCenter {
    echo ""
    echo "开始安装文档中心"
@@ -146,3 +147,7 @@ function __InstallDocCenter {
    echo "sleep 120s"
    sleep 120s
 }
+if [[ -d "${workdir}/jar/dbaas-doc-retrieval/" && ${theme} != "zData" ]]; then
+    h2 "[安装文档中心 ..."; let item+=1
+    __InstallDocCenter
+fi

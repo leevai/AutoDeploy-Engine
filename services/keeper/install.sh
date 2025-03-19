@@ -1,3 +1,4 @@
+. ./script/lib/common.sh
 installNodeType=#{installNodeType}
 workdir=#{workdir}
 homePath=#{homePath}
@@ -16,7 +17,7 @@ dependenceOutsideMySQL=#{dependenceOutsideMySQL}
 dependenceOutsidePrometheus=#{dependenceOutsidePrometheus}
 bakTime=($( __ReadValue ${logPath}/evn.cfg bakTimeS))
 
-. ./script/lib/common.sh
+
 
 nodeNum=#{nodeNum}
 

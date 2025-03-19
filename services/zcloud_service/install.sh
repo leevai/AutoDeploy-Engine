@@ -49,12 +49,12 @@ export versionPath=${logPath}/${version}
 
 export serviceName=$1
 
-
 function __InstallZcloudService() {
 . ./script/lib/common.sh
 . ./script/lib/license/fresh_license_user_identifier.sh
 . ./services/zcloud_service/zcloud_server_install.sh
 . ./services/zcloud_service/monitor_component_install_unroot.sh
+. ./services/lowcode/lowcode_install.sh
 
   __QueryDatabaseInfo
   if [[ ${theme} == "zData" ]];then
@@ -89,7 +89,7 @@ function __InstallZcloudService() {
   for item in "${normalService[@]}";
     do
       if [[ "$item" == "$serviceName" ]]; then
-        find_result=$(find ./jar -type f -iname "${serviceName}*.jar" -print -quit)
+        find_result=$(find ${workdir}/jar -type f -iname "${serviceName}*.jar" -print -quit)
         if [[ -n "$find_result" ]]; then
           __InstallNormalZcloudService
           __CheckZcloudSingleServiceStatus
@@ -98,7 +98,13 @@ function __InstallZcloudService() {
       fi
     done
 
-
+  if [[ ${serviceName} == "lowcode" ]]; then
+    h2 "[安装低代码平台 ...";
+    startTime=$(date +"%s%N")
+    __InstallLowCodeSoft
+    endTime=$(date +"%s%N")
+    info "安装低代码平台完成，耗时$( __CalcDuration ${startTime} ${endTime})"
+  fi
   if [[ ${serviceName} == "dbaas-flyway-manage" ]]; then
     __InstallFlyway
     __CheckZcloudSingleServiceStatus

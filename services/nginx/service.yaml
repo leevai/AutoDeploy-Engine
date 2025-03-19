@@ -12,7 +12,7 @@ service:
   backup_script: "./services/nginx/upgrade.py"
   rollback_script: "./services/nginx/rollback.url"
   check_health_script: "./services/nginx/check_health_script.sh"
-  upgrade_script: "./services/nginx/upgrade.py"
+  upgrade_script: "./services/nginx/install.sh"
   change_ip_script: "./services/nginx/change_ip.sh"
   install_path: "/opt/nginx"
   start_command: "systemctl start nginx"

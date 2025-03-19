@@ -7,7 +7,7 @@ service:
 #  backup_script: "./services/mysql/upgrade.py"
 #  rollback_script: "./services/mysql/rollback.url"
 #  check_health_script: "./services/mysql/check_health_script.sh"
-#  upgrade_script: "./services/mysql/upgrade.py"
+  upgrade_script: "./services/prometheus/upgrade.sh"
 #  change_ip_script: "./services/mysql/change_ip.sh"
 #  install_path: "/opt/mysql"
 #  start_command: "systemctl start mysql"

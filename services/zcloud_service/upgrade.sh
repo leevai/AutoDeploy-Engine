@@ -47,16 +47,6 @@ export versionPath=${logPath}/${version}
 export keeperBakPath=${configPath}/keeper.yaml.bak.${bakTime}
 export serviceName=$1
 
-if [[ ${theme} != "zData" ]];then
-  if [[ ${installType} = 4 ]]; then
-      startTime=$(date +"%s%N")
-      info "刷新license的软件标识 ..."
-      __Fresh_user_identifier
-      endTime=$(date +"%s%N")
-      info "刷新license软件标识成功，耗时$( __CalcDuration ${startTime} ${endTime})"
-  fi
-fi
-
 function __UpgradeZcloudService() {
 . ./script/lib/common.sh
 . ./script/lib/license/fresh_license_user_identifier.sh
@@ -95,7 +85,7 @@ function __UpgradeZcloudService() {
   for item in "${normalService[@]}";
     do
       if [[ "$item" == "$serviceName" ]]; then
-        find_result=$(find ./jar -type f -iname "${serviceName}*.jar" -print -quit)
+        find_result=$(find ${workdir}/jar -type f -iname "${serviceName}*.jar" -print -quit)
         if [[ -n "$find_result" ]]; then
           __InstallNormalZcloudService
           __CheckZcloudSingleServiceStatus
@@ -103,6 +93,17 @@ function __UpgradeZcloudService() {
         fi
       fi
     done
+
+
+    if [[ ${serviceName} == "fresh_license" && ${theme} != "zData" ]];then
+      if [[ ${installType} = 4 ]]; then
+          startTime=$(date +"%s%N")
+          info "刷新license的软件标识 ..."
+          __Fresh_user_identifier
+          endTime=$(date +"%s%N")
+          info "刷新license软件标识成功，耗时$( __CalcDuration ${startTime} ${endTime})"
+      fi
+    fi
 
 
   if [[ ${serviceName} == "dbaas-flyway-manage" ]]; then

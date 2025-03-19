@@ -237,7 +237,7 @@ function __InstallService() {
       \cp -f ${workdir}/jar/prometheus/promtool ${installPath}${serviceNamePrefix}/${serviceName}
       chmod u+x ${installPath}${serviceNamePrefix}/${serviceName}/promtool
     fi
-    nowVersion=$(ls jar${serviceNamePrefix}/${serviceName}/${serviceJarName}*.jar | awk -F'/' '{print $NF}' | awk -F'-' '{print $(NF-1)}')
+    nowVersion=$(ls jar/${serviceNamePrefix}/${serviceName}/${serviceJarName}*.jar | awk -F'/' '{print $NF}' | awk -F'-' '{print $(NF-1)}')
     oldVersion=$(ls ${installPath}${serviceNamePrefix}/${serviceName}/${serviceJarName}*.jar | awk -F'/' '{print $NF}' | awk -F'-' '{print $(NF-1)}')
     if [[ ${nowVersion} != ${oldVersion} || "dbaas-apigateway" == ${serviceName} || "dbaas-monitor" == ${serviceName}  || "dbaas-infrastructure" == ${serviceName} ]]; then
       echo "type=升级替换">>${versionPath}/version.cfg
@@ -586,7 +586,7 @@ function __removeKeeperIfNotExist() {
 
 
 function __InstallNormalZcloudService() {
-  find_result=$(find ./jar -type f -iname "${serviceName}*.jar" -print -quit)
+  find_result=$(find ${workdir}/jar -type f -iname "${serviceName}*.jar" -print -quit)
   if [[ -n "$find_result" ]]; then
     h2 "[安装服务 ... ${serviceName}";
       startTime=$(date +"%s%N")
@@ -610,7 +610,7 @@ function __InstallNormalZcloudService() {
 }
 
 function __InstallFlyway() {
-  find_result=$(find ./jar -type f -iname "${serviceName}*.jar" -print -quit)
+  find_result=$(find ${workdir}/jar -type f -iname "${serviceName}*.jar" -print -quit)
   if [[ -n "$find_result" ]]; then
     h2 "[安装服务 ... dbaas-flyway-manage";
     startTime=$(date +"%s%N")
@@ -645,7 +645,7 @@ function __InstallFlyway() {
 
 
 function __InstallZdbmonMgr() {
-  find_result=$(find ./jar -type f -iname "${serviceName}*.jar" -print -quit)
+  find_result=$(find ${workdir}/jar -type f -iname "${serviceName}*.jar" -print -quit)
   if [[ -n "$find_result" ]]; then
     startTime=$(date +"%s%N")
     echo "${serviceName}" >> ${installPath}/serviceTemp

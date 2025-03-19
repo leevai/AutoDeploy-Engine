@@ -9,6 +9,7 @@ function __cpSys {
     cd ${workdir}
     \cp -f paasdata/sys.tar.gz ${installPath}/packages/download
     cd ${installPath}/packages/download
+    chown zcloud:zcloud sys.tar.gz
     tar -xf sys.tar.gz
     cd ${workdir}
 }

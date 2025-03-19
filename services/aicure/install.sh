@@ -46,17 +46,7 @@ function __initMysqlData(){
     echo "检查是否已安装mysql"
     localIP=${1}
     zcloudCfg=${workdir}/zcloud.cfg
-#    if [[ ${installNodeType} == "OneNode" ]]; then
-#              mysqlhostIp=$(__readINI ${zcloudCfg} single mysql.service.ip)
-#              mysqlhostport=$(__readINI ${zcloudCfg} single mysql.service.port)
-#              __mysqlRootPwd=$(__readINI ${zcloudCfg} single mysql.root.paasword)
 
-#    else
-#              mysqlhostIp=$(__readINI ${zcloudCfg} multiple mysql.service.ip)
-#              mysqlhostport=$(__readINI ${zcloudCfg} multiple mysql.service.port)
-#              __mysqlRootPwd=$(__readINI ${zcloudCfg} multiple mysql.root.paasword)
-
-#    fi
 
     if [[ ${installType} = 1 ]];then
       ${installPath}/soft/mysql/mysql/bin/mysql -uroot -p${mysqlpassword} -h${mysqlhost} -P${mysqlhostport} < dbsqlfile/aicure/init.sql >> ${logFile} 2>&1

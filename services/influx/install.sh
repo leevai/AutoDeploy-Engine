@@ -6,6 +6,7 @@ homePath=#{homePath}
 release=#{release}
 oldRelease=#{oldRelease}
 logFile=#{logFile}
+theme=#{theme}
 
 . ./script/lib/start_service.sh
 . ./script/lib/common.sh
@@ -134,5 +135,6 @@ function __InstantiateInfluxdb() {
     error "Instantiate influxdb failed, please instantiate manually"
 }
 
-
-__InstallInfluxdb
+if [[ ${theme} != "zData" ]];then
+    __InstallInfluxdb
+fi

@@ -10,6 +10,7 @@ installNodeType=#{installNodeType}
 workflowIp=#{workflowIp}
 
 . ./script/lib/common.sh
+. ./script/lib/soft_bak.sh
 . ./script/lib/dir_auth.sh
 
 function __CheckNginx {
@@ -434,6 +435,11 @@ function __LowCodeWorkFlowConfig {
   sed -i "$[${upstreamLine}]r temp" ${nginx_conf_path}
   rm -f temp
 }
+h2 "备份nginx配置 ..."
+startTime=$(date +"%s%N")
+__BackUpNginxConf
+endTime=$(date +"%s%N")
+info "备份nginx配置完成，耗时$( __CalcDuration ${startTime} ${endTime})"
 
 __CheckNginx
 

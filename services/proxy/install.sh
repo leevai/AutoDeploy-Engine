@@ -21,7 +21,6 @@ mogdbuser=#{mogdbuser}
 mogdbpassword=#{mogdbpassword}
 mogdbport=#{mogdbport}
 mogdbhost=#{mogdbhost}
-proxyVersion=#{proxyVersion}
 logPath="${homePath}/dbaas/zcloud-log"
 logFile="${homePath}/dbaas/zcloud-log/install.log"
 packagePath="${homePath}/dbaas/soft-package"
@@ -187,34 +186,34 @@ function __initProxy() {
   memorysize=`cat /proc/meminfo | grep MemTotal | awk '{print $2}'`
   machinetype=`/usr/sbin/dmidecode -s  system-product-name`
   hardwareplatform=`uname -i`
-
+  proxyVersion=`cat ${workdir}/version.txt`
   if [[ ${databaseType} == "MySQL" ]];then
-    sed -i "s|#hostname#|${hostname}|g" ${workdir}/dbsqlfile/init_proxy_mysql.sql
-    sed -i "s|#cputype#|${cputype}|g" ${workdir}/dbsqlfile/init_proxy_mysql.sql
-    sed -i "s|#cpunum#|${cpunum}|g" ${workdir}/dbsqlfile/init_proxy_mysql.sql
-    sed -i "s|#oskernel#|${oskernel}|g" ${workdir}/dbsqlfile/init_proxy_mysql.sql
-    sed -i "s|#memorysize#|${memorysize}|g" ${workdir}/dbsqlfile/init_proxy_mysql.sql
-    sed -i "s|#machinetype#|${machinetype}|g" ${workdir}/dbsqlfile/init_proxy_mysql.sql
-    sed -i "s|#hardwareplatform#|${hardwareplatform}|g" ${workdir}/dbsqlfile/init_proxy_mysql.sql
-    sed -i "s|#hostip#|${hostip}|g" ${workdir}/dbsqlfile/init_proxy_mysql.sql
-    sed -i "s|#osversion#|${osVersion}|g" ${workdir}/dbsqlfile/init_proxy_mysql.sql
-    sed -i "s|#proxyversion#|${proxyVersion}|g" ${workdir}/dbsqlfile/init_proxy_mysql.sql
+    sed -i "s|#hostname#|${hostname}|g" ${workdir}/services/proxy/init_proxy_mysql.sql
+    sed -i "s|#cputype#|${cputype}|g" ${workdir}/services/proxy/init_proxy_mysql.sql
+    sed -i "s|#cpunum#|${cpunum}|g" ${workdir}/services/proxy/init_proxy_mysql.sql
+    sed -i "s|#oskernel#|${oskernel}|g" ${workdir}/services/proxy/init_proxy_mysql.sql
+    sed -i "s|#memorysize#|${memorysize}|g" ${workdir}/services/proxy/init_proxy_mysql.sql
+    sed -i "s|#machinetype#|${machinetype}|g" ${workdir}/services/proxy/init_proxy_mysql.sql
+    sed -i "s|#hardwareplatform#|${hardwareplatform}|g" ${workdir}/services/proxy/init_proxy_mysql.sql
+    sed -i "s|#hostip#|${realHostIp}|g" ${workdir}/services/proxy/init_proxy_mysql.sql
+    sed -i "s|#osversion#|${osVersion}|g" ${workdir}/services/proxy/init_proxy_mysql.sql
+    sed -i "s|#proxyversion#|${proxyVersion}|g" ${workdir}/services/proxy/init_proxy_mysql.sql
 
     mysqlAddr="${installPath}/soft/mysql/mysql/bin/mysql"
-    ${mysqlAddr} -uroot -p${mysqlpassword} -h${mysqlhost} -P${mysqlhostport} < ${workdir}/dbsqlfile/init_proxy_mysql.sql >> ${logFile} 2>&1
+    ${mysqlAddr} -uroot -p${mysqlpassword} -h${mysqlhost} -P${mysqlhostport} < ${workdir}/services/proxy/init_proxy_mysql.sql >> ${logFile} 2>&1
   else
 
-    sed -i "s|#hostname#|${hostname}|g" ${workdir}/dbsqlfile/init_proxy_mogdb.sql
-    sed -i "s|#cputype#|${cputype}|g" ${workdir}/dbsqlfile/init_proxy_mogdb.sql
-    sed -i "s|#cpunum#|${cpunum}|g" ${workdir}/dbsqlfile/init_proxy_mogdb.sql
-    sed -i "s|#oskernel#|${oskernel}|g" ${workdir}/dbsqlfile/init_proxy_mogdb.sql
-    sed -i "s|#memorysize#|${memorysize}|g" ${workdir}/dbsqlfile/init_proxy_mogdb.sql
-    sed -i "s|#machinetype#|${machinetype}|g" ${workdir}/dbsqlfile/init_proxy_mogdb.sql
-    sed -i "s|#hardwareplatform#|${hardwareplatform}|g" ${workdir}/dbsqlfile/init_proxy_mogdb.sql
-    sed -i "s|#hostip#|${hostip}|g" ${workdir}/dbsqlfile/init_proxy_mogdb.sql
-    sed -i "s|#osversion#|${osVersion}|g" ${workdir}/dbsqlfile/init_proxy_mogdb.sql
-    sed -i "s|#proxyversion#|${proxyVersion}|g" ${workdir}/dbsqlfile/init_proxy_mogdb.sql
-    ${installPath}/soft/mogdb/app/bin/gsql -d zcloud -h ${mogdbhost} -p ${mogdbport} -U ${mogdbuser} -W ${mogdbpassword} -f dbsqlfile/init_proxy_mogdb.sql
+    sed -i "s|#hostname#|${hostname}|g" ${workdir}/services/proxy/init_proxy_mogdb.sql
+    sed -i "s|#cputype#|${cputype}|g" ${workdir}/services/proxy/init_proxy_mogdb.sql
+    sed -i "s|#cpunum#|${cpunum}|g" ${workdir}/services/proxy/init_proxy_mogdb.sql
+    sed -i "s|#oskernel#|${oskernel}|g" ${workdir}/services/proxy/init_proxy_mogdb.sql
+    sed -i "s|#memorysize#|${memorysize}|g" ${workdir}/services/proxy/init_proxy_mogdb.sql
+    sed -i "s|#machinetype#|${machinetype}|g" ${workdir}/services/proxy/init_proxy_mogdb.sql
+    sed -i "s|#hardwareplatform#|${hardwareplatform}|g" ${workdir}/services/proxy/init_proxy_mogdb.sql
+    sed -i "s|#hostip#|${realHostIp}|g" ${workdir}/services/proxy/init_proxy_mogdb.sql
+    sed -i "s|#osversion#|${osVersion}|g" ${workdir}/services/proxy/init_proxy_mogdb.sql
+    sed -i "s|#proxyversion#|${proxyVersion}|g" ${workdir}/services/proxy/init_proxy_mogdb.sql
+    ${installPath}/soft/mogdb/app/bin/gsql -d zcloud -h ${mogdbhost} -p ${mogdbport} -U ${mogdbuser} -W ${mogdbpassword} -f ${workdir}/services/proxy/init_proxy_mogdb.sql
   fi
 
 }

@@ -29,6 +29,7 @@ workflowIp=#{workflowIp}
 
 . ./script/lib/common.sh
 . ./script/lib/dir_auth.sh
+. ./script/lib/soft_bak.sh
 
 function __InstallConsul() {
   #清除已安装的consul
@@ -503,6 +504,12 @@ function __UpdateConsulOtherNode() {
   cp zcloudBeforeInstall.cfg zcloudBeforeInstall.cfg_temp
   sed -i "/^consul.acl.token/cconsul.acl.token=${consulToken}" zcloudBeforeInstall.cfg_temp
 }
+h2 "[Step $item/$stepTotal]:  备份consul数据 ..."; let item+=1
+startTime=$(date +"%s%N")
+__BackUpConsulData
+endTime=$(date +"%s%N")
+info "备份consul数据完成，耗时$( __CalcDuration ${startTime} ${endTime})"
+
 
 __InstallConsulUnRoot
 

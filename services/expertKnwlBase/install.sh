@@ -1,4 +1,3 @@
-#!/bin/bash
 databaseType=#{databaseType}
 workdir=#{workdir}
 zcloudCfg=${workdir}/zcloud.cfg
@@ -11,6 +10,8 @@ logFile=#{logFile}
 homePath=#{homePath}
 
 . ./script/lib/dir_auth.sh
+. ./script/lib/common.sh
+. ./services/zcloud_service/zcloud_server_install.sh
 . ./script/lib/start_service.sh
 
 function __QueryDatabaseInfoKNWL() {
@@ -146,6 +147,7 @@ function __InstallEkb {
 
 if [[ ${release} != "forMogdb" ]];then
  __InstallEkb
+ __CheckZcloudSingleServiceStatus
 fi
 
 

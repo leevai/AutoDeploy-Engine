@@ -822,58 +822,36 @@ function __InstallMonitorComponent() {
     fi
     if [[  ${outsidePrometheus} = 0 && ${serviceName} == 'alertmanager' ]]; then
       __InstallAlertmanager
-    else
-      echo "当前节点无需安装alertmanager"
     fi
     if [[ -e ${workdir}/jar/zoramon-mgr && ${serviceName} == 'zoramon-mgr' ]]; then
       __InstallZcloud_zoramon_mgr
-    else
-      echo "当前节点无需安装zoramon-mgr"
     fi
     if [[ ${serviceName} == 'smart-baseline' ]]; then
       __InstallZcloud_smart_baseline
-    else
-      echo "当前节点无需安装smart-baseline"
     fi
     if [[ -e ${workdir}/jar/dbaas-mail-sender && ${serviceName} == 'dbaas-mail-sender' ]]; then
       __InstallDbaas_mail_sender
-    else
-      __RemoveServiceFromKeeper dbaas-mail-sender ${configPath}/keeper.yaml
-      echo "当前节点无需安装dbaas-mail-sender"
     fi
     if [[ ${theme} != "zData" ]];then
       if [[  -e ${workdir}/jar/dbaas-wxwork-sender && ${serviceName} == 'dbaas-wxwork-sender' ]]; then
         __Install_alert_sender dbaas-wxwork-sender
-      else
-        __RemoveServiceFromKeeper dbaas-wxwork-sender ${configPath}/keeper.yaml
-        echo "当前节点无需安装dbaas-wxwork-sender"
       fi
 
       if [[ -e ${workdir}/jar/dbaas-sender-common && ${serviceName} == 'dbaas-sender-common'  ]]; then
         __Install_alert_sender dbaas-sender-common
-      else
-        __RemoveServiceFromKeeper dbaas-sender-common ${configPath}/keeper.yaml
-        echo "当前节点无需安装dbaas-sender-common"
       fi
 
       if [[ -e ${workdir}/jar/dbaas-zabbix-sender && ${serviceName} == 'dbaas-zabbix-sender' ]]; then
         __Install_alert_sender dbaas-zabbix-sender
-      else
-        __RemoveServiceFromKeeper dbaas-zabbix-sender ${configPath}/keeper.yaml
-        echo "当前节点无需安装dbaas-zabbix-sender"
       fi
     fi
     if [[  ${serviceName} == 'slowmon_mgr' ]]; then
     __InstallZcloud_slowmon_mgr
-    else
-        echo "当前节点无需安装slowmon_mgr"
     fi
 
     sleep 20
     if [[ ${outsidePrometheus} = 0  && ${serviceName} == 'dbaas-registrationHub' ]]; then
     __InstallDbaas_registrationHub
-    else
-        echo "当前节点无需安装dbaas-registrationHub"
     fi
 
     echo "等待监控组件的启动，等待1分钟"
