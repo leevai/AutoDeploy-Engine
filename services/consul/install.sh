@@ -504,7 +504,7 @@ function __UpdateConsulOtherNode() {
   cp zcloudBeforeInstall.cfg zcloudBeforeInstall.cfg_temp
   sed -i "/^consul.acl.token/cconsul.acl.token=${consulToken}" zcloudBeforeInstall.cfg_temp
 }
-h2 "[Step $item/$stepTotal]:  备份consul数据 ..."; let item+=1
+h2 "[备份consul数据 ..."
 startTime=$(date +"%s%N")
 __BackUpConsulData
 endTime=$(date +"%s%N")

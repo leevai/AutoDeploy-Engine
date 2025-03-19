@@ -622,7 +622,7 @@ function __QueryDatabaseecho() {
 }
 
 function __CreateLowCodeSchema() {
-    __QueryDatabaseecho
+  #  __QueryDatabaseecho
     if [[ ${databaseType} == "MySQL" ]];then
       mysqlAddr="${installPath}/soft/mysql/mysql/bin/mysql"
       ${mysqlAddr} -uroot -p${dbaas_password} -h${server_ip} -P${server_port}  -e "CREATE DATABASE IF NOT EXISTS lowcodeworkflow;"
@@ -747,7 +747,7 @@ function __InitLowCodeConsulData() {
 }
 
 function __InitMagicCubeConsulData() {
-  __QueryDatabaseecho
+ # __QueryDatabaseecho
   if [[ -f ${configPath}/consultoken.txt ]];then
     consulToken=`less ${configPath}/consultoken.txt | grep SecretID|awk '{print $2}'`
     export CONSUL_HTTP_TOKEN=${consulToken}
@@ -1265,8 +1265,3 @@ function __AuthSudoForPodman {
   fi
   chmod u-w ${sudoFile}
 }
-
-
-__InstallLowCodeEnv
-
-__AuthSudoForPodman

@@ -54,7 +54,7 @@ function __InstallZcloudService() {
 . ./script/lib/license/fresh_license_user_identifier.sh
 . ./services/zcloud_service/zcloud_server_install.sh
 . ./services/zcloud_service/monitor_component_install_unroot.sh
-. ./services/lowcode/lowcode_install.sh
+. ./services/zcloud_service/lowcode_install.sh
 
   __QueryDatabaseInfo
   if [[ ${theme} == "zData" ]];then
