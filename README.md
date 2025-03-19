@@ -2,4 +2,12 @@
 
 ## 安装
 ```shell
-pip install -r requirements.txt
+./AutoDeploy-Engine install
+```
+
+## 卸载
+```shell
+./AutoDeploy-Engine uninstal
+```
+卸载执行用户必须为root
+

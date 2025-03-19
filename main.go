@@ -3,9 +3,11 @@ package main
 import (
 	"AutoDeploy-Engine/config"
 	"AutoDeploy-Engine/core"
+	"AutoDeploy-Engine/modules/backup"
 	"AutoDeploy-Engine/modules/checker"
 	"fmt"
 	"os"
+	"time"
 )
 
 func main() {
@@ -16,6 +18,7 @@ func main() {
 	checker.CronCheckSourceLimit()
 
 	action := os.Args[1]
+	startTime := time.Now()
 	switch action {
 	case "install":
 		config.InsertToGlobalVars("installType", 1)
@@ -23,7 +26,9 @@ func main() {
 			fmt.Println("Install failed:", err)
 			return
 		}
-		//fmt.Println("Installation completed successfully!")
+
+		endTime := time.Now()
+		fmt.Printf("install start at %s end at %s, cost %f min\n", startTime, endTime, endTime.Sub(startTime).Minutes())
 
 	case "upgrade":
 		config.InsertToGlobalVars("installType", 4)
@@ -31,34 +36,25 @@ func main() {
 			fmt.Println("Upgrade failed:", err)
 			return
 		}
-	case "Unload":
+	case "uninstall":
 		if err := core.Unload(); err != nil {
-			fmt.Println("Upgrade failed:", err)
+			fmt.Println("uninstall failed:", err)
 			return
 		}
-	//	//fmt.Println("Upgrade completed successfully!")
-	//
-	//case "uninstall":
-	//	if err := deploy.Uninstall(); err != nil {
-	//		fmt.Println("Uninstall failed:", err)
-	//		return
-	//	}
-	//	fmt.Println("Uninstall completed successfully!")
-	//
-	//case "backup":
-	//	if err := deploy.Backup(); err != nil {
-	//		fmt.Println("Backup failed:", err)
-	//		return
-	//	}
-	//	fmt.Println("Backup completed successfully!")
-	//
-	//case "rollback":
-	//	if err := deploy.Rollback(); err != nil {
-	//		fmt.Println("Rollback failed:", err)
-	//		return
-	//	}
-	//	fmt.Println("Rollback completed successfully!")
-	//
+	case "backup":
+		if err := backup.ExecuteBackUp(); err != nil {
+			fmt.Println("Backup failed:", err)
+			return
+		}
+		fmt.Println("Backup completed successfully!")
+
+	case "rollback":
+		if err := backup.ExecuteRestore(); err != nil {
+			fmt.Println("Rollback failed:", err)
+			return
+		}
+		fmt.Println("Rollback completed successfully!")
+
 	//case "change-ip":
 	//	if err := deploy.ChangeIP(); err != nil {
 	//		fmt.Println("Change IP failed:", err)

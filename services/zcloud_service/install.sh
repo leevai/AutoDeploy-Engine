@@ -104,10 +104,10 @@ function __InstallZcloudService() {
     __CheckZcloudSingleServiceStatus
   fi
 
-  if [[ ${serviceName} == "zdbmon-mgr" ]]; then
-    __InstallZdbmonMgr
-    __CheckZcloudSingleServiceStatus
-  fi
+#  if [[ ${serviceName} == "zdbmon-mgr" ]]; then
+#    __InstallZdbmonMgr
+#    __CheckZcloudSingleServiceStatus
+#  fi
 
   if [[ ${serviceName} == "offline_health_check_collector" ]]; then
     # 复制offline_health_check_collector 到/paasdata

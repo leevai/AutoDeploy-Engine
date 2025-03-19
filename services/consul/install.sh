@@ -275,22 +275,17 @@ function __ReadGlobalConfig() {
   #   IFS=$(echo -en "\n")
   info "配置文件目录${installPath}/soft/consul/consul"
   cd ${workdir}
-  if [[ ${installNodeType} == "OneNode" ]]; then
-    localIP=$( __ReadValue nodeconfig/installparam.txt hostIp)
-  else
-    localIP=$( __readINI zcloud.cfg multiple web.ip )
-  fi
 
   cat ${installPath}/soft/consul/consul/globalconfig.txt | while read line; do
     info "consul kv put $line"
     #   IFS=$SAVEIFS
     ${installPath}/soft/consul/consul/consul kv put $line
   done
-  ${installPath}/soft/consul/consul/consul kv put zcloudconfig/prod/global/eureka.client.serviceUrl.defaultZone http://admin:admin123@${localIP}:8761/eureka/
+  ${installPath}/soft/consul/consul/consul kv put zcloudconfig/prod/global/eureka.client.serviceUrl.defaultZone http://admin:admin123@${webIp}:8761/eureka/
   sleep 3s
   check=$(echo $?)
   if [ "${check}" == "0" ]; then
-    info "consul kv put zcloudconfig/prod/global/eureka.client.serviceUrl.defaultZone http://${localIP}:8761/eureka/"
+    info "consul kv put zcloudconfig/prod/global/eureka.client.serviceUrl.defaultZone http://${webIp}:8761/eureka/"
   else
     info "consul zcloudconfig/prod/global/eureka.client.serviceUrl.defaultZone error"
     exit 1

@@ -18,6 +18,6 @@ func Unload() error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("Upgrade completed successfully!")
+	fmt.Println("uninstall completed successfully!")
 	return nil
 }
