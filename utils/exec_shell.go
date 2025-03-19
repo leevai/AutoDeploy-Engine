@@ -72,14 +72,14 @@ func ExecuteShellCommand(service *config.ServiceConfig, cmdstr string) (stdout, 
 		if service.ServiceName != "" {
 			args = service.ServiceName
 		}
-		return executeShellLocal(cmdstr + " " + args)
+		return executeShellLocal(service, cmdstr+" "+args)
 	} else {
 		return RemoteSSH(service, cmdstr)
 	}
 
 }
 
-func executeShellLocal(cmdstr string) (stdout, stderr string, err error) {
+func executeShellLocal(service *config.ServiceConfig, cmdstr string) (stdout, stderr string, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3000*time.Second) // 设置超时
 	defer cancel()
 
@@ -106,13 +106,14 @@ func executeShellLocal(cmdstr string) (stdout, stderr string, err error) {
 		// 若启动命令出错，打印错误信息
 		log.Fatalf("启动命令出错: %v", err)
 	}
-	mwOut := io.MultiWriter(os.Stdout, &outBuf)
-	mwErr := io.MultiWriter(os.Stderr, &errBuf)
+	// 创建自定义 Writer 并添加进程 ID
+	pidOutWriter := NewProcessIDWriter(service, io.MultiWriter(os.Stdout))
+	pidErrWriter := NewProcessIDWriter(service, io.MultiWriter(os.Stderr))
 
 	// 将标准输出复制到 os.Stdout，实时显示输出
-	go io.Copy(mwOut, stdoutP)
+	go io.Copy(io.MultiWriter(pidOutWriter, &outBuf), stdoutP)
 	// 将标准错误输出复制到 os.Stderr，实时显示错误输出
-	go io.Copy(mwErr, stderrP)
+	go io.Copy(io.MultiWriter(pidErrWriter, &errBuf), stderrP)
 
 	// 等待命令执行完成
 	if err := cmd.Wait(); err != nil {
