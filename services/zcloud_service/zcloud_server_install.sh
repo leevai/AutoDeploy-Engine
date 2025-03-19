@@ -722,12 +722,12 @@ function __CheckZcloudSingleServiceStatus()  {
     ./start.sh --name ansible_executor
   fi
   info "Loop check three times"
-  for loop in 1 2 3
+  for loop in 1 2 3 4
   do
     info "start num ${loop} check"
-    info "Wait 1 minutes for the service to start"
+    info "Wait 30s for the service to start"
       #睡眠2分钟
-    sleep 60s
+    sleep 30s
 
     result=`curl -u admin:admin123 http://${webIp}:8761/eureka/apps`
     if [[ "${result}" == "" ]] ;then

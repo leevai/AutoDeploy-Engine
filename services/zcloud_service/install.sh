@@ -37,7 +37,7 @@ export consulHost=#{consulHost}
 . ./script/lib/license/fresh_license_user_identifier.sh
 . ./services/zcloud_service/zcloud_server_install.sh
 . ./services/zcloud_service/monitor_component_install_unroot.sh
-
+. ./services/zcloud_service/lowcode_install.sh
 
 export ipPath=($( __ReadValue ${logPath}/evn.cfg ipPath))
 export ssPath=($( __ReadValue ${logPath}/evn.cfg ssPath))

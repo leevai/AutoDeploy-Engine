@@ -1,4 +1,3 @@
-
 function __InstallPython3_9 {
   echo "安装python3.9.."
   pythonInstallVersion=3.9

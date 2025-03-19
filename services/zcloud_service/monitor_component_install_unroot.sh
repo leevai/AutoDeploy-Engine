@@ -370,7 +370,7 @@ function __Install_alert_sender {
       sed -i "s|#logPath#|${logPath}|g" ${keeperConf}
     else
       enableOffset=`sed -n "$[${serviceNameLine}+1],\$"p ${keeperConf} |grep -n enable:|head -n 1|awk -F':' '{print $1}'`
-      lineNum=$[ ${serviceNameLine} + ${offset} ]
+      lineNum=$[ ${serviceNameLine} + ${enableOffset} ]
       sed -ri "${lineNum}s|enable: .*|enable: true|g" ${keeperConf}
     fi
     sed -ri "s|${installPath}/${senderName}/${senderName}.*\.jar|${wxworkJar}|g" ${configPath}/keeper.yaml
