@@ -1,3 +1,12 @@
+delete from dbaas.soft_owner_file_mid where file_id in ('24s1b413-drbd-1273-8w58-56dr92d065af');
+delete from dbaas.upload_soft_file_store where file_id in ('24s1b413-drbd-1273-8w58-56dr92d065af');
+
+INSERT INTO dbaas.soft_owner_file_mid (owner_id,file_id,create_time,update_time,version) VALUES
+    ((select id from dbaas.soft_file_owner where main_type='Proxy' and special_type='#proxySpecialType#'),'24s1b413-drbd-1273-8w58-56dr92d065af','2022-11-15 22:21:02',NULL,0);
+
+INSERT INTO dbaas.upload_soft_file_store (file_id,file_owner,file_type,distribution,file_ver,special_type,suitable_os_type,suitable_os_ver,service_path,file_size,file_name,create_time,md5_sum,state,uuid,update_time,version,file_uuid) VALUES
+    ('24s1b413-drbd-1273-8w58-56dr92d065af',NULL,NULL,NULL,NULL,NULL,NULL,NULL,'/paasdata/Proxy/',#proxy_size#,'#proxy_file_name#','2022-11-15 22:21:20','#proxy_md5#','1',NULL,NULL,0,NULL);
+
 DELETE FROM dbaas.os_host where host_id='8052f3c4-5f92-4637-869e-e2305b60933b';
 INSERT INTO dbaas.os_host
 (host_id, host_name, os_admin_user, os_type, tenant_id, host_ip, eth_name, subnet_mask, os_version, `version`, state,
