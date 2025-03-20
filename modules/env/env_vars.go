@@ -44,7 +44,9 @@ func getPath(config *config2.ServiceConfig) error {
 		return err
 	}
 	homePath = strings.TrimSpace(homePath)
-	fmt.Printf("homePath: %s, ok", homePath)
+	if homePath == "" {
+		return fmt.Errorf("homePath is Empty")
+	}
 
 	config2.InsertToGlobalVars("homePath", homePath)
 	config2.InsertToGlobalVars("installPath", fmt.Sprintf("%s/dbaas/soft-install", homePath))
@@ -61,6 +63,9 @@ func getPath(config *config2.ServiceConfig) error {
 	if err != nil {
 		fmt.Println(stderr)
 		return err
+	}
+	if workdir == "" {
+		return fmt.Errorf("homePath is Empty")
 	}
 	config2.InsertToGlobalVars("workdir", strings.TrimSpace(workdir))
 	return nil

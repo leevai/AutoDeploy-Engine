@@ -107,8 +107,8 @@ func executeShellLocal(service *config.ServiceConfig, cmdstr string) (stdout, st
 		log.Fatalf("启动命令出错: %v", err)
 	}
 	// 创建自定义 Writer 并添加进程 ID
-	pidOutWriter := NewProcessIDWriter(service, io.MultiWriter(os.Stdout))
-	pidErrWriter := NewProcessIDWriter(service, io.MultiWriter(os.Stderr))
+	pidOutWriter := NewProcessIDWriter(service, os.Stdout)
+	pidErrWriter := NewProcessIDWriter(service, os.Stderr)
 
 	// 将标准输出复制到 os.Stdout，实时显示输出
 	go io.Copy(io.MultiWriter(pidOutWriter, &outBuf), stdoutP)

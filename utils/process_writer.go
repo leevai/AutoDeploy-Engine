@@ -4,7 +4,6 @@ import (
 	"AutoDeploy-Engine/config"
 	"fmt"
 	"io"
-	"runtime"
 	"strings"
 )
 
@@ -39,11 +38,4 @@ func (p *ProcessIDWriter) Write(data []byte) (n int, err error) {
 	// 保存最后一行，可能是不完整的行
 	p.buffer = []byte(lines[len(lines)-1])
 	return len(data), nil
-}
-
-func goId() string {
-	buf := make([]byte, 32)
-	n := runtime.Stack(buf, false)
-	id := strings.Fields(string(buf[:n]))[0]
-	return id
 }
